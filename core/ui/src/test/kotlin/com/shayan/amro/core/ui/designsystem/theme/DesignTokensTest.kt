@@ -1,0 +1,72 @@
+package com.shayan.amro.core.ui.designsystem.theme
+
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.unit.dp
+import org.junit.Assert.assertEquals
+import org.junit.Test
+
+class DesignTokensTest {
+    @Test
+    fun `spacing follows four dp grid`() {
+        assertEquals(0.dp, Spacing.s0)
+        assertEquals(2.dp, Spacing.s0_5)
+        assertEquals(4.dp, Spacing.s1)
+        assertEquals(8.dp, Spacing.s2)
+        assertEquals(12.dp, Spacing.s3)
+        assertEquals(16.dp, Spacing.s4)
+        assertEquals(20.dp, Spacing.s5)
+        assertEquals(24.dp, Spacing.s6)
+        assertEquals(32.dp, Spacing.s8)
+        assertEquals(40.dp, Spacing.s10)
+        assertEquals(48.dp, Spacing.s12)
+        assertEquals(64.dp, Spacing.s16)
+        assertEquals(16.dp, Spacing.gutter)
+    }
+
+    @Test
+    fun `component shapes match spec`() {
+        assertEquals(CircleShape, ComponentShapes.button)
+        assertEquals(RoundedCornerShape(8.dp), ComponentShapes.chip)
+        assertEquals(RoundedCornerShape(12.dp), ComponentShapes.card)
+        assertEquals(RoundedCornerShape(4.dp), ComponentShapes.input)
+        assertEquals(RoundedCornerShape(28.dp), ComponentShapes.dialog)
+    }
+
+    @Test
+    fun `motion durations scales and state layers`() {
+        assertEquals(150, Motion.durationShortMillis)
+        assertEquals(250, Motion.durationMediumMillis)
+        assertEquals(400, Motion.durationLongMillis)
+        assertEquals(0.97f, Motion.pressScaleButton, 0f)
+        assertEquals(0.90f, Motion.pressScaleIconButton, 0f)
+        assertEquals(0.08f, Motion.stateLayerHover, 0f)
+        assertEquals(0.10f, Motion.stateLayerFocus, 0f)
+        assertEquals(0.12f, Motion.stateLayerPressed, 0f)
+    }
+
+    @Test
+    fun `elevation levels are m3 dps`() {
+        assertEquals(1.dp, Elevation.level1)
+        assertEquals(3.dp, Elevation.level2)
+        assertEquals(6.dp, Elevation.level3)
+        assertEquals(8.dp, Elevation.level4)
+        assertEquals(12.dp, Elevation.level5)
+    }
+
+    @Test
+    fun `extended colors resolve per scheme`() {
+        assertEquals(ColorPrimitives.Green50, DarkExtendedColors.success)
+        assertEquals(ColorPrimitives.Green08, DarkExtendedColors.onSuccess)
+        assertEquals(ColorPrimitives.Green20, DarkExtendedColors.successContainer)
+        assertEquals(ColorPrimitives.Amber50, DarkExtendedColors.warning)
+        assertEquals(ColorPrimitives.Orange57, DarkExtendedColors.primaryHover)
+        assertEquals(ColorPrimitives.Orange40, DarkExtendedColors.primaryPressed)
+        assertEquals(ColorPrimitives.Green44, LightExtendedColors.success)
+        assertEquals(ColorPrimitives.White, LightExtendedColors.onSuccess)
+        assertEquals(ColorPrimitives.Green88, LightExtendedColors.successContainer)
+        assertEquals(ColorPrimitives.Amber35, LightExtendedColors.warning)
+        assertEquals(ColorPrimitives.Orange30, LightExtendedColors.primaryHover)
+        assertEquals(ColorPrimitives.Orange20, LightExtendedColors.primaryPressed)
+    }
+}

@@ -1,9 +1,7 @@
 # Architecture
 
 An overview of how the app is put together: what the modules are, what each one holds, and how data
-and events move between them. Conventions and their rationale live in the `architecture` project
-skill; technology choices live in the tech stack spec; specs in `docs/superpowers/specs/` describe
-individual features.
+and events move between them.
 
 The app has no backend of its own. TMDB is the only remote, reached with a read access token, and
 everything the app shows is served from a local database that the network layer fills. Offline is
@@ -170,7 +168,7 @@ query, so a `Movie` carries genre names by the time it leaves the data layer, an
 reads the same table.
 
 ## Detail and freshness (TODO: remove this)
- 
+
 `MovieDetailRepository` exposes a `Flow` of the cached detail and a separate call that fetches when
 the cache is missing or older than the freshness window. The window is a `cachedAt` column compared
 against an injected `Clock`, so a test moves time instead of waiting.

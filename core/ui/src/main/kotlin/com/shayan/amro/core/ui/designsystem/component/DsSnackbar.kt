@@ -1,0 +1,45 @@
+package com.shayan.amro.core.ui.designsystem.component
+
+import androidx.compose.material3.SnackbarData
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarVisuals
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import com.shayan.amro.core.ui.designsystem.theme.AmroTheme
+import androidx.compose.material3.Snackbar as M3Snackbar
+
+/** Design-system snackbar. Drop it into an M3 `SnackbarHost`. */
+@Composable
+fun DsSnackbar(
+    snackbarData: SnackbarData,
+    modifier: Modifier = Modifier,
+) {
+    M3Snackbar(snackbarData = snackbarData, modifier = modifier)
+}
+
+private val PreviewSnackbarData =
+    object : SnackbarData {
+        override val visuals =
+            object : SnackbarVisuals {
+                override val message = "Couldn't load trending"
+                override val actionLabel = "Retry"
+                override val withDismissAction = false
+                override val duration = SnackbarDuration.Short
+            }
+
+        override fun performAction() {}
+
+        override fun dismiss() {}
+    }
+
+@Preview
+@Composable
+private fun SnackbarPreview() {
+    AmroTheme(darkTheme = true) {
+        Surface {
+            DsSnackbar(snackbarData = PreviewSnackbarData)
+        }
+    }
+}

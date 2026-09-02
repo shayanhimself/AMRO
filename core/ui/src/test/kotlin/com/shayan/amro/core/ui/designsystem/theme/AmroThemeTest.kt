@@ -1,0 +1,44 @@
+package com.shayan.amro.core.ui.designsystem.theme
+
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.test.junit4.v2.createComposeRule
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.Assert.assertEquals
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+
+@RunWith(AndroidJUnit4::class)
+class AmroThemeTest {
+    @get:Rule
+    val composeRule = createComposeRule()
+
+    @Test
+    fun `dark theme installs dark scheme and extended colors`() {
+        var primary = Color.Unspecified
+        var success = Color.Unspecified
+        composeRule.setContent {
+            AmroTheme(darkTheme = true) {
+                primary = MaterialTheme.colorScheme.primary
+                success = AmroExtendedTheme.colors.success
+            }
+        }
+        assertEquals(ColorPrimitives.Orange50, primary)
+        assertEquals(ColorPrimitives.Green50, success)
+    }
+
+    @Test
+    fun `light theme switches schemes and extended colors`() {
+        var primary = Color.Unspecified
+        var success = Color.Unspecified
+        composeRule.setContent {
+            AmroTheme(darkTheme = false) {
+                primary = MaterialTheme.colorScheme.primary
+                success = AmroExtendedTheme.colors.success
+            }
+        }
+        assertEquals(ColorPrimitives.Orange40, primary)
+        assertEquals(ColorPrimitives.Green44, success)
+    }
+}
