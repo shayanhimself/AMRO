@@ -30,3 +30,15 @@ dependencyResolutionManagement {
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "amro"
+
+include(
+    ":app",
+    ":core:model",
+    ":core:network",
+    ":core:database",
+    ":core:data",
+    ":core:ui",
+    ":core:testing",
+    ":feature:trending",
+    ":feature:detail",
+)

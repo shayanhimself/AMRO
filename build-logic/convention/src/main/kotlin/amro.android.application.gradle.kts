@@ -16,6 +16,7 @@ android {
         sourceCompatibility = JavaVersion.toVersion(JDK_VERSION)
         targetCompatibility = JavaVersion.toVersion(JDK_VERSION)
     }
+    // Goes with the Compose compiler plugin above. A module needs both halves.
     buildFeatures {
         compose = true
     }

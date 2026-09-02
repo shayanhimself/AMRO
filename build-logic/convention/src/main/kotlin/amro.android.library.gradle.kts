@@ -1,6 +1,7 @@
 // A plain Android library module.
 plugins {
     id("com.android.library")
+    id("amro.kover")
 }
 
 android {

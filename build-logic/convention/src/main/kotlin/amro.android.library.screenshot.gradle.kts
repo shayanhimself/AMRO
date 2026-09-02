@@ -10,6 +10,7 @@ plugins {
 }
 
 android {
+    // Goes with the Compose compiler plugin above. A module needs both halves.
     buildFeatures {
         compose = true
     }
