@@ -45,6 +45,7 @@ android {
 dependencies {
     implementation(projects.core.ui)
     implementation(projects.core.data)
+    implementation(projects.core.network)
     implementation(projects.feature.trending)
     implementation(projects.feature.detail)
 
@@ -58,7 +59,6 @@ dependencies {
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.androidx.adaptive.navigation3)
-    implementation(libs.kotlinx.coroutines.core)
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)

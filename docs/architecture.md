@@ -30,6 +30,7 @@ graph TD
     app --> detail
     app --> ui
     app --> data
+    app --> network
 
     trending --> ui
     trending --> data
