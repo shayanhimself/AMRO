@@ -42,6 +42,13 @@ android {
     }
 }
 
+// The Accessibility Test Framework drags in an old Material Components library that downgrades
+// the app's own dependencies. Nothing on screen uses it, so it is dropped from the device test
+// classpath.
+configurations.androidTestImplementation {
+    exclude(group = "com.google.android.material", module = "material")
+}
+
 dependencies {
     implementation(projects.core.ui)
     implementation(projects.core.data)
@@ -62,4 +69,18 @@ dependencies {
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    kspAndroidTest(libs.hilt.compiler)
+
+    androidTestImplementation(projects.core.network)
+    androidTestImplementation(projects.core.testing)
+    androidTestImplementation(libs.hilt.android.testing)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4.accessibility)
+    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.kotlin.test)
+    androidTestImplementation(enforcedPlatform(libs.okhttp.bom))
+    androidTestImplementation(libs.okhttp.mockwebserver)
 }

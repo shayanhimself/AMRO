@@ -47,8 +47,10 @@ is worse than no fake.
 **Where:** `core/ui/src/screenshotTest` and `feature/*/src/screenshotTest`, with goldens checked in
 under `src/screenshotTestDebug/reference`.
 
-**Tools:** Compose Preview Screenshot Testing, `@PreviewTest` on a `@Preview`. Run by
-`scripts/test.sh`, re-recorded by `scripts/screenshotUpdate.sh`, and gated by `check`.
+**Tools:** Compose Preview Screenshot Testing, `@PreviewTest` on a `@Preview`. Gated by `check`, so
+`scripts/unittest.sh` runs it. `scripts/screenshotTest.sh` validates the goldens on their own, which
+is the fast loop while a component is being changed, and `scripts/screenshotUpdate.sh` re-records
+them.
 
 **What goes here:** rendering. Every component in light and dark, every distinct visual state of a
 screen, the form factors including the two-pane layout, and the large-font setting.
@@ -121,13 +123,13 @@ needs a token and a network, so it never gates `check`.
 
 ## Where a test goes
 
-| Layer | Runs on | In `check` | Command |
-|---|---|---|---|
-| Unit | JVM | yes | `scripts/test.sh` |
-| Screenshot | JVM | yes | `scripts/test.sh`, re-record with `scripts/screenshotUpdate.sh` |
-| Screen | JVM | yes | `scripts/test.sh` |
-| Flow | device | no | `scripts/instrumented.sh` |
-| E2E | device, real API | no | `scripts/journeys.py` |
+| Layer | Runs on | Command                         |
+|---|---|---------------------------------|
+| Unit | JVM | `scripts/unittest.sh`           |
+| Screen | JVM | `scripts/unittest.sh`           |
+| Screenshot | JVM | `scripts/screenshotTest.sh` or `scripts/unittest.sh` |
+| Flow | device | `scripts/instrumented.sh`       |
+| E2E | device, real API | `scripts/journeys.py`           |
 
 Whether a test runs on the JVM or on a device is decided by its source set, never by an annotation.
 `@RunWith(AndroidJUnit4::class)` appears on both a Robolectric test and a device test, and only

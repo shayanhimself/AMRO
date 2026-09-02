@@ -23,6 +23,12 @@ android {
     }
 }
 
+// Gradle fails a test task that finds no tests, and counts the screenshot source set as test
+// sources. Without this, a module whose only tests are goldens fails the build.
+tasks.withType<Test>().configureEach {
+    failOnNoDiscoveredTests = false
+}
+
 // Applied here rather than in the plugins block: it refuses to apply until the gate above is set,
 // and everything in a plugins block runs before the body.
 apply(plugin = "com.android.compose.screenshot")
