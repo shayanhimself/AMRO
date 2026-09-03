@@ -53,7 +53,7 @@ graph TD
 | `:core:model` | The types every other module speaks in: `MovieId`, `Movie`, `MovieDetail`, `Genre`, `MovieFilter`, `SortKey`, `SortDirection`, `ImageRef`, and the sealed `DataError`. Types only, pure Kotlin, no Android dependency                                                                                                                                                                                                                  |
 | `:core:network` | `MovieRemoteDataSource`, the api-neutral contract the data layer depends on, and its TMDB implementation: Ktor client configuration, endpoints, wire DTOs and mappings.
 | `:core:database` | The Room database, entities, and DAOs. A movie arrives with its genres already resolved, so nothing here joins them                                                                                                                                                                                                                                                                                                                  |
-| `:core:data` | Repository interfaces and their implementations, the fetch policy, deduplication, the freshness rule, and the filter and sort functions the trending list applies. Names no source                                                                                                                                                                                                                                                     |
+| `:core:data` | Repository interfaces and their implementations, the fetch policy, deduplication, and the filter and sort functions the trending list applies. Names no source                                                                                                                                                                                                                                                     |
 | `:core:ui` | Theme, design system tokens and components, and generic strings. Depends on nothing in the project                                                                                                                                                                                                                                                                                                                                     |
 | `:feature:trending` | The trending list, the filter sheet, and their view model                                                                                                                                                                                                                                                                                                                                                                              |
 | `:feature:detail` | The movie detail screen and its view model                                                                                                                                                                                                                                                                                                                                                                                             |
@@ -90,10 +90,10 @@ graph TD
         VM["ViewModel, owns UiState and the filter"]
     end
 
-    subgraph DATALAYER["Data layer (:core:data)"]
+    subgraph DATALAYER["Data layer (:core:data, :core:database)"]
         TrendingRepo["TrendingRepository"]
         DetailRepo["MovieDetailRepository"]
-        Room[("Room: summaries, details")]
+        Room[("MovieLocalDataSource<br/>Room: movies, movie_details")]
     end
 
     subgraph SOURCE["Remote source (:core:network)"]
@@ -154,25 +154,24 @@ A request that fails part way through fails the whole call, and the source retur
 A short list and a list cut short look the same to a caller, so a partial answer would reach the
 screen as though it were the whole one. The screen shows the failure with a retry instead.
 
-The genre list is fetched once and stored. The join from ids to names happens in the DAO's relation
-query, so a `Movie` carries genre names by the time it leaves the data layer, and the filter sheet
-reads the same table.
+A refresh replaces the trending table in one transaction. Room defers invalidation until the commit,
+so a subscriber sees one emission carrying the new set and never an empty list between the delete and
+the insert.
 
-## Detail and freshness (TODO: remove this)
+## Detail (TODO: remove this)
 
-`MovieDetailRepository` exposes a `Flow` of the cached detail and a separate call that fetches when
-the cache is missing or older than the freshness window. The window is a `cachedAt` column compared
-against an injected `Clock`, so a test moves time instead of waiting.
+`MovieDetailRepository` exposes a `Flow` of the cached detail and a separate call that fetches. The
+fetch is issued whatever the cache holds, so neither table is timestamped and no layer holds a clock:
+the cache renders at once and is replaced when an answer arrives.
 
-The two calls carry different failures on purpose. A fetch for a movie with nothing cached is the
-screen's own request, and its failure is the screen's error state. A refetch behind content that is
-already correct reports nothing, and is attempted again the next time the movie is opened.
+The two carry different failures on purpose. A fetch for a movie with nothing cached is the screen's
+own request, and its failure is the screen's error state. A fetch behind content that is already
+correct reports nothing, and is attempted again the next time the movie is opened.
 
 ## Genres (TODO: remove this)
 
-`Genre` is the app's own vocabulary, not a provider's, and the stored link between a movie and its
-genres holds app genres. One selection in the filter sheet therefore matches movies from every
-source at once.
+`Genre` is the app's own vocabulary, not a provider's, and a movie stores app genres. One selection
+in the filter sheet therefore matches movies from every source at once.
 
 Each source keeps an alias table, its own genres paired with the app genre each one becomes, and the
 translation happens while a movie is saved. The alias is keyed on the provider's id where it has

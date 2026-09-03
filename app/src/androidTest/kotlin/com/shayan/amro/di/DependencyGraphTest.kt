@@ -10,7 +10,6 @@ import org.junit.runner.RunWith
 import javax.inject.Inject
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-import kotlin.time.Clock
 
 private const val BASE_URL_SUFFIX = "/"
 
@@ -29,15 +28,11 @@ class DependencyGraphTest {
     @Inject
     lateinit var tmdbConfig: TmdbConfig
 
-    @Inject
-    lateinit var clock: Clock
-
     @Test
     fun everyStartupBindingResolves() {
         hiltRule.inject()
 
         assertNotNull(tmdbConfig)
-        assertNotNull(clock)
     }
 
     // The token is a build input that defaults to empty, so its value is not asserted on. The

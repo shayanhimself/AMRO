@@ -16,13 +16,11 @@ the build and no case for adding one: a mock returns the value the test wrote an
 rather than the result, so it stays green after the real collaborator stops behaving that way. A fake
 asserts what the call produced, so a refactor that preserves the behaviour preserves the test.
 
-Fakes live in `:core:testing`, which is what makes them visible to other modules' tests. `MockEngine`
-and MockWebServer are not exceptions: they stand in for the provider, not for a class we own.
+Fakes and fixtures live in `:core:testing`, which is what makes them visible to other modules' tests.
+The fixtures are of two kinds: hand-built and recorded from API responses.
 
-`:core:testing` also owns the fixtures, and they are recorded provider responses rather than
-hand-built objects. A hand-built object is missing whatever its author remembered to leave out; a
-recorded one carries the shapes the provider actually sends, including the ones the product treats
-as normal.
+Recorded responses sit under `core/testing/src/main/resources/fixtures/`,
+and `scripts/record-fixtures.py` re-records them against the live API.
 
 ## The layers
 
@@ -95,10 +93,6 @@ than in a layer of their own, because every flow test starts both.
 
 **How the server is replaced:** the API base URL and the image base URL are both client configuration
 values, so a test binding points them at a local MockWebServer that serves recorded responses.
-
-Recorded responses sit under `core/testing/src/main/resources/fixtures/`, and `scripts/record-fixtures.py`
-re-records them against the live API.
-
 
 **Reading a failure:** a flow test failing should mean two layers are wired together wrong. If the
 cause turns out to sit inside one layer, that is also a gap in the cheaper test that should have

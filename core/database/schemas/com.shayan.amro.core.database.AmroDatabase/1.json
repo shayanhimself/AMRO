@@ -1,0 +1,185 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "5f53acdddbb7ac947a6d97ee38137918",
+    "entities": [
+      {
+        "tableName": "movies",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`source` TEXT NOT NULL, `movieId` TEXT NOT NULL, `title` TEXT NOT NULL, `genres` TEXT NOT NULL, `popularity` REAL NOT NULL, `releaseDateEpochDay` INTEGER, `posterSmall` TEXT, `posterLarge` TEXT, PRIMARY KEY(`source`, `movieId`))",
+        "fields": [
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "movieId",
+            "columnName": "movieId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "genres",
+            "columnName": "genres",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "popularity",
+            "columnName": "popularity",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "releaseDateEpochDay",
+            "columnName": "releaseDateEpochDay",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "posterSmall",
+            "columnName": "posterSmall",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "posterLarge",
+            "columnName": "posterLarge",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "source",
+            "movieId"
+          ]
+        }
+      },
+      {
+        "tableName": "movie_details",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`source` TEXT NOT NULL, `movieId` TEXT NOT NULL, `title` TEXT NOT NULL, `genres` TEXT NOT NULL, `popularity` REAL NOT NULL, `releaseDateEpochDay` INTEGER, `posterSmall` TEXT, `posterLarge` TEXT, `overview` TEXT, `tagline` TEXT, `backdropSmall` TEXT, `backdropLarge` TEXT, `runtimeMinutes` INTEGER, `status` TEXT NOT NULL, `budget` INTEGER, `revenue` INTEGER, `ratingAverage` REAL, `ratingCount` INTEGER, `imdbId` TEXT, PRIMARY KEY(`source`, `movieId`))",
+        "fields": [
+          {
+            "fieldPath": "source",
+            "columnName": "source",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "movieId",
+            "columnName": "movieId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "genres",
+            "columnName": "genres",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "popularity",
+            "columnName": "popularity",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "releaseDateEpochDay",
+            "columnName": "releaseDateEpochDay",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "posterSmall",
+            "columnName": "posterSmall",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "posterLarge",
+            "columnName": "posterLarge",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "overview",
+            "columnName": "overview",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "tagline",
+            "columnName": "tagline",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "backdropSmall",
+            "columnName": "backdropSmall",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "backdropLarge",
+            "columnName": "backdropLarge",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "runtimeMinutes",
+            "columnName": "runtimeMinutes",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "budget",
+            "columnName": "budget",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "revenue",
+            "columnName": "revenue",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "ratingAverage",
+            "columnName": "ratingAverage",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "ratingCount",
+            "columnName": "ratingCount",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "imdbId",
+            "columnName": "imdbId",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "source",
+            "movieId"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5f53acdddbb7ac947a6d97ee38137918')"
+    ]
+  }
+}

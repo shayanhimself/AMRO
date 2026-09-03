@@ -157,12 +157,20 @@ class TmdbRemoteDataSourceTest {
         }
 
     @Test
-    fun `the recorded unauthorised body is a server failure and is never parsed`() =
+    fun `a refused status fails a page even when the body would have parsed`() =
         runTest {
             val result =
                 dataSource {
-                    respondJson(TmdbFixture.Error.UNAUTHORISED, HttpStatusCode.Unauthorized)
+                    respondJson(TmdbFixture.Trending.PAGE_1, HttpStatusCode.Unauthorized)
                 }.trending(WANTED)
+
+            assertEquals(DataError.Server, assertIs<NetworkResult.Failure>(result).error)
+        }
+
+    @Test
+    fun `the recorded unauthorised body never becomes movies`() =
+        runTest {
+            val result = dataSource { respondJson(TmdbFixture.Error.UNAUTHORISED) }.trending(WANTED)
 
             assertEquals(DataError.Server, assertIs<NetworkResult.Failure>(result).error)
         }
@@ -182,11 +190,22 @@ class TmdbRemoteDataSourceTest {
         }
 
     @Test
-    fun `the recorded not found body is a server failure on a detail`() =
+    fun `a refused status fails a detail even when the body would have parsed`() =
         runTest {
             val result =
                 dataSource {
-                    respondJson(TmdbFixture.Error.NOT_FOUND, HttpStatusCode.NotFound)
+                    respondJson(TmdbFixture.Movie.RELEASED, HttpStatusCode.NotFound)
+                }.movieDetail(MovieId(TMDB_SOURCE, KNOWN_MOVIE_ID))
+
+            assertEquals(DataError.Server, assertIs<NetworkResult.Failure>(result).error)
+        }
+
+    @Test
+    fun `the recorded not found body never becomes a movie detail`() =
+        runTest {
+            val result =
+                dataSource {
+                    respondJson(TmdbFixture.Error.NOT_FOUND)
                 }.movieDetail(MovieId(TMDB_SOURCE, KNOWN_MOVIE_ID))
 
             assertEquals(DataError.Server, assertIs<NetworkResult.Failure>(result).error)

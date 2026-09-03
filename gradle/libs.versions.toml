@@ -56,6 +56,7 @@ androidx-adaptive-navigation3 = { group = "androidx.compose.material3.adaptive",
 androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.ref = "sqlite" }
+androidx-sqlite-bundled-jvm = { group = "androidx.sqlite", name = "sqlite-bundled-jvm", version.ref = "sqlite" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
@@ -107,3 +108,4 @@ amro-android-application = { id = "amro.android.application" }
 amro-android-library = { id = "amro.android.library" }
 amro-android-library-screenshot = { id = "amro.android.library.screenshot" }
 amro-api-tokens = { id = "amro.api.tokens" }
+amro-robolectric = { id = "amro.robolectric" }
