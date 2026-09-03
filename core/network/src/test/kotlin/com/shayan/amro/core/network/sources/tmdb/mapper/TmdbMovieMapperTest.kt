@@ -6,8 +6,9 @@ import com.shayan.amro.core.network.sources.tmdb.TMDB_SOURCE
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbMovieDetailDto
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbMovieDto
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbTrendingPageDto
-import com.shayan.amro.core.network.sources.tmdb.testJson
-import com.shayan.amro.core.testing.TmdbFixture
+import com.shayan.amro.core.testing.fixture.tmdb.TmdbFixture
+import com.shayan.amro.core.testing.fixture.tmdb.TmdbRecording
+import com.shayan.amro.core.testing.fixture.tmdb.decode
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -32,9 +33,6 @@ private const val ROW_POPULARITY = 42.5
 /** The smallest score seen across the recorded pages, so no real row sorts below an unscored one. */
 private const val LOWEST_TMDB_SCORE = 2.1233
 
-/** A row TMDB has never sent, since it scores every one it serves. */
-private const val ROW_WITHOUT_POPULARITY = """{"id":$ROW_ID,"title":"$ROW_TITLE"}"""
-
 /** An id TMDB does not issue, so a row carrying it has a genre the table has no entry for. */
 private const val UNKNOWN_GENRE_ID = 999_999
 
@@ -54,7 +52,7 @@ private val RECORDED_ROW_RELEASE_DATE = LocalDate(2026, 9, 3)
 class TmdbMovieMapperTest {
     @Test
     fun `the complete record maps every field TMDB populated`() {
-        val detail = recorded(TmdbFixture.RELEASED_MOVIE).toMovieDetail()
+        val detail = recorded(TmdbFixture.Movie.RELEASED).toMovieDetail()
 
         assertEquals(TMDB_SOURCE, detail.movie.id.source)
         assertEquals(COMPLETE_ID, detail.movie.id.value)
@@ -75,7 +73,7 @@ class TmdbMovieMapperTest {
 
     @Test
     fun `the sparse record maps tagline budget revenue and rating to null`() {
-        val detail = recorded(TmdbFixture.IN_PRODUCTION_MOVIE).toMovieDetail()
+        val detail = recorded(TmdbFixture.Movie.IN_PRODUCTION).toMovieDetail()
 
         assertNull(detail.tagline)
         assertNull(detail.budget)
@@ -85,7 +83,7 @@ class TmdbMovieMapperTest {
 
     @Test
     fun `the unreleased record maps to post production with no rating`() {
-        val detail = recorded(TmdbFixture.POST_PRODUCTION_MOVIE).toMovieDetail()
+        val detail = recorded(TmdbFixture.Movie.POST_PRODUCTION).toMovieDetail()
 
         assertEquals(ReleaseStatus.POST_PRODUCTION, detail.status)
         assertNull(detail.rating)
@@ -136,7 +134,7 @@ class TmdbMovieMapperTest {
 
     @Test
     fun `a row with no score still becomes a movie and sorts below every scored one`() {
-        val unscored = testJson.decodeFromString<TmdbMovieDto>(ROW_WITHOUT_POPULARITY).toMovie()
+        val unscored = row(popularity = null).toMovie()
 
         assertEquals(ROW_TITLE, unscored.title, "the row is kept rather than failing its page")
         assertTrue(unscored.popularity < row(popularity = LOWEST_TMDB_SCORE).toMovie().popularity)
@@ -169,8 +167,7 @@ class TmdbMovieMapperTest {
 }
 
 /** A recorded response, decoded the way the client decodes it. */
-private fun recorded(fixture: TmdbFixture) =
-    testJson.decodeFromString<TmdbMovieDetailDto>(fixture.json)
+private fun recorded(fixture: TmdbRecording) = fixture.decode<TmdbMovieDetailDto>()
 
 /**
  * The first row of a recorded trending page, decoded the way the client decodes it.
@@ -179,8 +176,8 @@ private fun recorded(fixture: TmdbFixture) =
  * This one does, so a renamed field reaches the assertions as an absence.
  */
 private fun recordedRow() =
-    testJson
-        .decodeFromString<TmdbTrendingPageDto>(TmdbFixture.TRENDING_PAGE_1.json)
+    TmdbFixture.Trending.PAGE_1
+        .decode<TmdbTrendingPageDto>()
         .results
         .first()
 

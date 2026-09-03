@@ -4,7 +4,8 @@ import com.shayan.amro.core.model.DataError
 import com.shayan.amro.core.model.Movie
 import com.shayan.amro.core.model.MovieId
 import com.shayan.amro.core.network.NetworkResult
-import com.shayan.amro.core.testing.TmdbFixture
+import com.shayan.amro.core.testing.fixture.tmdb.TmdbFixture
+import com.shayan.amro.core.testing.fixture.tmdb.TmdbRecording
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
@@ -126,7 +127,7 @@ class TmdbRemoteDataSourceTest {
     fun `a recorded detail becomes a movie detail`() =
         runTest {
             val result =
-                dataSource { respondJson(TmdbFixture.RELEASED_MOVIE.json) }
+                dataSource { respondJson(TmdbFixture.Movie.RELEASED) }
                     .movieDetail(MovieId(TMDB_SOURCE, KNOWN_MOVIE_ID))
 
             assertIs<NetworkResult.Success<*>>(result)
@@ -160,10 +161,7 @@ class TmdbRemoteDataSourceTest {
         runTest {
             val result =
                 dataSource {
-                    respondJson(
-                        TmdbFixture.UNAUTHORISED_ERROR.json,
-                        HttpStatusCode.Unauthorized,
-                    )
+                    respondJson(TmdbFixture.Error.UNAUTHORISED, HttpStatusCode.Unauthorized)
                 }.trending(WANTED)
 
             assertEquals(DataError.Server, assertIs<NetworkResult.Failure>(result).error)
@@ -188,10 +186,7 @@ class TmdbRemoteDataSourceTest {
         runTest {
             val result =
                 dataSource {
-                    respondJson(
-                        TmdbFixture.NOT_FOUND_ERROR.json,
-                        HttpStatusCode.NotFound,
-                    )
+                    respondJson(TmdbFixture.Error.NOT_FOUND, HttpStatusCode.NotFound)
                 }.movieDetail(MovieId(TMDB_SOURCE, KNOWN_MOVIE_ID))
 
             assertEquals(DataError.Server, assertIs<NetworkResult.Failure>(result).error)
@@ -224,7 +219,7 @@ class TmdbRemoteDataSourceTest {
     @Test
     fun `every request carries the credential as a bearer header and never in the URL`() =
         runTest {
-            dataSource { respondJson(TmdbFixture.TRENDING_PAGE_1.json) }.trending(TMDB_PAGE_SIZE)
+            dataSource { respondJson(TmdbFixture.Trending.PAGE_1) }.trending(TMDB_PAGE_SIZE)
 
             val request = requests.single()
             assertEquals("Bearer $TOKEN", request.headers[HttpHeaders.Authorization])
@@ -236,7 +231,7 @@ class TmdbRemoteDataSourceTest {
         runTest {
             dataSource(
                 logLevel = LogLevel.ALL,
-            ) { respondJson(TmdbFixture.TRENDING_PAGE_1.json) }.trending(TMDB_PAGE_SIZE)
+            ) { respondJson(TmdbFixture.Trending.PAGE_1) }.trending(TMDB_PAGE_SIZE)
 
             val logged = logLines.joinToString("\n")
             assertTrue(logged.contains(HttpHeaders.Authorization), "no header was logged to redact")
@@ -244,20 +239,19 @@ class TmdbRemoteDataSourceTest {
         }
 
     /** A source answering each successive request with the next recorded page, then with none. */
-    private fun pagingSource() = sequenceSource(TmdbFixture.TRENDING_PAGES)
+    private fun pagingSource() = sequenceSource(TmdbFixture.Trending.entries)
 
     /** A source answering with the two assembled pages that repeat rows across their boundary. */
-    private fun overlapSource() =
-        sequenceSource(listOf(TmdbFixture.OVERLAP_PAGE_1, TmdbFixture.OVERLAP_PAGE_2))
+    private fun overlapSource() = sequenceSource(TmdbFixture.Overlap.entries)
 
     /** A source answering every request with the same page, so the walk can only end on the cap. */
-    private fun repeatingSource() = dataSource { respondJson(TmdbFixture.TRENDING_PAGE_1.json) }
+    private fun repeatingSource() = dataSource { respondJson(TmdbFixture.Trending.PAGE_1) }
 
     /**
      * A source that serves [pages] in order and answers every request past them with an empty
      * page, which is how TMDB says it has no more to give.
      */
-    private fun sequenceSource(pages: List<TmdbFixture>): TmdbRemoteDataSource {
+    private fun sequenceSource(pages: List<TmdbRecording>): TmdbRemoteDataSource {
         var served = 0
         return dataSource {
             val body = pages.getOrNull(served)?.json ?: EMPTY_RESULTS
@@ -272,7 +266,7 @@ class TmdbRemoteDataSourceTest {
         return dataSource {
             request++
             if (request == FIRST_PAGE) {
-                respondJson(TmdbFixture.TRENDING_PAGE_1.json)
+                respondJson(TmdbFixture.Trending.PAGE_1)
             } else {
                 throw IOException("dropped")
             }
@@ -313,11 +307,21 @@ class TmdbRemoteDataSourceTest {
      * Answers one request with [body], the way TMDB would have.
      * Ktor's [MockEngine] calls this in place of a socket.
      *
-     * @param body the response body, usually a recorded [TmdbFixture].
+     * @param body the response body, usually a recorded [TmdbRecording].
      * @param status the status to answer with. An error status carries a body too.
      */
     private fun MockRequestHandleScope.respondJson(
         body: String,
         status: HttpStatusCode = HttpStatusCode.OK,
     ) = respond(body, status, headersOf(HttpHeaders.ContentType, "application/json"))
+
+    /**
+     * Answers one request with what TMDB sent when [fixture] was recorded.
+     *
+     * @param status the status to answer under, which a recorded error body is paired with.
+     */
+    private fun MockRequestHandleScope.respondJson(
+        fixture: TmdbRecording,
+        status: HttpStatusCode = HttpStatusCode.OK,
+    ) = respondJson(fixture.json, status)
 }

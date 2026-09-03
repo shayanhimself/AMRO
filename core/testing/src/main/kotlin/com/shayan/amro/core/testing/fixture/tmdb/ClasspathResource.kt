@@ -1,4 +1,4 @@
-package com.shayan.amro.core.testing
+package com.shayan.amro.core.testing.fixture.tmdb
 
 /**
  * Reads one file packaged with this module.
