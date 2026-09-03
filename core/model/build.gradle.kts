@@ -5,3 +5,7 @@ plugins {
 android {
     namespace = "com.shayan.amro.core.model"
 }
+
+dependencies {
+    api(libs.kotlinx.datetime)
+}

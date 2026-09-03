@@ -1,6 +1,6 @@
 package com.shayan.amro.wire
 
-import com.shayan.amro.core.network.TmdbConfig
+import com.shayan.amro.core.network.sources.tmdb.TmdbConfig
 import mockwebserver3.Dispatcher
 import mockwebserver3.MockResponse
 import mockwebserver3.MockWebServer

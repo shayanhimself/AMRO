@@ -94,9 +94,11 @@ The real Hilt graph resolving and Room running on the device's own SQLite are co
 than in a layer of their own, because every flow test starts both.
 
 **How the server is replaced:** the API base URL and the image base URL are both client configuration
-values, so a test binding points them at a local MockWebServer that serves recorded responses and
-local image bytes. There is no proxy and no certificate anchor, because nothing has to impersonate a
-host the app has hard-coded.
+values, so a test binding points them at a local MockWebServer that serves recorded responses.
+
+Recorded responses sit under `core/testing/src/main/resources/fixtures/`, and `scripts/record-fixtures.py`
+re-records them against the live API.
+
 
 **Reading a failure:** a flow test failing should mean two layers are wired together wrong. If the
 cause turns out to sit inside one layer, that is also a gap in the cheaper test that should have

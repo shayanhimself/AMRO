@@ -106,3 +106,4 @@ spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 amro-android-application = { id = "amro.android.application" }
 amro-android-library = { id = "amro.android.library" }
 amro-android-library-screenshot = { id = "amro.android.library.screenshot" }
+amro-api-tokens = { id = "amro.api.tokens" }

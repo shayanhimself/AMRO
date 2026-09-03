@@ -48,17 +48,17 @@ graph TD
     data -.-> coreTest
 ```
 
-| Module | Holds |
-|---|---|
-| `:core:model` | The types every other module speaks in: `MovieId`, `Movie`, `MovieDetail`, `Genre`, `MovieFilter`, `SortKey`, `SortDirection`, `ImageRef`, and the sealed `DataError`. Types only, pure Kotlin, no Android dependency |
-| `:core:network` | `MovieRemoteDataSource`, the source-neutral contract the data layer depends on, and its TMDB implementation: Ktor client configuration, endpoints, wire DTOs, DTO to model mapping, the mapping of transport and status failures onto `DataError`, and the mapping of TMDB's genres onto the app's own. Also TMDB's own facts, its page size and the instability of its ranking |
-| `:core:database` | The Room database, entities, DAOs, the genre alias table, and the relation query that returns a movie with its genres |
-| `:core:data` | Repository interfaces and their implementations, the fetch policy, deduplication, the freshness rule, and the filter and sort functions the trending list applies. Names no source |
-| `:core:ui` | Theme, design system tokens and components, and generic strings. Depends on nothing in the project |
-| `:feature:trending` | The trending list, the filter sheet, and their view model |
-| `:feature:detail` | The movie detail screen and its view model |
-| `:app` | `MainActivity`, the navigator and the `NavDisplay` host, the application class, and the Hilt root |
-| `:core:testing` | Fakes, fixtures, and the resource-reading helper other modules' tests reuse. Never a production dependency |
+| Module | Holds                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+|---|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `:core:model` | The types every other module speaks in: `MovieId`, `Movie`, `MovieDetail`, `Genre`, `MovieFilter`, `SortKey`, `SortDirection`, `ImageRef`, and the sealed `DataError`. Types only, pure Kotlin, no Android dependency                                                                                                                                                                                                                  |
+| `:core:network` | `MovieRemoteDataSource`, the api-neutral contract the data layer depends on, and its TMDB implementation: Ktor client configuration, endpoints, wire DTOs and mappings.
+| `:core:database` | The Room database, entities, and DAOs. A movie arrives with its genres already resolved, so nothing here joins them                                                                                                                                                                                                                                                                                                                  |
+| `:core:data` | Repository interfaces and their implementations, the fetch policy, deduplication, the freshness rule, and the filter and sort functions the trending list applies. Names no source                                                                                                                                                                                                                                                     |
+| `:core:ui` | Theme, design system tokens and components, and generic strings. Depends on nothing in the project                                                                                                                                                                                                                                                                                                                                     |
+| `:feature:trending` | The trending list, the filter sheet, and their view model                                                                                                                                                                                                                                                                                                                                                                              |
+| `:feature:detail` | The movie detail screen and its view model                                                                                                                                                                                                                                                                                                                                                                                             |
+| `:app` | `MainActivity`, the navigator and the `NavDisplay` host, the application class, and the Hilt root                                                                                                                                                                                                                                                                                                                                      |
+| `:core:testing` | Fakes, fixtures, and the resource-reading helper other modules' tests reuse. Never a production dependency                                                                                                                                                                                                                                                                                                                             |
 
 Dependency rules (hard):
 
@@ -71,7 +71,7 @@ Dependency rules (hard):
 - Ktor types never leave `:core:network`, and Room types never leave `:core:database`. A repository
   returns model types or a `DataError`, so no layer above the data layer knows which library
   produced a value.
-- A repository depends on `MovieRemoteDataSource`, never on a named source. No provider's name
+- A repository depends on a `MovieRemoteDataSource` interface, never on a named API (ex: TMBD). No API name
   appears above `:core:network`.
 - No user-facing copy below the UI layer. The data layer returns typed errors, and a feature maps
   each one to a string resource it owns. The test is whether a translator would ever touch the
@@ -93,8 +93,7 @@ graph TD
     subgraph DATALAYER["Data layer (:core:data)"]
         TrendingRepo["TrendingRepository"]
         DetailRepo["MovieDetailRepository"]
-        GenreRepo["GenreRepository"]
-        Room[("Room: summaries, details, genres")]
+        Room[("Room: summaries, details")]
     end
 
     subgraph SOURCE["Remote source (:core:network)"]
@@ -112,14 +111,11 @@ graph TD
     VM -->|"suspend refresh"| TrendingRepo
     TrendingRepo -->|Flow| VM
     VM --> DetailRepo
-    VM --> GenreRepo
 
     TrendingRepo --> Room
     TrendingRepo --> Contract
     DetailRepo --> Room
     DetailRepo --> Contract
-    GenreRepo --> Room
-    GenreRepo --> Contract
     Tmdb -.->|implements| Contract
     Tmdb -->|"GET, Bearer token"| API
 ```
@@ -130,16 +126,10 @@ graph TD
   so nothing is pushed to the UI through an event channel.
 - **Repositories are the sole entry to the data layer.** No view model touches a DAO or a data
   source.
-- **A repository speaks to a data source interface.** It decides how many pages to ask for and when
-  to stop; the source knows how one page is requested and how large it is. That split is what keeps
-  the fetch policy free of any provider's pagination.
-- **A movie is identified by its source and that source's id.** One source today, so the pair is
-  always the same on the left, but the id space belongs to whoever issued it, and a second source
-  reusing an integer must not collide with the first.
+- **A repository speaks to a data source interface.**
 - **Room is the single source of truth.** A repository exposes its data as a `Flow` off Room and
   never returns network results directly. The network path only writes. A cached list therefore
-  renders before any request completes, and a refresh that changes nothing changes nothing on
-  screen, because the list is keyed by movie id.
+  renders before any request completes.
 - **Data crossing a layer boundary is immutable**, and mutation happens only inside the owner.
 
 
@@ -155,14 +145,14 @@ and TMDB's host and width list stay in `:core:network`.
 
 ## Loading the trending list (TODO: remove this)
 
-`TrendingRepository` owns the whole fetch. It requests pages in order, maps each response to model
-types, and stops when it holds enough distinct movies or reaches the request cap. Deduplication by
-movie id is a pure function taking the accumulated pages and returning distinct movies, so the
-duplicates that unstable ranking produces are reproduced by a fixture rather than by a live API.
+`TrendingRepository` asks the source for a hundred distinct movies, once, and writes what comes
+back. The walk, the deduplication by movie id and the page cap are the source's own, exercised by
+an assembled fixture that repeats rows across a page boundary, so the duplicates unstable ranking
+produces are reproduced on every run rather than by a live API.
 
-A request that fails part way through keeps the pages that already succeeded: the repository writes
-what it has and returns the failure, which is what lets the UI show a short list and name it as
-incomplete rather than discarding it.
+A request that fails part way through fails the whole call, and the source returns no movies with it.
+A short list and a list cut short look the same to a caller, so a partial answer would reach the
+screen as though it were the whole one. The screen shows the failure with a retry instead.
 
 The genre list is fetched once and stored. The join from ids to names happens in the DAO's relation
 query, so a `Movie` carries genre names by the time it leaves the data layer, and the filter sheet
@@ -208,18 +198,44 @@ total over what we have recorded, so a gap cannot be introduced by editing it. I
 provider adding a genre: the fixture still holds the old list, and the addition surfaces when the
 fixture is next recorded.
 
-## Adding a second source
+## Adding a second source (TODO: move to readme)
 
-A source is a module implementing `MovieRemoteDataSource`, a mapping from its genres onto the app's,
-and a binding that provides both. Nothing in the UI, the repositories, or the database schema
-changes, because a movie already carries which source issued it, its genres are already the app's
-own, its images already arrive as a set of URLs rather than a path, and the fetch policy already
-asks for pages without knowing how large one is.
+A source is a package under `:core:network`'s `sources/`, beside the TMDB one it already holds: a
+client configuration, wire shapes, mappers, a mapping from that provider's genres onto the app's, and
+a Hilt module that binds it. The module root holds only the contract and what every source shares, so
+no new Gradle module is needed and no existing file is edited.
 
-One thing is not paid for, deliberately:
+Nothing in the UI, the repositories, or the database schema changes either, because a movie already
+carries which source issued it, its genres are already the app's own, its images already arrive as a
+set of URLs rather than a path, and the fetch policy already asks for pages without knowing how large
+one is.
+
+Each source contributes itself through a Hilt multibinding, so the repository takes every source
+there is rather than a named one:
+
+```kotlin
+@Binds @IntoSet abstract fun bindTmdb(impl: TmdbRemoteDataSource): MovieRemoteDataSource
+
+class DefaultTrendingRepository @Inject constructor(
+    private val sources: Set<@JvmSuppressWildcards MovieRemoteDataSource>,
+)
+```
+
+`@JvmSuppressWildcards` is required: Kotlin compiles the parameter to `Set<? extends
+MovieRemoteDataSource>`, which Dagger does not match against the binding.
+
+While there is one source the repository takes a single `MovieRemoteDataSource` and the binding is a
+plain `@Binds`. The set is what the second source turns it into.
+
+Three things are not paid for, deliberately:
 
 - **What a second source means.** Merging two trending lists, preferring one, or showing them apart
   is a product decision. The data layer can express any of them; none is chosen.
+- **Cross-source identity.** Deduplication is by `MovieId`, which is a source and that source's id,
+  so one film served by two providers is two rows. Matching them needs a rule of its own, on
+  `imdb_id` where both carry one and on title and year otherwise.
+- **Comparable popularity.** Each provider scores on its own scale, so a merged list cannot be
+  ordered by popularity without a normalisation. Title and release date order fine across sources.
 
 ## Navigation and the adaptive layout
 

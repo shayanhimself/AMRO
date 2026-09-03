@@ -1,22 +1,10 @@
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.amro.android.application)
+    alias(libs.plugins.amro.api.tokens)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
 }
-
-// The TMDB v4 read access token is a build input: it is read from local.properties
-// and defaults to empty, so a clone without one still builds and runs.
-val tmdbReadAccessToken: String =
-    Properties()
-        .apply {
-            val file = rootProject.file("local.properties")
-            if (file.exists()) {
-                file.inputStream().use { load(it) }
-            }
-        }.getProperty("tmdb.readAccessToken", "")
 
 android {
     namespace = "com.shayan.amro"
@@ -25,7 +13,6 @@ android {
         versionCode = 1
         versionName = "0.1.0"
         testInstrumentationRunner = "com.shayan.amro.HiltTestRunner"
-        buildConfigField("String", "TMDB_READ_ACCESS_TOKEN", "\"$tmdbReadAccessToken\"")
     }
 
     buildTypes {
@@ -36,9 +23,6 @@ android {
                 "proguard-rules.pro",
             )
         }
-    }
-    buildFeatures {
-        buildConfig = true
     }
 }
 

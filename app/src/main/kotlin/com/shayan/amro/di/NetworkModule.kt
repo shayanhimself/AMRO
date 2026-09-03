@@ -1,7 +1,7 @@
 package com.shayan.amro.di
 
 import com.shayan.amro.BuildConfig
-import com.shayan.amro.core.network.TmdbConfig
+import com.shayan.amro.core.network.sources.tmdb.TmdbConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

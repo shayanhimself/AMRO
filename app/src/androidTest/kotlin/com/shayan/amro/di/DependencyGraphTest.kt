@@ -1,7 +1,7 @@
 package com.shayan.amro.di
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.shayan.amro.core.network.TmdbConfig
+import com.shayan.amro.core.network.sources.tmdb.TmdbConfig
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Rule

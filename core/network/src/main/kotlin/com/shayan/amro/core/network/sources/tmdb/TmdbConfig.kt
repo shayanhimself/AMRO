@@ -1,4 +1,4 @@
-package com.shayan.amro.core.network
+package com.shayan.amro.core.network.sources.tmdb
 
 /**
  * What the TMDB client needs to reach the API.

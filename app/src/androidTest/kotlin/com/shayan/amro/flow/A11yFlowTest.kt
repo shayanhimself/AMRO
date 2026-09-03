@@ -8,7 +8,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SdkSuppress
 import com.google.android.apps.common.testing.accessibility.framework.AccessibilityCheckResult.AccessibilityCheckResultType
 import com.google.android.apps.common.testing.accessibility.framework.integrations.espresso.AccessibilityValidator
-import com.shayan.amro.core.network.TmdbConfig
+import com.shayan.amro.core.network.sources.tmdb.TmdbConfig
 import com.shayan.amro.di.NetworkModule
 import com.shayan.amro.wire.LocalTmdb
 import dagger.hilt.android.testing.BindValue
