@@ -1,7 +1,7 @@
 package com.shayan.amro.core.database
 
 import androidx.room.Room
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import androidx.sqlite.driver.AndroidSQLiteDriver
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -17,6 +17,6 @@ internal fun TestScope.testDatabase(): AmroDatabase =
         .inMemoryDatabaseBuilder(
             ApplicationProvider.getApplicationContext(),
             AmroDatabase::class.java,
-        ).setDriver(BundledSQLiteDriver())
+        ).setDriver(AndroidSQLiteDriver())
         .setQueryCoroutineContext(StandardTestDispatcher(testScheduler))
         .build()

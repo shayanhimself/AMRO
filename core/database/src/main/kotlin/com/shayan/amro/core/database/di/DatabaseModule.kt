@@ -2,7 +2,7 @@ package com.shayan.amro.core.database.di
 
 import android.content.Context
 import androidx.room.Room
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import androidx.sqlite.driver.AndroidSQLiteDriver
 import com.shayan.amro.core.database.AmroDatabase
 import com.shayan.amro.core.database.MovieLocalDataSource
 import com.shayan.amro.core.database.RoomMovieLocalDataSource
@@ -40,7 +40,7 @@ internal abstract class DatabaseModule {
         ): AmroDatabase =
             Room
                 .databaseBuilder(context, AmroDatabase::class.java, DATABASE_NAME)
-                .setDriver(BundledSQLiteDriver())
+                .setDriver(AndroidSQLiteDriver())
                 .setQueryCoroutineContext(Dispatchers.IO)
                 .fallbackToDestructiveMigration(dropAllTables = true)
                 .build()

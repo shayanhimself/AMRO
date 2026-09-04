@@ -20,7 +20,6 @@ dependencies {
     api(libs.kotlinx.coroutines.core)
 
     implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.sqlite.bundled)
     implementation(libs.hilt.android)
     ksp(libs.androidx.room.compiler)
     ksp(libs.hilt.compiler)
@@ -31,6 +30,5 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.robolectric)
     testImplementation(libs.turbine)
-    testImplementation(libs.androidx.sqlite.bundled.jvm)
     testImplementation(libs.androidx.test.core)
 }
