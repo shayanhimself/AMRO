@@ -1,82 +1,41 @@
 package com.shayan.amro.core.database
 
-import androidx.room.Room
-import androidx.sqlite.driver.bundled.BundledSQLiteDriver
-import androidx.test.core.app.ApplicationProvider
-import com.shayan.amro.core.model.Movie
-import com.shayan.amro.core.model.MovieDetail
+import app.cash.turbine.test
+import com.shayan.amro.core.database.testDatabase
 import com.shayan.amro.core.model.SourceId
 import com.shayan.amro.core.testing.fixture.model.MovieFixture.detail
 import com.shayan.amro.core.testing.fixture.model.MovieFixture.movie
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeout
-import kotlinx.coroutines.withTimeoutOrNull
-import org.junit.After
-import org.junit.Before
+import kotlinx.coroutines.test.TestResult
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 
 /** What the same movie's tagline reads as once TMDB has been asked again. */
 private const val SECOND_TAGLINE = "It bites twice."
 
-/** How long a test waits for Room to publish a change before it calls the emission missing. */
-private val EMISSION_TIMEOUT = 5.seconds
-
-/** How long a test waits after the emission it expected, to see whether another follows. */
-private val QUIET_PERIOD = 250.milliseconds
-
 @RunWith(RobolectricTestRunner::class)
 class RoomMovieLocalDataSourceTest {
-    private lateinit var database: AmroDatabase
-    private lateinit var source: MovieLocalDataSource
-
-    @Before
-    fun open() {
-        database =
-            Room
-                .inMemoryDatabaseBuilder(
-                    ApplicationProvider.getApplicationContext(),
-                    AmroDatabase::class.java,
-                ).setDriver(BundledSQLiteDriver())
-                .setQueryCoroutineContext(Dispatchers.IO)
-                .build()
-        source = RoomMovieLocalDataSource(database.movieDao(), database.movieDetailDao())
-    }
-
-    @After
-    fun close() {
-        database.close()
-    }
-
     @Test
     fun `a replace emits once with the new set and never an empty list`() =
-        runBlocking {
-            val emissions = Channel<List<Movie>>(Channel.UNLIMITED)
-            val collector =
-                launch(Dispatchers.IO) { source.getTrendingFlow().collect(emissions::send) }
+        runLocalDataSourceTest { source ->
+            source.getTrendingFlow().test {
+                assertEquals(emptyList(), awaitItem())
 
-            assertEquals(emptyList(), emissions.next())
+                source.replaceTrending(listOf(FIRST_MOVIE, SECOND_MOVIE))
 
-            source.replaceTrending(listOf(FIRST_MOVIE, SECOND_MOVIE))
-
-            assertEquals(listOf(FIRST_MOVIE, SECOND_MOVIE), emissions.next().sortedBy { it.title })
-            assertNull(emissions.nextOrNull(), "the write published more than one set")
-
-            collector.cancel()
+                assertEquals(listOf(FIRST_MOVIE, SECOND_MOVIE), awaitItem().sortedBy { it.title })
+                expectNoEvents()
+            }
         }
 
     @Test
     fun `a replace removes the rows the new set does not contain`() =
-        runBlocking {
+        runLocalDataSourceTest { source ->
             source.replaceTrending(listOf(FIRST_MOVIE, SECOND_MOVIE))
 
             source.replaceTrending(listOf(SECOND_MOVIE, THIRD_MOVIE))
@@ -89,7 +48,7 @@ class RoomMovieLocalDataSourceTest {
 
     @Test
     fun `a detail written for a movie the trending table does not hold still reads back`() =
-        runBlocking {
+        runLocalDataSourceTest { source ->
             source.writeMovieDetail(FIRST_DETAIL)
 
             source.replaceTrending(listOf(SECOND_MOVIE))
@@ -99,7 +58,7 @@ class RoomMovieLocalDataSourceTest {
 
     @Test
     fun `writing a detail leaves the trending table untouched`() =
-        runBlocking {
+        runLocalDataSourceTest { source ->
             source.replaceTrending(listOf(SECOND_MOVIE))
 
             source.writeMovieDetail(FIRST_DETAIL)
@@ -109,13 +68,13 @@ class RoomMovieLocalDataSourceTest {
 
     @Test
     fun `a detail read with nothing cached emits null`() =
-        runBlocking {
+        runLocalDataSourceTest { source ->
             assertNull(source.getMovieDetailFlow(FIRST_MOVIE.id).first())
         }
 
     @Test
     fun `a movie read for one a refresh dropped emits null`() =
-        runBlocking {
+        runLocalDataSourceTest { source ->
             source.replaceTrending(listOf(FIRST_MOVIE))
 
             source.replaceTrending(listOf(SECOND_MOVIE))
@@ -125,7 +84,7 @@ class RoomMovieLocalDataSourceTest {
 
     @Test
     fun `a movie read for one the trending set holds emits it`() =
-        runBlocking {
+        runLocalDataSourceTest { source ->
             source.replaceTrending(listOf(FIRST_MOVIE, SECOND_MOVIE))
 
             assertEquals(FIRST_MOVIE, source.getMovieFlow(FIRST_MOVIE.id).first())
@@ -133,29 +92,24 @@ class RoomMovieLocalDataSourceTest {
 
     @Test
     fun `a detail write reaches a subscriber already collecting`() =
-        runBlocking {
-            val emissions = Channel<MovieDetail?>(Channel.UNLIMITED)
-            val collector =
-                launch(Dispatchers.IO) {
-                    source.getMovieDetailFlow(FIRST_MOVIE.id).collect(emissions::send)
-                }
-            assertNull(emissions.next())
+        runLocalDataSourceTest { source ->
+            source.getMovieDetailFlow(FIRST_MOVIE.id).test {
+                assertNull(awaitItem())
 
-            source.writeMovieDetail(FIRST_DETAIL)
+                source.writeMovieDetail(FIRST_DETAIL)
 
-            assertEquals(FIRST_DETAIL, emissions.next())
+                assertEquals(FIRST_DETAIL, awaitItem())
 
-            val refetched = FIRST_DETAIL.copy(tagline = SECOND_TAGLINE)
-            source.writeMovieDetail(refetched)
+                val refetched = FIRST_DETAIL.copy(tagline = SECOND_TAGLINE)
+                source.writeMovieDetail(refetched)
 
-            assertEquals(refetched, emissions.next())
-
-            collector.cancel()
+                assertEquals(refetched, awaitItem())
+            }
         }
 
     @Test
     fun `writing a detail twice leaves one row, carrying the second`() =
-        runBlocking {
+        runLocalDataSourceTest { source ->
             val refetched = FIRST_DETAIL.copy(tagline = SECOND_TAGLINE)
             source.writeMovieDetail(FIRST_DETAIL)
 
@@ -166,7 +120,7 @@ class RoomMovieLocalDataSourceTest {
 
     @Test
     fun `two sources issuing one id are two movies`() =
-        runBlocking {
+        runLocalDataSourceTest { source ->
             val other = FIRST_MOVIE.copy(id = FIRST_MOVIE.id.copy(source = SourceId("omdb")))
 
             source.replaceTrending(listOf(FIRST_MOVIE, other))
@@ -177,13 +131,19 @@ class RoomMovieLocalDataSourceTest {
         }
 }
 
-private suspend fun <T> Channel<T>.next(): T = withTimeout(EMISSION_TIMEOUT) { receive() }
-
-private suspend fun <T> Channel<T>.nextOrNull(): T? = withTimeoutOrNull(QUIET_PERIOD) { receive() }
+/**
+ * Runs [body] against a data source over a database of its own.
+ */
+private fun runLocalDataSourceTest(
+    body: suspend TestScope.(MovieLocalDataSource) -> Unit,
+): TestResult =
+    runTest {
+        val database = testDatabase()
+        body(RoomMovieLocalDataSource(database.movieDao(), database.movieDetailDao()))
+    }
 
 /**
- * Three movies of one trending set, titled so that this order is also their title order, which is
- * what the tests that sort by title assert against.
+ * Three movies of one trending set.
  */
 private val FIRST_MOVIE = movie(title = "The Mongoose")
 
