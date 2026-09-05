@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 internal interface MovieDao {
     @Query("SELECT * FROM movies")
-    fun getTrendingFlow(): Flow<List<MovieEntity>>
+    fun getTrendingMoviesFlow(): Flow<List<MovieEntity>>
 
     @Query("SELECT * FROM movies WHERE source = :source AND movieId = :movieId")
     fun getMovieFlow(

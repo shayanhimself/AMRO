@@ -48,17 +48,17 @@ graph TD
     data -.-> coreTest
 ```
 
-| Module | Holds                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-|---|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `:core:model` | The types every other module speaks in: `MovieId`, `Movie`, `MovieDetail`, `Genre`, `MovieFilter`, `SortKey`, `SortDirection`, `ImageRef`, and the sealed `DataError`. Types only, pure Kotlin, no Android dependency                                                                                                                                                                                                                  |
+| Module | Holds                                                                                                                                                                   |
+|---|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `:core:model` | The types every other module speaks in. Types only, pure Kotlin, no Android dependency                                                                                  |
 | `:core:network` | `MovieRemoteDataSource`, the api-neutral contract the data layer depends on, and its TMDB implementation: Ktor client configuration, endpoints, wire DTOs and mappings.
-| `:core:database` | The Room database, entities, and DAOs. A movie arrives with its genres already resolved, so nothing here joins them                                                                                                                                                                                                                                                                                                                  |
-| `:core:data` | Repository interfaces and their implementations, the fetch policy, deduplication, and the filter and sort functions the trending list applies. Names no source                                                                                                                                                                                                                                                     |
-| `:core:ui` | Theme, design system tokens and components, and generic strings. Depends on nothing in the project                                                                                                                                                                                                                                                                                                                                     |
-| `:feature:trending` | The trending list, the filter sheet, and their view model                                                                                                                                                                                                                                                                                                                                                                              |
-| `:feature:detail` | The movie detail screen and its view model                                                                                                                                                                                                                                                                                                                                                                                             |
-| `:app` | `MainActivity`, the navigator and the `NavDisplay` host, the application class, and the Hilt root                                                                                                                                                                                                                                                                                                                                      |
-| `:core:testing` | Fakes, fixtures, and the resource-reading helper other modules' tests reuse. Never a production dependency                                                                                                                                                                                                                                                                                                                             |
+| `:core:database` | The Room database, entities, and DAOs. A movie arrives with its genres already resolved, so nothing here joins them                                                     |
+| `:core:data` | Repository interfaces and their implementations, and the fetch policy. Names no source                                                                                  |
+| `:core:ui` | Theme, design system tokens and components, and generic strings. Depends on nothing in the project                                                                      |
+| `:feature:trending` | The trending list, the filter sheet, their view model, and the filter and sort rules it applies over the fetched set                                                    |
+| `:feature:detail` | The movie detail screen and its view model                                                                                                                              |
+| `:app` | `MainActivity`, the navigator and the `NavDisplay` host, the application class, and the Hilt root                                                                       |
+| `:core:testing` | Fakes, fixtures, and the resource-reading helper other modules' tests reuse. Never a production dependency                                                              |
 
 Dependency rules (hard):
 
@@ -91,7 +91,7 @@ graph TD
     end
 
     subgraph DATALAYER["Data layer (:core:data, :core:database)"]
-        TrendingRepo["TrendingRepository"]
+        TrendingRepo["TrendingMoviesRepository"]
         DetailRepo["MovieDetailRepository"]
         Room[("MovieLocalDataSource<br/>Room: movies, movie_details")]
     end
@@ -145,7 +145,7 @@ and TMDB's host and width list stay in `:core:network`.
 
 ## Loading the trending list (TODO: remove this)
 
-`TrendingRepository` asks the source for a hundred distinct movies, once, and writes what comes
+`TrendingMoviesRepository` asks the source for a hundred distinct movies, once, and writes what comes
 back. The walk, the deduplication by movie id and the page cap are the source's own, exercised by
 an assembled fixture that repeats rows across a page boundary, so the duplicates unstable ranking
 produces are reproduced on every run rather than by a live API.
@@ -215,7 +215,7 @@ there is rather than a named one:
 ```kotlin
 @Binds @IntoSet abstract fun bindTmdb(impl: TmdbRemoteDataSource): MovieRemoteDataSource
 
-class DefaultTrendingRepository @Inject constructor(
+class DefaultTrendingMoviesRepository @Inject constructor(
     private val sources: Set<@JvmSuppressWildcards MovieRemoteDataSource>,
 )
 ```

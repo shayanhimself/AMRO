@@ -47,13 +47,17 @@ internal class TmdbRemoteDataSource
          *
          * It walks TMDB's pages until it holds [count] distinct movies. TMDB has a fixed page size
          * and it re-ranks between requests, so a movie can arrive twice while another is missed. So
-         * paging is the only way to reach a count here.  A page that fails takes the walk down with
+         * paging is the only way to reach a count here. A page that fails takes the walk down with
          * it.
+         *
+         * It's a workaround for a known issue:
+         * https://www.themoviedb.org/talk/5ee3abd1590086001f50b3c1
+         * https://www.themoviedb.org/talk/5bbabe890e0a2616d7005bd6
          *
          * @return up to [count] distinct movies. Fewer means the source ran out of them or the walk
          * reached [TMDB_PAGE_CAP], both of which are complete answers rather than failures.
          */
-        override suspend fun trending(count: Int): NetworkResult<List<Movie>> {
+        override suspend fun getTrendingMovies(count: Int): NetworkResult<List<Movie>> {
             val held = LinkedHashMap<MovieId, Movie>()
             var page = FIRST_PAGE
 
@@ -83,7 +87,7 @@ internal class TmdbRemoteDataSource
             return held.upTo(count)
         }
 
-        override suspend fun movieDetail(id: MovieId): NetworkResult<MovieDetail> =
+        override suspend fun getMovieDetail(id: MovieId): NetworkResult<MovieDetail> =
             apiCall {
                 val response = client.get(MOVIE_DETAIL_PATH + id.value)
                 if (!response.status.isSuccess()) {

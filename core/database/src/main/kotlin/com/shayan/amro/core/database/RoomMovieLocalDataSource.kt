@@ -19,8 +19,8 @@ internal class RoomMovieLocalDataSource
         private val moviesDao: MovieDao,
         private val detailsDao: MovieDetailDao,
     ) : MovieLocalDataSource {
-        override fun getTrendingFlow(): Flow<List<Movie>> =
-            moviesDao.getTrendingFlow().map { rows -> rows.map { it.toMovie() } }
+        override fun getTrendingMoviesFlow(): Flow<List<Movie>> =
+            moviesDao.getTrendingMoviesFlow().map { rows -> rows.map { it.toMovie() } }
 
         override suspend fun replaceTrending(movies: List<Movie>) {
             this.moviesDao.replaceAll(movies.map { it.toEntity() })

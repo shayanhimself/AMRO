@@ -23,7 +23,7 @@ class RoomMovieLocalDataSourceTest {
     @Test
     fun `a replace emits once with the new set and never an empty list`() =
         runLocalDataSourceTest { source ->
-            source.getTrendingFlow().test {
+            source.getTrendingMoviesFlow().test {
                 assertEquals(emptyList(), awaitItem())
 
                 source.replaceTrending(listOf(FIRST_MOVIE, SECOND_MOVIE))
@@ -42,7 +42,7 @@ class RoomMovieLocalDataSourceTest {
 
             assertEquals(
                 listOf(SECOND_MOVIE, THIRD_MOVIE),
-                source.getTrendingFlow().first().sortedBy { it.title },
+                source.getTrendingMoviesFlow().first().sortedBy { it.title },
             )
         }
 
@@ -63,7 +63,7 @@ class RoomMovieLocalDataSourceTest {
 
             source.writeMovieDetail(FIRST_DETAIL)
 
-            assertEquals(listOf(SECOND_MOVIE), source.getTrendingFlow().first())
+            assertEquals(listOf(SECOND_MOVIE), source.getTrendingMoviesFlow().first())
         }
 
     @Test
@@ -126,7 +126,7 @@ class RoomMovieLocalDataSourceTest {
             source.replaceTrending(listOf(FIRST_MOVIE, other))
             source.writeMovieDetail(FIRST_DETAIL)
 
-            assertEquals(2, source.getTrendingFlow().first().size)
+            assertEquals(2, source.getTrendingMoviesFlow().first().size)
             assertNull(source.getMovieDetailFlow(other.id).first())
         }
 }

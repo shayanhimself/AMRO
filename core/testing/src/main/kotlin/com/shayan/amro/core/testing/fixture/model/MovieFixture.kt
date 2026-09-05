@@ -67,4 +67,93 @@ object MovieFixture {
             rating = rating,
             imdbId = imdbId,
         )
+
+    /** One movie, where nothing about it decides the test. */
+    val MOVIE = movie()
+
+    /** A second movie, differing from [MOVIE] in every field a test reads back. */
+    val OTHER_MOVIE =
+        movie(
+            id = MovieId(SourceId("tmdb"), "755898"),
+            title = "War of the Worlds",
+            genres = listOf(Genre.SCIENCE_FICTION),
+            popularity = 3.5,
+            releaseDate = LocalDate.parse("2005-06-13"),
+        )
+
+    /** An accented title, and the most popular and oldest movie of the set. */
+    val MOVIE_WITH_ACCENTED_TITLE =
+        movie(
+            id = MovieId(SourceId("tmdb"), "1"),
+            title = "Amélie",
+            genres = listOf(Genre.ROMANCE, Genre.COMEDY),
+            popularity = 30.0,
+            releaseDate = LocalDate.parse("2001-04-25"),
+        )
+
+    /**
+     * The same title without its accent, which only a collator orders beside
+     * [MOVIE_WITH_ACCENTED_TITLE].
+     */
+    val MOVIE_WITH_UNACCENTED_TITLE =
+        movie(
+            id = MovieId(SourceId("tmdb"), "2"),
+            title = "Amelie",
+            genres = listOf(Genre.ROMANCE),
+            popularity = 20.0,
+            releaseDate = LocalDate.parse("2019-01-01"),
+        )
+
+    /** A lowercase title, tying popularity and release date with [MOVIE_WITH_CAPITALISED_TITLE]. */
+    val MOVIE_WITH_LOWERCASE_TITLE =
+        movie(
+            id = MovieId(SourceId("tmdb"), "3"),
+            title = "boyhood",
+            genres = listOf(Genre.DRAMA),
+            popularity = 10.0,
+            releaseDate = LocalDate.parse("2014-07-11"),
+        )
+
+    /** The same title cased, so every key it carries ties with [MOVIE_WITH_LOWERCASE_TITLE]. */
+    val MOVIE_WITH_CAPITALISED_TITLE =
+        movie(
+            id = MovieId(SourceId("tmdb"), "4"),
+            title = "Boyhood",
+            genres = listOf(Genre.DRAMA, Genre.COMEDY),
+            popularity = 10.0,
+            releaseDate = LocalDate.parse("2014-07-11"),
+        )
+
+    /**
+     * The newest release, tying popularity with [MOVIE_WITH_UNACCENTED_TITLE] and sharing a genre
+     * with nothing.
+     */
+    val MOVIE_WITH_NEWEST_RELEASE =
+        movie(
+            id = MovieId(SourceId("tmdb"), "5"),
+            title = "Dune",
+            genres = listOf(Genre.SCIENCE_FICTION, Genre.ADVENTURE),
+            popularity = 20.0,
+            releaseDate = LocalDate.parse("2021-09-15"),
+        )
+
+    /** A movie with no release date, which every date ordering places last. */
+    val MOVIE_WITH_NO_RELEASE_DATE =
+        movie(
+            id = MovieId(SourceId("tmdb"), "6"),
+            title = "Zodiac",
+            genres = listOf(Genre.CRIME, Genre.THRILLER),
+            popularity = 5.0,
+            releaseDate = null,
+        )
+
+    val MOVIES_IN_NO_ORDER =
+        listOf(
+            MOVIE_WITH_NO_RELEASE_DATE,
+            MOVIE_WITH_ACCENTED_TITLE,
+            MOVIE_WITH_CAPITALISED_TITLE,
+            MOVIE_WITH_NEWEST_RELEASE,
+            MOVIE_WITH_UNACCENTED_TITLE,
+            MOVIE_WITH_LOWERCASE_TITLE,
+        )
 }

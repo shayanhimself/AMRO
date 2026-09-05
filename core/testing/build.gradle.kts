@@ -7,8 +7,11 @@ android {
 }
 
 dependencies {
-    // The model fixtures are on this module's surface.
     api(projects.core.model)
+    api(projects.core.data)
+    api(projects.core.database)
+    api(projects.core.network)
+    api(libs.kotlinx.coroutines.core)
 
     api(libs.kotlinx.serialization.json)
     api(platform(libs.androidx.compose.bom))
@@ -17,4 +20,6 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
 }

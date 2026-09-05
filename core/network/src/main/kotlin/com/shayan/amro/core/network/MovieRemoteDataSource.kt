@@ -16,7 +16,7 @@ interface MovieRemoteDataSource {
      * source has no more to give, which is a complete answer. A failure means the list could not be
      * read, and no movies come back with it: a source never presents a part of a list as the whole.
      */
-    suspend fun trending(count: Int): NetworkResult<List<Movie>>
+    suspend fun getTrendingMovies(count: Int): NetworkResult<List<Movie>>
 
     /**
      * Reads the fuller record behind one movie.
@@ -24,5 +24,5 @@ interface MovieRemoteDataSource {
      * @param id an id this source issued.
      * @return the detail, or the cause it could not be read.
      */
-    suspend fun movieDetail(id: MovieId): NetworkResult<MovieDetail>
+    suspend fun getMovieDetail(id: MovieId): NetworkResult<MovieDetail>
 }

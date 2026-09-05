@@ -61,7 +61,7 @@ class TmdbRemoteDataSourceTest {
     @Test
     fun `a walk stops once it holds the movies that were asked for`() =
         runTest {
-            val result = pagingSource().trending(WANTED)
+            val result = pagingSource().getTrendingMovies(WANTED)
 
             val movies = assertIs<NetworkResult.Success<List<Movie>>>(result).value
 
@@ -71,7 +71,7 @@ class TmdbRemoteDataSourceTest {
     @Test
     fun `a movie served on two pages is held once`() =
         runTest {
-            val result = overlapSource().trending(OVERLAP_ROWS)
+            val result = overlapSource().getTrendingMovies(OVERLAP_ROWS)
 
             val movies = assertIs<NetworkResult.Success<List<Movie>>>(result).value
             val ids = movies.map { it.id }
@@ -82,7 +82,7 @@ class TmdbRemoteDataSourceTest {
     @Test
     fun `a walk asks for as many pages as reaching the count takes`() =
         runTest {
-            pagingSource().trending(WANTED)
+            pagingSource().getTrendingMovies(WANTED)
 
             assertEquals(PAGES_FOR_WANTED, requests.size)
             assertEquals(
@@ -94,7 +94,7 @@ class TmdbRemoteDataSourceTest {
     @Test
     fun `a walk asks for no more than the page cap`() =
         runTest {
-            val result = repeatingSource().trending(MORE_THAN_ANY_PAGE_HOLDS)
+            val result = repeatingSource().getTrendingMovies(MORE_THAN_ANY_PAGE_HOLDS)
 
             assertEquals(TMDB_PAGE_CAP, requests.size)
             val movies = assertIs<NetworkResult.Success<List<Movie>>>(result).value
@@ -108,7 +108,7 @@ class TmdbRemoteDataSourceTest {
     @Test
     fun `a page that fails after the first fails the walk rather than returning a part of it`() =
         runTest {
-            val result = failingAfterFirstPageSource().trending(WANTED)
+            val result = failingAfterFirstPageSource().getTrendingMovies(WANTED)
 
             assertEquals(DataError.NoConnectivity, assertIs<NetworkResult.Failure>(result).error)
         }
@@ -116,7 +116,7 @@ class TmdbRemoteDataSourceTest {
     @Test
     fun `the page number is the only query parameter`() =
         runTest {
-            pagingSource().trending(TMDB_PAGE_SIZE)
+            pagingSource().getTrendingMovies(TMDB_PAGE_SIZE)
 
             val url = requests.single().url
             assertTrue(url.toString().contains(TRENDING_PATH_SEGMENT), url.toString())
@@ -128,7 +128,7 @@ class TmdbRemoteDataSourceTest {
         runTest {
             val result =
                 dataSource { respondJson(TmdbFixture.Movie.RELEASED) }
-                    .movieDetail(MovieId(TMDB_SOURCE, KNOWN_MOVIE_ID))
+                    .getMovieDetail(MovieId(TMDB_SOURCE, KNOWN_MOVIE_ID))
 
             assertIs<NetworkResult.Success<*>>(result)
             assertTrue(
@@ -143,7 +143,7 @@ class TmdbRemoteDataSourceTest {
     @Test
     fun `a dropped connection is no connectivity`() =
         runTest {
-            val result = dataSource { throw IOException("dropped") }.trending(WANTED)
+            val result = dataSource { throw IOException("dropped") }.getTrendingMovies(WANTED)
 
             assertEquals(DataError.NoConnectivity, assertIs<NetworkResult.Failure>(result).error)
         }
@@ -151,7 +151,7 @@ class TmdbRemoteDataSourceTest {
     @Test
     fun `an unresolved host is no connectivity rather than a server fault`() =
         runTest {
-            val result = dataSource { throw UnresolvedAddressException() }.trending(WANTED)
+            val result = dataSource { throw UnresolvedAddressException() }.getTrendingMovies(WANTED)
 
             assertEquals(DataError.NoConnectivity, assertIs<NetworkResult.Failure>(result).error)
         }
@@ -162,7 +162,7 @@ class TmdbRemoteDataSourceTest {
             val result =
                 dataSource {
                     respondJson(TmdbFixture.Trending.PAGE_1, HttpStatusCode.Unauthorized)
-                }.trending(WANTED)
+                }.getTrendingMovies(WANTED)
 
             assertEquals(DataError.Server, assertIs<NetworkResult.Failure>(result).error)
         }
@@ -170,7 +170,12 @@ class TmdbRemoteDataSourceTest {
     @Test
     fun `the recorded unauthorised body never becomes movies`() =
         runTest {
-            val result = dataSource { respondJson(TmdbFixture.Error.UNAUTHORISED) }.trending(WANTED)
+            val result =
+                dataSource {
+                    respondJson(
+                        TmdbFixture.Error.UNAUTHORISED,
+                    )
+                }.getTrendingMovies(WANTED)
 
             assertEquals(DataError.Server, assertIs<NetworkResult.Failure>(result).error)
         }
@@ -184,7 +189,7 @@ class TmdbRemoteDataSourceTest {
                         EMPTY_RESULTS,
                         HttpStatusCode.InternalServerError,
                     )
-                }.trending(WANTED)
+                }.getTrendingMovies(WANTED)
 
             assertEquals(DataError.Server, assertIs<NetworkResult.Failure>(result).error)
         }
@@ -195,7 +200,7 @@ class TmdbRemoteDataSourceTest {
             val result =
                 dataSource {
                     respondJson(TmdbFixture.Movie.RELEASED, HttpStatusCode.NotFound)
-                }.movieDetail(MovieId(TMDB_SOURCE, KNOWN_MOVIE_ID))
+                }.getMovieDetail(MovieId(TMDB_SOURCE, KNOWN_MOVIE_ID))
 
             assertEquals(DataError.Server, assertIs<NetworkResult.Failure>(result).error)
         }
@@ -206,7 +211,7 @@ class TmdbRemoteDataSourceTest {
             val result =
                 dataSource {
                     respondJson(TmdbFixture.Error.NOT_FOUND)
-                }.movieDetail(MovieId(TMDB_SOURCE, KNOWN_MOVIE_ID))
+                }.getMovieDetail(MovieId(TMDB_SOURCE, KNOWN_MOVIE_ID))
 
             assertEquals(DataError.Server, assertIs<NetworkResult.Failure>(result).error)
         }
@@ -214,7 +219,7 @@ class TmdbRemoteDataSourceTest {
     @Test
     fun `a body that cannot be parsed is a server failure`() =
         runTest {
-            val result = dataSource { respondJson(NOT_JSON) }.trending(WANTED)
+            val result = dataSource { respondJson(NOT_JSON) }.getTrendingMovies(WANTED)
 
             assertEquals(DataError.Server, assertIs<NetworkResult.Failure>(result).error)
         }
@@ -222,7 +227,7 @@ class TmdbRemoteDataSourceTest {
     @Test
     fun `an empty results array is an empty response`() =
         runTest {
-            val result = dataSource { respondJson(EMPTY_RESULTS) }.trending(WANTED)
+            val result = dataSource { respondJson(EMPTY_RESULTS) }.getTrendingMovies(WANTED)
 
             assertEquals(DataError.EmptyResponse, assertIs<NetworkResult.Failure>(result).error)
         }
@@ -231,14 +236,16 @@ class TmdbRemoteDataSourceTest {
     fun `a cancelled call is rethrown rather than returned as a failure`() =
         runTest {
             assertFailsWith<CancellationException> {
-                dataSource { throw CancellationException("navigated away") }.trending(WANTED)
+                dataSource { throw CancellationException("navigated away") }
+                    .getTrendingMovies(WANTED)
             }
         }
 
     @Test
     fun `every request carries the credential as a bearer header and never in the URL`() =
         runTest {
-            dataSource { respondJson(TmdbFixture.Trending.PAGE_1) }.trending(TMDB_PAGE_SIZE)
+            dataSource { respondJson(TmdbFixture.Trending.PAGE_1) }
+                .getTrendingMovies(TMDB_PAGE_SIZE)
 
             val request = requests.single()
             assertEquals("Bearer $TOKEN", request.headers[HttpHeaders.Authorization])
@@ -250,7 +257,7 @@ class TmdbRemoteDataSourceTest {
         runTest {
             dataSource(
                 logLevel = LogLevel.ALL,
-            ) { respondJson(TmdbFixture.Trending.PAGE_1) }.trending(TMDB_PAGE_SIZE)
+            ) { respondJson(TmdbFixture.Trending.PAGE_1) }.getTrendingMovies(TMDB_PAGE_SIZE)
 
             val logged = logLines.joinToString("\n")
             assertTrue(logged.contains(HttpHeaders.Authorization), "no header was logged to redact")

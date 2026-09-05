@@ -9,11 +9,18 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.model)
+    api(projects.core.model)
+    api(libs.kotlinx.coroutines.core)
+
     implementation(projects.core.network)
     implementation(projects.core.database)
 
-    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+
+    testImplementation(projects.core.testing)
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlin.test.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
 }

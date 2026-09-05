@@ -17,7 +17,7 @@ interface MovieLocalDataSource {
      *
      * @return the movies, in an unspecified order.
      */
-    fun getTrendingFlow(): Flow<List<Movie>>
+    fun getTrendingMoviesFlow(): Flow<List<Movie>>
 
     /**
      * Replaces the trending set.
