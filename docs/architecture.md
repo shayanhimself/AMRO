@@ -58,7 +58,7 @@ graph TD
 | `:feature:trending` | The trending list, the filter sheet, their view model, and the filter and sort rules it applies over the fetched set                                                    |
 | `:feature:detail` | The movie detail screen and its view model                                                                                                                              |
 | `:app` | `MainActivity`, the navigator and the `NavDisplay` host, the application class, and the Hilt root                                                                       |
-| `:core:testing` | Fakes, fixtures, and the resource-reading helper other modules' tests reuse. Never a production dependency                                                              |
+| `:core:testing` | Fakes, fixtures, and test helpers other modules' tests reuse. Never a production dependency                                                              |
 
 Dependency rules (hard):
 
