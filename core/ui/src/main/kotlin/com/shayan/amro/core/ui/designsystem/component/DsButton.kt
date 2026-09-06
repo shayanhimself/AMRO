@@ -17,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
@@ -37,6 +36,9 @@ import androidx.compose.material3.ElevatedButton as M3ElevatedButton
 import androidx.compose.material3.FilledTonalButton as M3FilledTonalButton
 import androidx.compose.material3.OutlinedButton as M3OutlinedButton
 import androidx.compose.material3.TextButton as M3TextButton
+
+/** The glyph in either slot, which the spinner that replaces the trailing one matches. */
+private val BUTTON_ICON_SIZE = 18.dp
 
 enum class ButtonVariant { Filled, Tonal, Outlined, Text, Elevated }
 
@@ -69,8 +71,6 @@ fun DsButton(
         animationSpec = tween(Motion.durationShortMillis, easing = Motion.easingStandard),
         label = "button-press-scale",
     )
-    // Loading is deliberately not folded into `enabled`: disabled dims the button, loading keeps
-    // the full filled appearance and the label, and only swallows the click.
     val loadingDescription = stringResource(R.string.core_ui_loading)
     val pressModifier =
         modifier
@@ -83,8 +83,6 @@ fun DsButton(
     val action = if (loading) ({}) else onClick
     val shape = ComponentShapes.button
     val content = buttonContent(text, loading, leadingGlyph, trailingGlyph)
-    // A glyph tightens the label padding symmetrically to 20dp, where M3 defaults to an asymmetric
-    // 16/24. The text variant keeps its own 12dp padding whether or not it carries a glyph.
     val contentPadding =
         when {
             variant == ButtonVariant.Text -> {
@@ -173,7 +171,7 @@ private fun buttonContent(
 ): @Composable RowScope.() -> Unit =
     {
         if (leadingGlyph != null) {
-            DsIcon(leadingGlyph, contentDescription = null, size = 18.dp)
+            DsIcon(leadingGlyph, contentDescription = null, size = BUTTON_ICON_SIZE)
             Spacer(Modifier.width(Spacing.s2))
         }
         Text(text)
@@ -181,14 +179,14 @@ private fun buttonContent(
         if (loading) {
             Spacer(Modifier.width(Spacing.s2))
             M3CircularProgressIndicator(
-                modifier = Modifier.size(18.dp),
+                modifier = Modifier.size(BUTTON_ICON_SIZE),
                 color = LocalContentColor.current,
                 strokeWidth = 2.dp,
                 trackColor = LocalContentColor.current.copy(alpha = 0.25f),
             )
         } else if (trailingGlyph != null) {
             Spacer(Modifier.width(Spacing.s2))
-            DsIcon(trailingGlyph, contentDescription = null, size = 18.dp)
+            DsIcon(trailingGlyph, contentDescription = null, size = BUTTON_ICON_SIZE)
         }
     }
 

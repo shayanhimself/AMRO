@@ -4,10 +4,13 @@ import app.cash.turbine.test
 import com.shayan.amro.core.model.DataError
 import com.shayan.amro.core.testing.fixture.model.MovieFixture.MOVIE
 import com.shayan.amro.core.testing.fixture.model.MovieFixture.OTHER_MOVIE
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 
 class FakeTrendingMoviesRepositoryTest {
@@ -47,6 +50,22 @@ class FakeTrendingMoviesRepositoryTest {
     fun `the read emits nothing until a set is seeded`() =
         runTest {
             assertEquals(emptyList(), repository.getTrendingMoviesFlow().first())
+        }
+
+    @Test
+    fun `a held refresh does not return until it is released`() =
+        runTest {
+            repository.scriptRefresh(listOf(OTHER_MOVIE))
+            val gate = repository.holdRefreshes()
+
+            val refresh = async { repository.refresh() }
+            runCurrent()
+
+            assertFalse(refresh.isCompleted)
+
+            gate.complete(Unit)
+
+            assertNull(refresh.await())
         }
 
     @Test

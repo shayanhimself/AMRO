@@ -16,7 +16,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.shayan.amro.feature.detail.MovieDetailRoute
-import com.shayan.amro.feature.trending.TrendingRoute
+import com.shayan.amro.feature.trending.ui.TrendingRoute
 
 /**
  * Maps every key to its route and lets the adaptive scene arrange them.
@@ -61,7 +61,8 @@ internal fun AmroNavDisplay(
                 }
                 entry<MovieDetailKey>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
                     MovieDetailRoute(
-                        movieId = key.id,
+                        sourceId = key.sourceId,
+                        movieId = key.movieId,
                         // Two panes are shown at once, so there is nowhere for a back affordance
                         // inside the detail pane to go.
                         onBack = if (twoPane) null else navigator::back,

@@ -10,9 +10,11 @@ data object TrendingKey : NavKey
 /**
  * One movie's detail.
  *
- * @property id the movie the screen shows.
+ * @property sourceId the provider that issued [movieId].
+ * @property movieId the movie the screen shows.
  */
 @Serializable
 data class MovieDetailKey(
-    val id: Int,
+    val sourceId: String,
+    val movieId: String,
 ) : NavKey

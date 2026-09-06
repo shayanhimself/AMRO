@@ -13,6 +13,7 @@ android {
 dependencies {
     api(projects.core.model)
 
+    api(libs.coil.network.ktor3)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.client.core)

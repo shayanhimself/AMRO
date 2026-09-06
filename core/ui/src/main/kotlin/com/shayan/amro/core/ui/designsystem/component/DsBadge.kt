@@ -19,6 +19,9 @@ import com.shayan.amro.core.ui.designsystem.theme.AmroExtendedTheme
 import com.shayan.amro.core.ui.designsystem.theme.AmroTheme
 import com.shayan.amro.core.ui.designsystem.theme.Spacing
 
+/** How small a badge carrying a label is allowed to get, in either direction. */
+private val BADGE_MIN_SIZE = 16.dp
+
 enum class BadgeTone { Primary, Error, Success, Neutral }
 
 /**
@@ -48,7 +51,7 @@ fun DsBadge(
     } else {
         Box(
             modifier
-                .defaultMinSize(minWidth = 16.dp, minHeight = 16.dp)
+                .defaultMinSize(minWidth = BADGE_MIN_SIZE, minHeight = BADGE_MIN_SIZE)
                 .background(container, CircleShape)
                 .padding(horizontal = Spacing.s1),
             contentAlignment = Alignment.Center,

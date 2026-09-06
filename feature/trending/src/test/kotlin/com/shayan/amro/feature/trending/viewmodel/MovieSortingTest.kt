@@ -2,9 +2,6 @@ package com.shayan.amro.feature.trending.viewmodel
 
 import com.shayan.amro.core.model.Genre
 import com.shayan.amro.core.model.Movie
-import com.shayan.amro.core.model.MovieSort
-import com.shayan.amro.core.model.SortDirection
-import com.shayan.amro.core.model.SortKey
 import com.shayan.amro.core.testing.fixture.model.MovieFixture.MOVIES_IN_NO_ORDER
 import com.shayan.amro.core.testing.fixture.model.MovieFixture.MOVIE_WITH_ACCENTED_TITLE
 import com.shayan.amro.core.testing.fixture.model.MovieFixture.MOVIE_WITH_CAPITALISED_TITLE

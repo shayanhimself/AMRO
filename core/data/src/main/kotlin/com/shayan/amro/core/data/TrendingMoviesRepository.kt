@@ -9,14 +9,14 @@ import kotlinx.coroutines.flow.Flow
  */
 interface TrendingMoviesRepository {
     /**
-     * The trending set this device holds.
+     * The trending movies as last fetched.
      *
      * @return the movies flow, in an unspecified order. Empty until a refresh has succeeded once.
      */
     fun getTrendingMoviesFlow(): Flow<List<Movie>>
 
     /**
-     * Triggers a fetch of the trending set.
+     * Triggers a fetch of the trending movies.
      *
      * @return error if it failed, null when successful.
      */

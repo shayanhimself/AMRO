@@ -22,10 +22,4 @@ object Spacing {
     val s12: Dp = 48.dp
     val s16: Dp = 64.dp
     val gutter: Dp = s4
-
-    /**
-     * Smallest size a tappable element may have on either axis. It sizes the element
-     * itself, not the glyph inside it, and it never stands in for padding or a gap.
-     */
-    val touchTargetMin: Dp = 48.dp
 }

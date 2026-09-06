@@ -58,13 +58,21 @@ class LocalTmdb : ExternalResource() {
         server.close()
     }
 
-    /** Answers the next request with [body] as a successful JSON response. */
-    fun enqueueJson(body: String) {
+    /**
+     * Answers the next request with [body] as a successful JSON response.
+     *
+     * @param delayMillis how long the server holds the response back before sending it.
+     */
+    fun enqueueJson(
+        body: String,
+        delayMillis: Long = 0,
+    ) {
         dispatcher.enqueue(
             MockResponse
                 .Builder()
                 .code(OK)
                 .setHeader(CONTENT_TYPE_HEADER, JSON_CONTENT_TYPE)
+                .headersDelay(delayMillis, TimeUnit.MILLISECONDS)
                 .body(body)
                 .build(),
         )

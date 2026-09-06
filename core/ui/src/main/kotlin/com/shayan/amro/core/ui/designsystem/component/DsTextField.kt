@@ -17,6 +17,9 @@ import androidx.compose.material3.IconButton as M3IconButton
 import androidx.compose.material3.OutlinedTextField as M3OutlinedTextField
 import androidx.compose.material3.TextField as M3TextField
 
+/** The glyph in either field slot. */
+private val FIELD_ICON_SIZE = 20.dp
+
 enum class TextFieldVariant { Outlined, Filled }
 
 /**
@@ -62,7 +65,7 @@ fun DsTextField(
     val supportingComposable: (@Composable () -> Unit)? = supportingText?.let { { Text(it) } }
     val leadingComposable: (@Composable () -> Unit)? =
         leadingGlyph?.let {
-            { DsIcon(it, contentDescription = null, size = 20.dp) }
+            { DsIcon(it, contentDescription = null, size = FIELD_ICON_SIZE) }
         }
     val trailingComposable: (@Composable () -> Unit)? =
         trailingGlyph?.let { glyph ->
@@ -74,11 +77,15 @@ fun DsTextField(
                         DsIcon(
                             glyph,
                             contentDescription = trailingContentDescription,
-                            size = 20.dp,
+                            size = FIELD_ICON_SIZE,
                         )
                     }
                 } else {
-                    DsIcon(glyph, contentDescription = trailingContentDescription, size = 20.dp)
+                    DsIcon(
+                        glyph,
+                        contentDescription = trailingContentDescription,
+                        size = FIELD_ICON_SIZE,
+                    )
                 }
             }
         }

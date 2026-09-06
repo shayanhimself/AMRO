@@ -2,21 +2,17 @@ package com.shayan.amro.core.ui.designsystem.component
 
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
-import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.shayan.amro.core.testing.assertion.assertTouchTargetMeetsMinimum
 import com.shayan.amro.core.testing.string
 import com.shayan.amro.core.ui.R
 import com.shayan.amro.core.ui.designsystem.icon.DsIcon
 import com.shayan.amro.core.ui.designsystem.icon.Glyphs
 import com.shayan.amro.core.ui.designsystem.theme.AmroTheme
-import com.shayan.amro.core.ui.designsystem.theme.Spacing
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -25,8 +21,6 @@ private const val BUTTON_LABEL = "Continue"
 private const val ICON_BUTTON_LABEL = "Close the sheet"
 private const val CHIP_LABEL = "Sonnet"
 private const val ICON_LABEL = "Offline"
-
-private val touchTargetTolerance = 0.5.dp
 
 @RunWith(AndroidJUnit4::class)
 class DsComponentsA11yTest {
@@ -131,28 +125,5 @@ class DsComponentsA11yTest {
 
         composeRule.onNodeWithContentDescription(ICON_LABEL).assertExists()
         composeRule.onNodeWithText(Glyphs.CLOUD_OFF).assertDoesNotExist()
-    }
-}
-
-/**
- * Asserts the node's touch target is at least the design system's minimum on both axes.
- *
- * Compose ships an "at least" assertion for layout bounds and an exact one for touch bounds, but
- * the contract is a minimum on the touch bounds: a component is free to exceed it, and one that
- * expands only its touch target leaves its layout bounds smaller than what it accepts a tap in.
- */
-private fun SemanticsNodeInteraction.assertTouchTargetMeetsMinimum(density: Density) {
-    val touchBounds = fetchSemanticsNode().touchBoundsInRoot
-    with(density) {
-        val height = touchBounds.height.toDp()
-        val width = touchBounds.width.toDp()
-        assertTrue(
-            "touch height $height is below ${Spacing.touchTargetMin}",
-            height + touchTargetTolerance >= Spacing.touchTargetMin,
-        )
-        assertTrue(
-            "touch width $width is below ${Spacing.touchTargetMin}",
-            width + touchTargetTolerance >= Spacing.touchTargetMin,
-        )
     }
 }

@@ -13,6 +13,13 @@ object Glyphs {
     const val ERROR = "error"
     const val ARROW_FORWARD = "arrow_forward"
     const val ARROW_BACK = "arrow_back"
+    const val ARROW_UPWARD = "arrow_upward"
+    const val ARROW_DOWNWARD = "arrow_downward"
     const val CHECK = "check"
     const val CLOUD_OFF = "cloud_off"
+    const val TUNE = "tune"
+    const val REFRESH = "refresh"
+    const val MOVIE = "movie"
+    const val MOVIE_FILTER = "movie_filter"
+    const val FILTER_ALT_OFF = "filter_alt_off"
 }

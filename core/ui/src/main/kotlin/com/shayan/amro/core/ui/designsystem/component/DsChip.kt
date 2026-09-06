@@ -24,6 +24,9 @@ import androidx.compose.material3.FilterChip as M3FilterChip
 import androidx.compose.material3.InputChip as M3InputChip
 import androidx.compose.material3.SuggestionChip as M3SuggestionChip
 
+/** The glyph in either chip slot, sized to sit with the label rather than with a heading. */
+private val CHIP_ICON_SIZE = 18.dp
+
 /** The four Material 3 chip types; each differs in behavior and appearance. */
 enum class ChipVariant {
     /** A contextual action; stateless. */
@@ -63,7 +66,7 @@ fun DsChip(
     val labelComposable: @Composable () -> Unit = { Text(label) }
     val leadingComposable: (@Composable () -> Unit)? =
         leadingGlyph?.let {
-            { DsIcon(it, contentDescription = null, size = 18.dp) }
+            { DsIcon(it, contentDescription = null, size = CHIP_ICON_SIZE) }
         }
     when (variant) {
         ChipVariant.Assist -> {
@@ -118,12 +121,6 @@ fun DsChip(
     }
 }
 
-/**
- * Trailing dismiss affordance for an input chip. A bare clickable [DsIcon] rather than an M3
- * `IconButton`: the button's own minimum interactive size does not fit the chip and would inflate
- * the trailing slot. Compose expands a clickable node's touch bounds to the platform minimum, so
- * the tappable area still meets the design system's minimum while the glyph stays 18dp.
- */
 @Composable
 private fun DismissButton(
     label: String,
@@ -139,7 +136,7 @@ private fun DismissButton(
                     this.role = Role.Button
                 },
     ) {
-        DsIcon(Glyphs.CLOSE, contentDescription = null, size = 18.dp)
+        DsIcon(Glyphs.CLOSE, contentDescription = null, size = CHIP_ICON_SIZE)
     }
 }
 

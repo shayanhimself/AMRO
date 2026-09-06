@@ -1,10 +1,6 @@
 package com.shayan.amro.feature.trending.viewmodel
 
 import com.shayan.amro.core.model.Movie
-import com.shayan.amro.core.model.MovieSort
-import com.shayan.amro.core.model.SortDirection
-import com.shayan.amro.core.model.SortKey
-import kotlinx.datetime.LocalDate
 
 /**
  * Sorts a list of movies.

@@ -11,10 +11,16 @@ internal class AmroNavigator(
     private val backStack: NavBackStack<NavKey>,
 ) {
     /**
-     * Opens movie [id], replacing the open movie rather than stacking on it.
+     * Opens one movie, replacing the open movie rather than stacking on it.
+     *
+     * @param sourceId the provider that issued [movieId].
+     * @param movieId the movie as that provider wrote it.
      */
-    fun openMovie(id: Int) {
-        val key = MovieDetailKey(id)
+    fun openMovie(
+        sourceId: String,
+        movieId: String,
+    ) {
+        val key = MovieDetailKey(sourceId = sourceId, movieId = movieId)
         if (backStack.lastOrNull() is MovieDetailKey) {
             backStack[backStack.lastIndex] = key
         } else {
