@@ -4,10 +4,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.shayan.amro.core.ui.designsystem.theme.AmroTheme
 import com.shayan.amro.feature.trending.viewmodel.TrendingViewModel
 
 /**
@@ -17,7 +15,7 @@ import com.shayan.amro.feature.trending.viewmodel.TrendingViewModel
  */
 @Composable
 fun TrendingRoute(
-    onMovieClick: (sourceId: String, movieId: String) -> Unit,
+    onMovieClick: (movieId: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val viewModel: TrendingViewModel = hiltViewModel()

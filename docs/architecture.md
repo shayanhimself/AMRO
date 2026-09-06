@@ -230,8 +230,8 @@ Three things are not paid for, deliberately:
 
 - **What a second source means.** Merging two trending lists, preferring one, or showing them apart
   is a product decision. The data layer can express any of them; none is chosen.
-- **Cross-source identity.** Deduplication is by `MovieId`, which is a source and that source's id,
-  so one film served by two providers is two rows. Matching them needs a rule of its own, on
+- **Cross-source identity.** Deduplication is by a movie's id, which carries the source that issued
+  it, so one film served by two providers is two rows. Matching them needs a rule of its own, on
   `imdb_id` where both carry one and on title and year otherwise.
 - **Comparable popularity.** Each provider scores on its own scale, so a merged list cannot be
   ordered by popularity without a normalisation. Title and release date order fine across sources.

@@ -61,7 +61,6 @@ internal fun AmroNavDisplay(
                 }
                 entry<MovieDetailKey>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
                     MovieDetailRoute(
-                        sourceId = key.sourceId,
                         movieId = key.movieId,
                         // Two panes are shown at once, so there is nowhere for a back affordance
                         // inside the detail pane to go.

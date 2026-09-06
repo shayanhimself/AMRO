@@ -11,11 +11,8 @@ import kotlinx.coroutines.flow.Flow
  */
 @Dao
 internal interface MovieDetailDao {
-    @Query("SELECT * FROM movie_details WHERE source = :source AND movieId = :movieId")
-    fun getMovieDetailFlow(
-        source: String,
-        movieId: String,
-    ): Flow<MovieDetailEntity?>
+    @Query("SELECT * FROM movie_details WHERE movieId = :movieId")
+    fun getMovieDetailFlow(movieId: String): Flow<MovieDetailEntity?>
 
     /**
      * Caches one movie's record. Upsert = Update + Insert.

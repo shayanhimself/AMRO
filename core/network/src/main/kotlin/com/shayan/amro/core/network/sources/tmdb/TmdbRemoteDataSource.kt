@@ -3,11 +3,10 @@ package com.shayan.amro.core.network.sources.tmdb
 import com.shayan.amro.core.model.DataError
 import com.shayan.amro.core.model.Movie
 import com.shayan.amro.core.model.MovieDetail
-import com.shayan.amro.core.model.MovieId
-import com.shayan.amro.core.model.SourceId
 import com.shayan.amro.core.network.MovieRemoteDataSource
 import com.shayan.amro.core.network.NetworkResult
 import com.shayan.amro.core.network.apiCall
+import com.shayan.amro.core.network.sources.MovieId
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbMovieDetailDto
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbMovieDto
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbTrendingPageDto
@@ -21,7 +20,7 @@ import io.ktor.http.isSuccess
 import javax.inject.Inject
 
 /** Stamps every id this source issues, so a second provider's ids cannot collide with these. */
-internal val TMDB_SOURCE = SourceId("tmdb")
+internal const val TMDB_SOURCE = "tmdb"
 
 /**
  * TMDB's trending list, relative to the configured base.
@@ -58,7 +57,7 @@ internal class TmdbRemoteDataSource
          * reached [TMDB_PAGE_CAP], both of which are complete answers rather than failures.
          */
         override suspend fun getTrendingMovies(count: Int): NetworkResult<List<Movie>> {
-            val held = LinkedHashMap<MovieId, Movie>()
+            val held = LinkedHashMap<String, Movie>()
             var page = FIRST_PAGE
 
             while (held.size < count && page <= TMDB_PAGE_CAP) {
@@ -87,9 +86,9 @@ internal class TmdbRemoteDataSource
             return held.upTo(count)
         }
 
-        override suspend fun getMovieDetail(id: MovieId): NetworkResult<MovieDetail> =
+        override suspend fun getMovieDetail(movieId: String): NetworkResult<MovieDetail> =
             apiCall {
-                val response = client.get(MOVIE_DETAIL_PATH + id.value)
+                val response = client.get(MOVIE_DETAIL_PATH + MovieId.of(movieId).sourceMovieId)
                 if (!response.status.isSuccess()) {
                     return@apiCall NetworkResult.Failure(DataError.Server)
                 }
@@ -116,5 +115,5 @@ internal class TmdbRemoteDataSource
 /**
  * The movies in this map, at most [count] of them, as a success.
  */
-private fun Map<MovieId, Movie>.upTo(count: Int): NetworkResult<List<Movie>> =
+private fun Map<String, Movie>.upTo(count: Int): NetworkResult<List<Movie>> =
     NetworkResult.Success(values.take(count))

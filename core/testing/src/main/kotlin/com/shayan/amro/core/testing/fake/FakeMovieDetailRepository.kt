@@ -4,7 +4,6 @@ import com.shayan.amro.core.data.MovieDetailRepository
 import com.shayan.amro.core.model.DataError
 import com.shayan.amro.core.model.Movie
 import com.shayan.amro.core.model.MovieDetail
-import com.shayan.amro.core.model.MovieId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -16,13 +15,13 @@ import kotlinx.coroutines.flow.map
  * A refresh for a movie nothing was scripted for fails the test rather than inventing an outcome.
  */
 class FakeMovieDetailRepository : MovieDetailRepository {
-    private val movies = MutableStateFlow<Map<MovieId, Movie>>(emptyMap())
-    private val details = MutableStateFlow<Map<MovieId, MovieDetail>>(emptyMap())
-    private val refreshes = mutableMapOf<MovieId, DetailRefresh>()
-    private val recordedIds = mutableListOf<MovieId>()
+    private val movies = MutableStateFlow<Map<String, Movie>>(emptyMap())
+    private val details = MutableStateFlow<Map<String, MovieDetail>>(emptyMap())
+    private val refreshes = mutableMapOf<String, DetailRefresh>()
+    private val recordedIds = mutableListOf<String>()
 
     /** The id each [refresh] call asked for, in call order. */
-    val requestedIds: List<MovieId> get() = recordedIds.toList()
+    val requestedIds: List<String> get() = recordedIds.toList()
 
     /**
      * Sets what [getMovieFlow] emits, as a trending set cached before the test began.
@@ -58,17 +57,17 @@ class FakeMovieDetailRepository : MovieDetailRepository {
      * @param error the cause it returns.
      */
     fun scriptRefreshFailure(
-        id: MovieId,
+        id: String,
         error: DataError,
     ) {
         refreshes[id] = DetailRefresh.Fails(error)
     }
 
-    override fun getMovieFlow(id: MovieId): Flow<Movie?> = movies.map { it[id] }
+    override fun getMovieFlow(id: String): Flow<Movie?> = movies.map { it[id] }
 
-    override fun getMovieDetailFlow(id: MovieId): Flow<MovieDetail?> = details.map { it[id] }
+    override fun getMovieDetailFlow(id: String): Flow<MovieDetail?> = details.map { it[id] }
 
-    override suspend fun refresh(id: MovieId): DataError? {
+    override suspend fun refresh(id: String): DataError? {
         recordedIds += id
         val next =
             checkNotNull(refreshes[id]) {

@@ -4,7 +4,6 @@ import com.shayan.amro.core.database.MovieLocalDataSource
 import com.shayan.amro.core.model.DataError
 import com.shayan.amro.core.model.Movie
 import com.shayan.amro.core.model.MovieDetail
-import com.shayan.amro.core.model.MovieId
 import com.shayan.amro.core.network.MovieRemoteDataSource
 import com.shayan.amro.core.network.NetworkResult
 import kotlinx.coroutines.flow.Flow
@@ -19,12 +18,12 @@ internal class DefaultMovieDetailRepository
         private val local: MovieLocalDataSource,
         private val remote: MovieRemoteDataSource,
     ) : MovieDetailRepository {
-        override fun getMovieFlow(id: MovieId): Flow<Movie?> = local.getMovieFlow(id)
+        override fun getMovieFlow(id: String): Flow<Movie?> = local.getMovieFlow(id)
 
-        override fun getMovieDetailFlow(id: MovieId): Flow<MovieDetail?> =
+        override fun getMovieDetailFlow(id: String): Flow<MovieDetail?> =
             local.getMovieDetailFlow(id)
 
-        override suspend fun refresh(id: MovieId): DataError? =
+        override suspend fun refresh(id: String): DataError? =
             when (val result = remote.getMovieDetail(id)) {
                 is NetworkResult.Success -> {
                     local.writeMovieDetail(result.value)

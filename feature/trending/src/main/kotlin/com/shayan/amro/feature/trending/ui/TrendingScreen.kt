@@ -53,7 +53,7 @@ import com.shayan.amro.core.ui.R as CoreUiR
 @Composable
 internal fun TrendingScreen(
     uiState: TrendingUiState,
-    onMovieClick: (sourceId: String, movieId: String) -> Unit,
+    onMovieClick: (movieId: String) -> Unit,
     onRefresh: () -> Unit,
     onToggleGenre: (String) -> Unit,
     onSelectSortKey: (SortKey) -> Unit,
@@ -97,10 +97,10 @@ internal fun TrendingScreen(
                             contentPadding = trendingListPadding,
                             verticalArrangement = Arrangement.spacedBy(Spacing.s4),
                         ) {
-                            items(content.rows, key = { it.key }) { row ->
+                            items(content.rows, key = { it.movieId }) { row ->
                                 MovieRow(
                                     row = row,
-                                    onClick = { onMovieClick(row.sourceId, row.movieId) },
+                                    onClick = { onMovieClick(row.movieId) },
                                 )
                             }
                         }

@@ -4,10 +4,8 @@ import com.shayan.amro.core.model.Genre
 import com.shayan.amro.core.model.ImageRef
 import com.shayan.amro.core.model.Movie
 import com.shayan.amro.core.model.MovieDetail
-import com.shayan.amro.core.model.MovieId
 import com.shayan.amro.core.model.Rating
 import com.shayan.amro.core.model.ReleaseStatus
-import com.shayan.amro.core.model.SourceId
 import kotlinx.datetime.LocalDate
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
@@ -18,7 +16,7 @@ object MovieFixture {
      * A movie carrying every field a source can fill.
      */
     fun movie(
-        id: MovieId = MovieId(SourceId("tmdb"), "1294189"),
+        id: String = "1294189",
         title: String = "The Mongoose",
         genres: List<Genre> = listOf(Genre.HORROR, Genre.THRILLER),
         popularity: Double = 12.5,
@@ -74,7 +72,7 @@ object MovieFixture {
     /** A second movie, differing from [MOVIE] in every field a test reads back. */
     val OTHER_MOVIE =
         movie(
-            id = MovieId(SourceId("tmdb"), "755898"),
+            id = "755898",
             title = "War of the Worlds",
             genres = listOf(Genre.SCIENCE_FICTION),
             popularity = 3.5,
@@ -84,7 +82,7 @@ object MovieFixture {
     /** An accented title, and the most popular and oldest movie of the set. */
     val MOVIE_WITH_ACCENTED_TITLE =
         movie(
-            id = MovieId(SourceId("tmdb"), "1"),
+            id = "1",
             title = "Amélie",
             genres = listOf(Genre.ROMANCE, Genre.COMEDY),
             popularity = 30.0,
@@ -97,7 +95,7 @@ object MovieFixture {
      */
     val MOVIE_WITH_UNACCENTED_TITLE =
         movie(
-            id = MovieId(SourceId("tmdb"), "2"),
+            id = "2",
             title = "Amelie",
             genres = listOf(Genre.ROMANCE),
             popularity = 20.0,
@@ -107,7 +105,7 @@ object MovieFixture {
     /** A lowercase title, tying popularity and release date with [MOVIE_WITH_CAPITALISED_TITLE]. */
     val MOVIE_WITH_LOWERCASE_TITLE =
         movie(
-            id = MovieId(SourceId("tmdb"), "3"),
+            id = "3",
             title = "boyhood",
             genres = listOf(Genre.DRAMA),
             popularity = 10.0,
@@ -117,7 +115,7 @@ object MovieFixture {
     /** The same title cased, so every key it carries ties with [MOVIE_WITH_LOWERCASE_TITLE]. */
     val MOVIE_WITH_CAPITALISED_TITLE =
         movie(
-            id = MovieId(SourceId("tmdb"), "4"),
+            id = "4",
             title = "Boyhood",
             genres = listOf(Genre.DRAMA, Genre.COMEDY),
             popularity = 10.0,
@@ -130,7 +128,7 @@ object MovieFixture {
      */
     val MOVIE_WITH_NEWEST_RELEASE =
         movie(
-            id = MovieId(SourceId("tmdb"), "5"),
+            id = "5",
             title = "Dune",
             genres = listOf(Genre.SCIENCE_FICTION, Genre.ADVENTURE),
             popularity = 20.0,
@@ -140,7 +138,7 @@ object MovieFixture {
     /** A movie with no release date, which every date ordering places last. */
     val MOVIE_WITH_NO_RELEASE_DATE =
         movie(
-            id = MovieId(SourceId("tmdb"), "6"),
+            id = "6",
             title = "Zodiac",
             genres = listOf(Genre.CRIME, Genre.THRILLER),
             popularity = 5.0,

@@ -2,7 +2,6 @@ package com.shayan.amro.core.database
 
 import app.cash.turbine.test
 import com.shayan.amro.core.database.testDatabase
-import com.shayan.amro.core.model.SourceId
 import com.shayan.amro.core.testing.fixture.model.MovieFixture.detail
 import com.shayan.amro.core.testing.fixture.model.MovieFixture.movie
 import kotlinx.coroutines.flow.first
@@ -117,18 +116,6 @@ class RoomMovieLocalDataSourceTest {
 
             assertEquals(refetched, source.getMovieDetailFlow(FIRST_MOVIE.id).first())
         }
-
-    @Test
-    fun `two sources issuing one id are two movies`() =
-        runLocalDataSourceTest { source ->
-            val other = FIRST_MOVIE.copy(id = FIRST_MOVIE.id.copy(source = SourceId("omdb")))
-
-            source.replaceTrending(listOf(FIRST_MOVIE, other))
-            source.writeMovieDetail(FIRST_DETAIL)
-
-            assertEquals(2, source.getTrendingMoviesFlow().first().size)
-            assertNull(source.getMovieDetailFlow(other.id).first())
-        }
 }
 
 /**
@@ -149,13 +136,13 @@ private val FIRST_MOVIE = movie(title = "The Mongoose")
 
 private val SECOND_MOVIE =
     movie(
-        id = FIRST_MOVIE.id.copy(value = "755898"),
+        id = "755898",
         title = "War of the Worlds",
     )
 
 private val THIRD_MOVIE =
     movie(
-        id = FIRST_MOVIE.id.copy(value = "1078605"),
+        id = "1078605",
         title = "Weapons",
     )
 

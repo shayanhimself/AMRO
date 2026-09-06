@@ -2,7 +2,6 @@ package com.shayan.amro.core.testing.fake
 
 import com.shayan.amro.core.model.Movie
 import com.shayan.amro.core.model.MovieDetail
-import com.shayan.amro.core.model.MovieId
 import com.shayan.amro.core.network.MovieRemoteDataSource
 import com.shayan.amro.core.network.NetworkResult
 
@@ -19,13 +18,13 @@ class FakeMovieRemoteDataSource : MovieRemoteDataSource {
     private val detailResults = ArrayDeque<NetworkResult<MovieDetail>>()
 
     private val recordedCounts = mutableListOf<Int>()
-    private val recordedIds = mutableListOf<MovieId>()
+    private val recordedIds = mutableListOf<String>()
 
     /** The count each [getTrendingMovies] call asked for, in call order. */
     val requestedCounts: List<Int> get() = recordedCounts.toList()
 
     /** The id each [getMovieDetail] call asked for, in call order. */
-    val requestedIds: List<MovieId> get() = recordedIds.toList()
+    val requestedIds: List<String> get() = recordedIds.toList()
 
     /**
      * Scripts what the next [getTrendingMovies] calls answer.
@@ -52,10 +51,10 @@ class FakeMovieRemoteDataSource : MovieRemoteDataSource {
         }
     }
 
-    override suspend fun getMovieDetail(id: MovieId): NetworkResult<MovieDetail> {
-        recordedIds += id
+    override suspend fun getMovieDetail(movieId: String): NetworkResult<MovieDetail> {
+        recordedIds += movieId
         return checkNotNull(detailResults.removeFirstOrNull()) {
-            "No movie detail result scripted for $id."
+            "No movie detail result scripted for $movieId."
         }
     }
 }

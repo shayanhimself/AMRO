@@ -2,6 +2,7 @@ package com.shayan.amro.core.network.sources.tmdb.mapper
 
 import com.shayan.amro.core.model.Genre
 import com.shayan.amro.core.model.ReleaseStatus
+import com.shayan.amro.core.network.sources.MovieId
 import com.shayan.amro.core.network.sources.tmdb.TMDB_SOURCE
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbMovieDetailDto
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbMovieDto
@@ -54,8 +55,7 @@ class TmdbMovieMapperTest {
     fun `the complete record maps every field TMDB populated`() {
         val detail = recorded(TmdbFixture.Movie.RELEASED).toMovieDetail()
 
-        assertEquals(TMDB_SOURCE, detail.movie.id.source)
-        assertEquals(COMPLETE_ID, detail.movie.id.value)
+        assertEquals(MovieId(TMDB_SOURCE, COMPLETE_ID).qualified, detail.movie.id)
         assertEquals(COMPLETE_TITLE, detail.movie.title)
         assertEquals(listOf(Genre.SCIENCE_FICTION, Genre.ADVENTURE), detail.movie.genres)
         assertEquals(COMPLETE_RELEASE_DATE, detail.movie.releaseDate)
@@ -157,7 +157,7 @@ class TmdbMovieMapperTest {
     fun `a recorded row arrives with every field TMDB names differently`() {
         val movie = recordedRow().toMovie()
 
-        assertEquals(RECORDED_ROW_ID, movie.id.value)
+        assertEquals(MovieId(TMDB_SOURCE, RECORDED_ROW_ID).qualified, movie.id)
         assertEquals(RECORDED_ROW_TITLE, movie.title)
         assertEquals(listOf(Genre.THRILLER), movie.genres)
         assertEquals(RECORDED_ROW_RELEASE_DATE, movie.releaseDate)

@@ -13,8 +13,6 @@ import com.shayan.amro.core.model.DataError
 import com.shayan.amro.core.model.Genre
 import com.shayan.amro.core.model.ImageRef
 import com.shayan.amro.core.model.Movie
-import com.shayan.amro.core.model.MovieId
-import com.shayan.amro.core.model.SourceId
 import com.shayan.amro.feature.trending.component.FilterSheetContent
 import com.shayan.amro.feature.trending.viewmodel.MovieRowUiState
 import com.shayan.amro.feature.trending.viewmodel.MovieSort
@@ -33,9 +31,6 @@ private val PREVIEW_POSTER_COLOR = Color(0xFF55617A)
 
 /** The popularity the first preview row carries, which every later row steps down from. */
 private const val PREVIEW_TOP_POPULARITY = 100.0
-
-/** The source every preview movie is attributed to. */
-private val PREVIEW_SOURCE = SourceId("preview")
 
 /** The cache every preview state is read out of. */
 private val PREVIEW_MOVIES: List<Movie> =
@@ -129,7 +124,7 @@ private fun previewMovie(
     poster: ImageRef? = ImageRef(small = "preview://poster/$id", large = "preview://poster/$id"),
 ): Movie =
     Movie(
-        id = MovieId(PREVIEW_SOURCE, id),
+        id = id,
         title = title,
         genres = genres.toList(),
         popularity = PREVIEW_TOP_POPULARITY - id.toDouble(),
@@ -150,7 +145,7 @@ internal fun TrendingScreenPreviewHost(state: TrendingUiState) {
     CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewHandler) {
         TrendingScreen(
             uiState = state,
-            onMovieClick = { _, _ -> },
+            onMovieClick = {},
             onRefresh = {},
             onToggleGenre = {},
             onSelectSortKey = {},

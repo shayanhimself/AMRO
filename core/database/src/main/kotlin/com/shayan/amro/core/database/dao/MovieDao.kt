@@ -13,11 +13,8 @@ internal interface MovieDao {
     @Query("SELECT * FROM movies")
     fun getTrendingMoviesFlow(): Flow<List<MovieEntity>>
 
-    @Query("SELECT * FROM movies WHERE source = :source AND movieId = :movieId")
-    fun getMovieFlow(
-        source: String,
-        movieId: String,
-    ): Flow<MovieEntity?>
+    @Query("SELECT * FROM movies WHERE movieId = :movieId")
+    fun getMovieFlow(movieId: String): Flow<MovieEntity?>
 
     @Transaction
     suspend fun replaceAll(movies: List<MovieEntity>) {

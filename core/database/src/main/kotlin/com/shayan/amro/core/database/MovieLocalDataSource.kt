@@ -2,7 +2,6 @@ package com.shayan.amro.core.database
 
 import com.shayan.amro.core.model.Movie
 import com.shayan.amro.core.model.MovieDetail
-import com.shayan.amro.core.model.MovieId
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -32,7 +31,7 @@ interface MovieLocalDataSource {
      * @param id of the movie.
      * @return the flow of movie, or null when it is not in the set this device holds.
      */
-    fun getMovieFlow(id: MovieId): Flow<Movie?>
+    fun getMovieFlow(id: String): Flow<Movie?>
 
     /**
      * The full movie detail this device holds for one movie.
@@ -40,7 +39,7 @@ interface MovieLocalDataSource {
      * @param id of the movie.
      * @return flow of the movie detail, or null when none has been written for it.
      */
-    fun getMovieDetailFlow(id: MovieId): Flow<MovieDetail?>
+    fun getMovieDetailFlow(id: String): Flow<MovieDetail?>
 
     /**
      * Writes one movie detail record.

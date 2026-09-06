@@ -60,19 +60,13 @@ internal sealed interface TrendingContent {
 /**
  * One movie, as a row draws it.
  *
- * @property key what tells this row from the others across a refresh, so an unchanged row moves
- * instead of being rebuilt.
- * @property sourceId the provider that issued [movieId], which navigation carries to the detail
- * screen.
- * @property movieId the movie as that provider wrote it.
+ * @property movieId identifies the movie.
  * @property title the words the row leads with.
  * @property posterUrl null when the source offers no poster.
  * @property genreLabels what the row lists under the title, in the order it lists them.
  */
 @Immutable
 internal data class MovieRowUiState(
-    val key: String,
-    val sourceId: String,
     val movieId: String,
     val title: String,
     val posterUrl: String?,

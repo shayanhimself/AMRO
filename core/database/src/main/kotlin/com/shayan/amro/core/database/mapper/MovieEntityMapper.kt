@@ -6,10 +6,8 @@ import com.shayan.amro.core.model.Genre
 import com.shayan.amro.core.model.ImageRef
 import com.shayan.amro.core.model.Movie
 import com.shayan.amro.core.model.MovieDetail
-import com.shayan.amro.core.model.MovieId
 import com.shayan.amro.core.model.Rating
 import com.shayan.amro.core.model.ReleaseStatus
-import com.shayan.amro.core.model.SourceId
 import kotlinx.datetime.LocalDate
 import kotlin.time.Duration.Companion.minutes
 
@@ -21,8 +19,7 @@ private val STATUSES_BY_NAME = ReleaseStatus.entries.associateBy { it.name }
 
 internal fun Movie.toEntity(): MovieEntity =
     MovieEntity(
-        source = id.source.value,
-        movieId = id.value,
+        movieId = id,
         title = title,
         genres = genres.toColumn(),
         popularity = popularity,
@@ -33,7 +30,7 @@ internal fun Movie.toEntity(): MovieEntity =
 
 internal fun MovieEntity.toMovie(): Movie =
     Movie(
-        id = MovieId(SourceId(source), movieId),
+        id = movieId,
         title = title,
         genres = genres.toGenres(),
         popularity = popularity,
@@ -44,8 +41,7 @@ internal fun MovieEntity.toMovie(): Movie =
 /** The row one cached record becomes. */
 internal fun MovieDetail.toEntity(): MovieDetailEntity =
     MovieDetailEntity(
-        source = movie.id.source.value,
-        movieId = movie.id.value,
+        movieId = movie.id,
         title = movie.title,
         genres = movie.genres.toColumn(),
         popularity = movie.popularity,
@@ -70,7 +66,7 @@ internal fun MovieDetailEntity.toMovieDetail(): MovieDetail =
     MovieDetail(
         movie =
             Movie(
-                id = MovieId(SourceId(source), movieId),
+                id = movieId,
                 title = title,
                 genres = genres.toGenres(),
                 popularity = popularity,

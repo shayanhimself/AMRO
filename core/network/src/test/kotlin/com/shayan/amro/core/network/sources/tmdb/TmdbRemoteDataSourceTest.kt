@@ -2,8 +2,8 @@ package com.shayan.amro.core.network.sources.tmdb
 
 import com.shayan.amro.core.model.DataError
 import com.shayan.amro.core.model.Movie
-import com.shayan.amro.core.model.MovieId
 import com.shayan.amro.core.network.NetworkResult
+import com.shayan.amro.core.network.sources.MovieId
 import com.shayan.amro.core.testing.fixture.tmdb.TmdbFixture
 import com.shayan.amro.core.testing.fixture.tmdb.TmdbRecording
 import io.ktor.client.engine.mock.MockEngine
@@ -128,7 +128,7 @@ class TmdbRemoteDataSourceTest {
         runTest {
             val result =
                 dataSource { respondJson(TmdbFixture.Movie.RELEASED) }
-                    .getMovieDetail(MovieId(TMDB_SOURCE, KNOWN_MOVIE_ID))
+                    .getMovieDetail(MovieId(TMDB_SOURCE, KNOWN_MOVIE_ID).qualified)
 
             assertIs<NetworkResult.Success<*>>(result)
             assertTrue(
@@ -200,7 +200,7 @@ class TmdbRemoteDataSourceTest {
             val result =
                 dataSource {
                     respondJson(TmdbFixture.Movie.RELEASED, HttpStatusCode.NotFound)
-                }.getMovieDetail(MovieId(TMDB_SOURCE, KNOWN_MOVIE_ID))
+                }.getMovieDetail(MovieId(TMDB_SOURCE, KNOWN_MOVIE_ID).qualified)
 
             assertEquals(DataError.Server, assertIs<NetworkResult.Failure>(result).error)
         }
@@ -211,7 +211,7 @@ class TmdbRemoteDataSourceTest {
             val result =
                 dataSource {
                     respondJson(TmdbFixture.Error.NOT_FOUND)
-                }.getMovieDetail(MovieId(TMDB_SOURCE, KNOWN_MOVIE_ID))
+                }.getMovieDetail(MovieId(TMDB_SOURCE, KNOWN_MOVIE_ID).qualified)
 
             assertEquals(DataError.Server, assertIs<NetworkResult.Failure>(result).error)
         }

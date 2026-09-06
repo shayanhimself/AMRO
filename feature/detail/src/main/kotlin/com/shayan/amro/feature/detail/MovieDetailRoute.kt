@@ -10,13 +10,11 @@ import com.shayan.amro.core.ui.designsystem.theme.AmroTheme
 /**
  * One movie's detail.
  *
- * @param sourceId the source that issued [movieId].
  * @param movieId the movie to show.
  * @param onBack leaves the screen, null where there is nowhere to go back to.
  */
 @Composable
 fun MovieDetailRoute(
-    sourceId: String,
     movieId: String,
     onBack: (() -> Unit)?,
     modifier: Modifier = Modifier,

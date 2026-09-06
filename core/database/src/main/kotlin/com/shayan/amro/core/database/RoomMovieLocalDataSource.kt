@@ -7,7 +7,6 @@ import com.shayan.amro.core.database.mapper.toMovie
 import com.shayan.amro.core.database.mapper.toMovieDetail
 import com.shayan.amro.core.model.Movie
 import com.shayan.amro.core.model.MovieDetail
-import com.shayan.amro.core.model.MovieId
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -26,19 +25,11 @@ internal class RoomMovieLocalDataSource
             this.moviesDao.replaceAll(movies.map { it.toEntity() })
         }
 
-        override fun getMovieFlow(id: MovieId): Flow<Movie?> =
-            moviesDao
-                .getMovieFlow(
-                    source = id.source.value,
-                    movieId = id.value,
-                ).map { it?.toMovie() }
+        override fun getMovieFlow(id: String): Flow<Movie?> =
+            moviesDao.getMovieFlow(id).map { it?.toMovie() }
 
-        override fun getMovieDetailFlow(id: MovieId): Flow<MovieDetail?> =
-            detailsDao
-                .getMovieDetailFlow(
-                    source = id.source.value,
-                    movieId = id.value,
-                ).map { it?.toMovieDetail() }
+        override fun getMovieDetailFlow(id: String): Flow<MovieDetail?> =
+            detailsDao.getMovieDetailFlow(id).map { it?.toMovieDetail() }
 
         override suspend fun writeMovieDetail(detail: MovieDetail) {
             detailsDao.update(detail.toEntity())

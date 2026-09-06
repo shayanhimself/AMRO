@@ -34,9 +34,7 @@ private fun comparatorFor(sort: MovieSort): Comparator<Movie> {
                 ) { it.releaseDate }
             }
         }
-    return byKey
-        .thenBy { it.id.source.value }
-        .thenBy { it.id.value }
+    return byKey.thenBy { it.id }
 }
 
 /**

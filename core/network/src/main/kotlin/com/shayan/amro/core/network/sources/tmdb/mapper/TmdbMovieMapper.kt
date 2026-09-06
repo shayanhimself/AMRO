@@ -2,9 +2,9 @@ package com.shayan.amro.core.network.sources.tmdb.mapper
 
 import com.shayan.amro.core.model.Movie
 import com.shayan.amro.core.model.MovieDetail
-import com.shayan.amro.core.model.MovieId
 import com.shayan.amro.core.model.Rating
 import com.shayan.amro.core.model.ReleaseStatus
+import com.shayan.amro.core.network.sources.MovieId
 import com.shayan.amro.core.network.sources.tmdb.TMDB_SOURCE
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbMovieDetailDto
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbMovieDto
@@ -31,7 +31,7 @@ private val STATUSES_BY_TMDB_NAME =
 /** The movie a list row describes. */
 internal fun TmdbMovieDto.toMovie(): Movie =
     Movie(
-        id = MovieId(TMDB_SOURCE, id.toString()),
+        id = MovieId(TMDB_SOURCE, id.toString()).qualified,
         title = title,
         genres = genreIds.mapNotNull(::tmdbGenre),
         popularity = popularity ?: UNPOPULAR,
@@ -44,7 +44,7 @@ internal fun TmdbMovieDetailDto.toMovieDetail(): MovieDetail =
     MovieDetail(
         movie =
             Movie(
-                id = MovieId(TMDB_SOURCE, id.toString()),
+                id = MovieId(TMDB_SOURCE, id.toString()).qualified,
                 title = title,
                 genres = genres.mapNotNull { tmdbGenre(it.id) },
                 popularity = popularity ?: UNPOPULAR,

@@ -35,13 +35,12 @@ class TrendingScreenTest {
 
     @Test
     fun `selecting a row reports the movie it stands for`() {
-        var selected: Pair<String, String>? = null
-        setContent(loaded(), onMovieClick = { sourceId, movieId -> selected = sourceId to movieId })
+        var selected: String? = null
+        setContent(loaded(), onMovieClick = { movieId -> selected = movieId })
 
         composeRule.onNodeWithText(TOP_TITLE).performClick()
 
-        val id = CACHE.first { it.title == TOP_TITLE }.id
-        assertEquals(id.source.value to id.value, selected)
+        assertEquals(CACHE.first { it.title == TOP_TITLE }.id, selected)
     }
 
     @Test
@@ -135,7 +134,7 @@ class TrendingScreenTest {
     /** Renders the stateless screen over one state. */
     private fun setContent(
         uiState: TrendingUiState,
-        onMovieClick: (sourceId: String, movieId: String) -> Unit = { _, _ -> },
+        onMovieClick: (movieId: String) -> Unit = {},
         onRefresh: () -> Unit = {},
     ) {
         composeRule.setContent {

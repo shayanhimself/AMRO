@@ -72,19 +72,13 @@ private fun contentFor(
     }
 
 /** One movie as the row that draws it. */
-private fun Movie.toRow(): MovieRowUiState {
-    val sourceId = id.source.value
-    val movieId = id.value
-
-    return MovieRowUiState(
-        key = sourceId + movieId,
-        sourceId = sourceId,
-        movieId = movieId,
+private fun Movie.toRow(): MovieRowUiState =
+    MovieRowUiState(
+        movieId = id,
         title = title,
         posterUrl = poster?.small,
         genreLabels = genres.map { it.labelRes }.toImmutableList(),
     )
-}
 
 /** A failed refresh as the bar that states it. */
 private fun DataError.toNotice(): NoticeUiState =

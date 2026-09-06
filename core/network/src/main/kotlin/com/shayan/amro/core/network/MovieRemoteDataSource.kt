@@ -2,7 +2,6 @@ package com.shayan.amro.core.network
 
 import com.shayan.amro.core.model.Movie
 import com.shayan.amro.core.model.MovieDetail
-import com.shayan.amro.core.model.MovieId
 
 /**
  * One provider of movies, as the data layer sees it.
@@ -21,8 +20,8 @@ interface MovieRemoteDataSource {
     /**
      * Reads the fuller record behind one movie.
      *
-     * @param id an id this source issued.
+     * @param movieId an id this source issued.
      * @return the detail, or the cause it could not be read.
      */
-    suspend fun getMovieDetail(id: MovieId): NetworkResult<MovieDetail>
+    suspend fun getMovieDetail(movieId: String): NetworkResult<MovieDetail>
 }
