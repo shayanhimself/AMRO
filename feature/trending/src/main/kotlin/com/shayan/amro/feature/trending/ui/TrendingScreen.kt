@@ -122,7 +122,7 @@ internal fun TrendingScreen(
                 is TrendingContent.Error -> {
                     MessagePanel(
                         glyph = content.glyph,
-                        title = stringResource(content.titleRes),
+                        title = content.title.resolve(),
                         actionLabel = stringResource(CoreUiR.string.core_ui_retry),
                         onAction = onRefresh,
                         glyphTint = MaterialTheme.colorScheme.error,

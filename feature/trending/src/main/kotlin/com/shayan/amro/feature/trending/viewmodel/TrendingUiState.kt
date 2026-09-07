@@ -1,15 +1,12 @@
 package com.shayan.amro.feature.trending.viewmodel
 
-import androidx.annotation.StringRes
 import androidx.compose.runtime.Immutable
+import com.shayan.amro.core.ui.text.AmroText
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 /**
- * Everything the trending screen renders.
- *
- * Nothing here is a type the data layer owns: the screen is handed resource ids, strings and
- * counts.
+ * Everything the trending screen needs to render.
  *
  * @property content what the body of the screen shows.
  * @property filter what the sheet offers, and what it currently keeps.
@@ -49,11 +46,11 @@ internal sealed interface TrendingContent {
      * Nothing is cached and a refresh failed.
      *
      * @property glyph what the screen draws over the message.
-     * @property titleRes what it says.
+     * @property title what it says.
      */
     data class Error(
         val glyph: String,
-        @param:StringRes val titleRes: Int,
+        val title: AmroText,
     ) : TrendingContent
 }
 
@@ -70,19 +67,19 @@ internal data class MovieRowUiState(
     val movieId: String,
     val title: String,
     val posterUrl: String?,
-    val genreLabels: ImmutableList<Int>,
+    val genres: AmroText,
 )
 
 /**
  * A failed refresh, stated over rows that are still worth reading.
  *
  * @property glyph what the bar draws beside the message.
- * @property messageRes what it says.
+ * @property message what it says.
  */
 @Immutable
 internal data class NoticeUiState(
     val glyph: String,
-    @param:StringRes val messageRes: Int,
+    val message: AmroText,
 )
 
 /**
@@ -109,14 +106,14 @@ internal data class FilterUiState(
  * @param T what the chip sends back when it is chosen. The screen never reads it, so a choice the
  * app owns travels as its own type and a genre travels as the name the selection is saved under.
  * @property value what a click reports.
- * @property labelRes what the chip is called.
+ * @property label what the chip is called.
  * @property isSelected whether the list is currently narrowed or ordered by this.
  * @property glyph drawn ahead of the label, for a choice a word alone states weakly.
  */
 @Immutable
 internal data class ChipUiState<out T>(
     val value: T,
-    @param:StringRes val labelRes: Int,
+    val label: AmroText,
     val isSelected: Boolean,
     val glyph: String? = null,
 )

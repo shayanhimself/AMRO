@@ -5,6 +5,7 @@ import com.shayan.amro.core.model.Movie
 import com.shayan.amro.core.testing.fixture.model.MovieFixture
 import com.shayan.amro.core.testing.fixture.model.MovieFixture.MOVIES_IN_NO_ORDER
 import com.shayan.amro.core.ui.designsystem.icon.Glyphs
+import com.shayan.amro.core.ui.text.AmroText
 import com.shayan.amro.feature.trending.R
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -23,7 +24,10 @@ class TrendingUiStateMapperTest {
         val content = state.content
         assertTrue(content is TrendingContent.Error, "expected an error, was $content")
         assertEquals(Glyphs.MOVIE_FILTER, content.glyph)
-        assertEquals(R.string.feature_trending_error_empty_response, content.titleRes)
+        assertEquals(
+            AmroText.Resource(R.string.feature_trending_error_empty_response),
+            content.title,
+        )
     }
 
     @Test
@@ -35,7 +39,10 @@ class TrendingUiStateMapperTest {
 
         val notice = assertNotNull(state.notice)
         assertEquals(Glyphs.MOVIE_FILTER, notice.glyph)
-        assertEquals(R.string.feature_trending_notice_empty_response, notice.messageRes)
+        assertEquals(
+            AmroText.Resource(R.string.feature_trending_notice_empty_response),
+            notice.message,
+        )
         assertEquals(MOVIES_IN_NO_ORDER.size, state.rows().size)
     }
 

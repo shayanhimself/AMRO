@@ -60,7 +60,7 @@ internal fun TrendingNoticeBar(
                     tint = MaterialTheme.colorScheme.error,
                 )
                 Text(
-                    text = stringResource(notice.messageRes),
+                    text = notice.message.resolve(),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(1f),

@@ -6,9 +6,13 @@ import com.shayan.amro.core.model.Genre
 import com.shayan.amro.core.model.Movie
 import com.shayan.amro.core.ui.designsystem.icon.Glyphs
 import com.shayan.amro.core.ui.label.labelRes
+import com.shayan.amro.core.ui.text.AmroText
 import com.shayan.amro.feature.trending.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+
+/** What sits between two genre names on a row. */
+private const val GENRE_SEPARATOR = " · "
 
 /**
  * The two directions, in the order the sheet offers them: the one the list opens on comes first.
@@ -78,16 +82,20 @@ private fun Movie.toRow(): MovieRowUiState =
         movieId = id,
         title = title,
         posterUrl = poster?.small,
-        genreLabels = genres.map { it.labelRes }.toImmutableList(),
+        genres =
+            AmroText.Joined(
+                texts = genres.map { AmroText.Resource(it.labelRes) }.toImmutableList(),
+                separator = GENRE_SEPARATOR,
+            ),
     )
 
 /** A failed refresh as the bar that states it. */
 private fun DataError.toNotice(): NoticeUiState =
-    NoticeUiState(glyph = glyph, messageRes = noticeRes)
+    NoticeUiState(glyph = glyph, message = AmroText.Resource(noticeRes))
 
 /** A failed refresh as the body it becomes with nothing left to show. */
 private fun DataError.toErrorContent(): TrendingContent.Error =
-    TrendingContent.Error(glyph = glyph, titleRes = titleRes)
+    TrendingContent.Error(glyph = glyph, title = AmroText.Resource(titleRes))
 
 /** Every genre, both selected and unselected. */
 private fun genreChips(selected: Set<Genre>): ImmutableList<ChipUiState<String>> =
@@ -95,7 +103,7 @@ private fun genreChips(selected: Set<Genre>): ImmutableList<ChipUiState<String>>
         .map { genre ->
             ChipUiState(
                 value = genre.name,
-                labelRes = genre.labelRes,
+                label = AmroText.Resource(genre.labelRes),
                 isSelected = genre in selected,
             )
         }.toImmutableList()
@@ -104,7 +112,11 @@ private fun genreChips(selected: Set<Genre>): ImmutableList<ChipUiState<String>>
 private fun sortKeyChips(selected: SortKey): ImmutableList<ChipUiState<SortKey>> =
     SortKey.entries
         .map { key ->
-            ChipUiState(value = key, labelRes = key.labelRes, isSelected = key == selected)
+            ChipUiState(
+                value = key,
+                label = AmroText.Resource(key.labelRes),
+                isSelected = key == selected,
+            )
         }.toImmutableList()
 
 /** Every direction the ordering can run. */
@@ -113,7 +125,7 @@ private fun directionChips(selected: SortDirection): ImmutableList<ChipUiState<S
         .map { direction ->
             ChipUiState(
                 value = direction,
-                labelRes = direction.labelRes,
+                label = AmroText.Resource(direction.labelRes),
                 isSelected = direction == selected,
                 glyph = direction.glyph,
             )

@@ -49,10 +49,11 @@ internal fun Duration.toRuntimeText(): AmroText {
  */
 internal fun LocalDate.toDateText(): AmroText =
     AmroText.Raw(
-        text = DateTimeFormatter
-            .ofLocalizedDate(FormatStyle.LONG)
-            .withLocale(formattingLocale())
-            .format(toJavaLocalDate()),
+        text =
+            DateTimeFormatter
+                .ofLocalizedDate(FormatStyle.LONG)
+                .withLocale(formattingLocale())
+                .format(toJavaLocalDate()),
     )
 
 /**

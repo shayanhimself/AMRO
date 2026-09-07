@@ -168,7 +168,7 @@ private fun <T> ChipRow(
 ) {
     chips.forEach { chip ->
         DsChip(
-            label = stringResource(chip.labelRes),
+            label = chip.label.resolve(),
             onClick = { onClick(chip.value) },
             variant = ChipVariant.Filter,
             selected = chip.isSelected,

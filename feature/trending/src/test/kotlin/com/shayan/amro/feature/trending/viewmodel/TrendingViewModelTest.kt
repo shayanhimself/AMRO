@@ -8,6 +8,7 @@ import com.shayan.amro.core.model.Genre
 import com.shayan.amro.core.testing.fake.FakeTrendingMoviesRepository
 import com.shayan.amro.core.testing.fixture.model.MovieFixture
 import com.shayan.amro.core.testing.rule.MainDispatcherRule
+import com.shayan.amro.core.ui.text.AmroText
 import com.shayan.amro.feature.trending.R
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -65,7 +66,10 @@ class TrendingViewModelTest {
                 val content = expectMostRecentItem().content
 
                 assertTrue(content is TrendingContent.Error, "expected an error, was $content")
-                assertEquals(R.string.feature_trending_error_no_connectivity, content.titleRes)
+                assertEquals(
+                    AmroText.Resource(R.string.feature_trending_error_no_connectivity),
+                    content.title,
+                )
             }
         }
 
@@ -82,7 +86,10 @@ class TrendingViewModelTest {
                 val state = expectMostRecentItem()
 
                 assertEquals(CACHE.size, state.rows().size)
-                assertEquals(R.string.feature_trending_notice_server, state.notice?.messageRes)
+                assertEquals(
+                    AmroText.Resource(R.string.feature_trending_notice_server),
+                    state.notice?.message,
+                )
             }
         }
 
@@ -115,8 +122,8 @@ class TrendingViewModelTest {
                 awaitItem()
                 viewModel.onRefresh()
                 assertEquals(
-                    R.string.feature_trending_notice_server,
-                    expectMostRecentItem().notice?.messageRes,
+                    AmroText.Resource(R.string.feature_trending_notice_server),
+                    expectMostRecentItem().notice?.message,
                 )
 
                 val gate = repository.holdRefreshes()
