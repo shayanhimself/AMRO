@@ -10,6 +10,7 @@ import com.google.android.apps.common.testing.accessibility.framework.Accessibil
 import com.google.android.apps.common.testing.accessibility.framework.integrations.espresso.AccessibilityValidator
 import com.shayan.amro.core.network.sources.tmdb.TmdbConfig
 import com.shayan.amro.di.NetworkModule
+import com.shayan.amro.flow.helpers.AppLauncher
 import com.shayan.amro.wire.LocalTmdb
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule

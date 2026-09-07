@@ -4,8 +4,6 @@
 #
 # `./gradlew test` is not equivalent. It runs the unit tests alone, leaving the screenshot
 # validation and the format gate out; `check` covers all three.
-#
-# Instrumented tests need a device and are not part of this gate; run scripts/instrumented.sh.
 set -euo pipefail
 
 cd "$(dirname "$0")/.."

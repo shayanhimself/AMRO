@@ -15,6 +15,10 @@ import com.shayan.amro.core.testing.quantityString
 import com.shayan.amro.core.testing.string
 import com.shayan.amro.di.NetworkModule
 import com.shayan.amro.feature.trending.R
+import com.shayan.amro.flow.helpers.AppLauncher
+import com.shayan.amro.flow.helpers.awaitContentDescription
+import com.shayan.amro.flow.helpers.awaitText
+import com.shayan.amro.flow.helpers.clickWhenStill
 import com.shayan.amro.wire.LocalTmdb
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule

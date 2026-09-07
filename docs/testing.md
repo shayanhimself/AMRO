@@ -5,9 +5,9 @@
 A test is worth having only if it can fail for the right reason. Every check goes to the cheapest
 layer that can still fail for that reason, and to exactly one layer.
 
-Cheapness is not only wall-clock time. A JVM test that fails names one class; a journey that fails
-names the whole app and needs a human to read the screenshot. Pushing a check down makes the failure
-more legible as well as faster.
+Cheapness is not only wall-clock time. A JVM test that fails names one class; an end-to-end test
+that fails names the whole app and the server behind it. Pushing a check down makes the failure more
+legible as well as faster.
 
 ## Doubles
 
@@ -78,10 +78,10 @@ JVM speed.
 
 ### 4. Flow
 
-**Where:** `app/src/androidTest`. On a device.
+**Where:** `app/src/androidTest`, in `com.shayan.amro.flow`. On a device.
 
-**Tools:** Hilt instrumented testing, Compose testing, and MockWebServer answering as the provider. Run by
-`scripts/instrumented.sh`.
+**Tools:** Hilt instrumented testing, Compose testing, and MockWebServer answering as the
+provider. Run by `scripts/flowTests.sh`.
 
 **What goes here:** multi-screen flows, integrating every real layer of the app with only the
 provider replaced. Navigation and the arguments that travel with it, state surviving a configuration
@@ -91,8 +91,9 @@ database when the next refresh fails.
 The real Hilt graph resolving and Room running on the device's own SQLite are covered here rather
 than in a layer of their own, because every flow test starts both.
 
-**How the server is replaced:** the API base URL and the image base URL are both client configuration
-values, so a test binding points them at a local MockWebServer that serves recorded responses.
+**How the server is replaced:** A flow test uninstalls the Hilt module binding the API address and
+binds a local server in its place. The API base URL is client configuration value, so a test binding
+points it at a local MockWebServer that serves recorded responses.
 
 **Reading a failure:** a flow test failing should mean two layers are wired together wrong. If the
 cause turns out to sit inside one layer, that is also a gap in the cheaper test that should have
@@ -100,22 +101,27 @@ caught it, and both get fixed.
 
 ### 5. E2E
 
-**Where:** `journeys/*.xml`.
+**Where:** `app/src/androidTest`, in `com.shayan.amro.e2e`, marked `@E2eTest`. On a device.
 
-**Tools:** journey files evaluated against an emulator running the installable build, against the
-real API with a real token. Run by `scripts/journeys.py`.
+**Tools:** Hilt instrumented testing and Compose testing over the app's own graph, against the live
+API with a real token. Run by `scripts/e2e.sh`, which selects on the annotation.
+`scripts/flowTests.sh` excludes it, which is what keeps the two device layers apart.
+
+**What makes it end to end:** The app resolves APIs real endpoints with the credential the build
+carries, responses that come back to the device's SQLite, and pulls its posters from the image host.
 
 **What goes here:** only what needs both halves of the real thing at once, the build a user installs
-and the server they reach. One journey per acceptance criterion.
+and the server they reach. Every layer below substitutes one or the other, so a check a local server
+could fail belongs at layer 4, and a check a fake could fail belongs lower still. The wire contract
+alone does not qualify: the client against the live API is a JVM test.
 
-Every layer below substitutes one or the other, so a check a mocked server could fail belongs at
-layer 4, and a check a fake could fail belongs lower still. The wire contract alone does not qualify:
-the client against the live API is a JVM test.
+**Every test starts as a fresh install.** A rule empties the app's databases before each one. A
+cached list would otherwise let the test skip the network path.
 
 **Why here:** this layer replaces nothing. Everywhere else the app draws its data from responses we
 recorded. Running the real build against the real server is what makes this the most expensive and
-least repeatable layer, so it stays small and a failure is read as signal rather than re-run. It also
-needs a token and a network, so it never gates `check`.
+least repeatable layer, so it stays small and a failure is read as signal rather than re-run. It
+also needs a token and a network, so it never gates `check`.
 
 ## Where a test goes
 
@@ -124,16 +130,17 @@ needs a token and a network, so it never gates `check`.
 | Unit | JVM | `scripts/unittest.sh`           |
 | Screen | JVM | `scripts/unittest.sh`           |
 | Screenshot | JVM | `scripts/screenshotTest.sh` or `scripts/unittest.sh` |
-| Flow | device | `scripts/instrumented.sh`       |
-| E2E | device, real API | `scripts/journeys.py`           |
+| Flow | device | `scripts/flowTests.sh`          |
+| E2E | device, real API | `scripts/e2e.sh`                |
 
-Whether a test runs on the JVM or on a device is decided by its source set, never by an annotation.
+Whether a test runs on the JVM or on a device is decided by its source set.
 `@RunWith(AndroidJUnit4::class)` appears on both a Robolectric test and a device test, and only
-`test` versus `androidTest` separates them.
+`test` versus `androidTest` separates them. `@E2eTest` divides the two device layers within
+`androidTest`, and says nothing about where a test runs.
 
 ## What is deliberately not tested
 
-**The same assertion at two layers.** A scenario covered by a flow test is not also a journey.
+**The same assertion at two layers.** A scenario covered by a flow test is not also an E2E.
 Duplication does not add confidence, it adds a second place to diagnose the same failure and a second
 thing to update.
 
@@ -162,7 +169,7 @@ worse than not having it.
 
 Cut in this order:
 
-1. E2E, to a smoke set run before a milestone rather than per change.
+1. E2E, to a run before a milestone rather than on demand while working.
 2. Flow, to merge into `main` rather than every push.
 3. Nothing else. Unit, screenshot and screen tests stay on every change; they are the cheap layers,
    and cutting them is how the fast signal disappears.

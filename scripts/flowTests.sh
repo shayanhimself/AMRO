@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
-# Run the tests that need a real device: the flow tests in :app. Kept out of scripts/unittest.sh
-# because a device is not always attached.
+# Run the flow tests: the device tests in :app that answer from a local server.
 #
-#   scripts/instrumented.sh                     every device test
-#   scripts/instrumented.sh 'trending screen'   the tests whose name matches
-#   scripts/instrumented.sh A11yFlowTest        likewise, by class
+#   scripts/flowTests.sh                     every flow test
+#   scripts/flowTests.sh 'trending screen'   the tests whose name matches
+#   scripts/flowTests.sh A11yFlowTest        likewise, by class
 #
 # A filter is a regex matched against `package.Class#method`, and the run narrows to the modules
 # whose sources it appears in: a filter matching nothing fails the task it matched nothing in.
@@ -22,7 +21,18 @@ fi
 APP_TASK=:app:connectedDebugAndroidTest
 APP_TESTS=app/src/androidTest
 
-gradle_args=("$APP_TASK")
+# Skip E2E tests, they have their own script.
+E2E_ANNOTATION=com.shayan.amro.e2e.helpers.E2eTest
+SKIP_E2E="-Pandroid.testInstrumentationRunnerArguments.notAnnotation=${E2E_ANNOTATION}"
+ANNOTATION_SOURCE="${APP_TESTS}/kotlin/${E2E_ANNOTATION//.//}.kt"
+
+# If the class cannot be loaded, the script fails.
+if [[ ! -f $ANNOTATION_SOURCE ]]; then
+  echo "No source at ${ANNOTATION_SOURCE}: ${E2E_ANNOTATION} has moved." >&2
+  exit 1
+fi
+
+gradle_args=("$APP_TASK" "$SKIP_E2E")
 if [[ -n $filter ]]; then
   # The class or method the filter names, without the package and the `#method` suffix: those are
   # how the runner spells a test, not how the source that declares it reads.
@@ -39,6 +49,7 @@ if [[ -n $filter ]]; then
   echo "Filtering on '${filter}': running ${APP_TASK}."
   gradle_args=(
     "$APP_TASK"
+    "$SKIP_E2E"
     "-Pandroid.testInstrumentationRunnerArguments.tests_regex=$filter"
   )
 fi
