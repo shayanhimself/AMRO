@@ -28,7 +28,8 @@ rows = []
 for report in sorted(pathlib.Path().glob(f"**/{REPORT}")):
     module = ":" + str(report.parent.parent.parent.parent).replace("/", ":")
     for counter in ET.parse(report).getroot().findall("counter"):
-        if counter.get("type") == "LINE":
+        # A module every filter excludes reports no lines at all, and has no percentage to show.
+        if counter.get("type") == "LINE" and int(counter.get("covered")) + int(counter.get("missed")) > 0:
             rows.append((module, int(counter.get("covered")), int(counter.get("missed"))))
 
 if not rows:

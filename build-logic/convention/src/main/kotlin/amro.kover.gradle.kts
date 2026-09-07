@@ -19,6 +19,21 @@ kover {
                     "*.BuildConfig",
                     "*_Impl",
                 )
+                // Android entry points. The framework constructs these, so a JVM test never
+                // enters them; the instrumented suite is what drives them.
+                classes(
+                    "com.shayan.amro.MainActivity",
+                    "com.shayan.amro.AmroApplication",
+                )
+                // Hilt modules
+                annotatedBy("dagger.Module")
+                // Model declarations, whose whole bytecode is the equals, hashCode, copy and
+                // toString the compiler writes. A model that grows a body belongs elsewhere.
+                packages("com.shayan.amro.core.model")
+                // Preview fixtures and galleries. The previews that read them are excluded, so
+                // counting the data they hand over measures nothing a test could reach.
+                classes("*PreviewData*")
+                packages("com.shayan.amro.core.ui.designsystem.preview")
                 annotatedBy("androidx.compose.ui.tooling.preview.Preview")
             }
         }
