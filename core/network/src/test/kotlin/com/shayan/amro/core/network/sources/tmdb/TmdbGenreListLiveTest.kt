@@ -1,21 +1,19 @@
 package com.shayan.amro.core.network.sources.tmdb
 
 import com.shayan.amro.core.network.BuildConfig
+import com.shayan.amro.core.network.NetworkResult
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbGenreListDto
 import com.shayan.amro.core.network.sources.tmdb.mapper.tmdbGenre
 import com.shayan.amro.core.network.sources.tmdb.mapper.tmdbGenreIds
-import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.request.get
 import kotlinx.coroutines.runBlocking
 import org.junit.Assume.assumeTrue
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertIs
 
 /** TMDB's real address, which is the whole point of this test. */
 private const val TMDB_BASE_URL = "https://api.themoviedb.org/3/"
-
-private const val GENRE_LIST_PATH = "genre/movie/list"
 
 private const val SKIPPED = "no TMDB token in local.properties or the environment"
 
@@ -24,9 +22,6 @@ private const val SKIPPED = "no TMDB token in local.properties or the environmen
  *
  * It fails when TMDB has added a genre the table has no entry for, or retired one the table still
  * carries. Every other test reads a recording, which can notice neither.
- *
- * It needs a token and a network, so `check` leaves it out. `scripts/livecheck.sh` runs it, and
- * it skips there too when no token was supplied.
  */
 class TmdbGenreListLiveTest {
     @Test
@@ -49,18 +44,18 @@ class TmdbGenreListLiveTest {
     }
 
     /**
-     * Reads TMDB's genre list through the production client.
+     * Reads TMDB's genre list through the production client and endpoints.
      *
-     * Going through the real client rather than a bare request means a change to the base address,
-     * the credential header or the JSON configuration fails here too.
+     * They are built here rather than injected, because the config is bound in the app module,
+     * which this one does not see, and this test runs on the JVM with no Hilt component to read a
+     * binding from.
      */
     private fun publishedGenres(token: String) =
         runBlocking {
-            tmdbHttpClient(
-                config = TmdbConfig(baseUrl = TMDB_BASE_URL, readAccessToken = token),
-                engine = OkHttp.create(),
-            ).use { client ->
-                client.get(GENRE_LIST_PATH).body<TmdbGenreListDto>().genres
+            val config = TmdbConfig(baseUrl = TMDB_BASE_URL, readAccessToken = token)
+            tmdbHttpClient(config = config, engine = OkHttp.create()).use { client ->
+                val result = TmdbApi(client, config).genreList()
+                assertIs<NetworkResult.Success<TmdbGenreListDto>>(result).value.genres
             }
         }
 }

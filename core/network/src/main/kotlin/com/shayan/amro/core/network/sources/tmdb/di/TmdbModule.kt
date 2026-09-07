@@ -34,6 +34,9 @@ internal abstract class TmdbModule {
         @Provides
         @Singleton
         fun provideHttpClient(config: TmdbConfig): HttpClient =
-            tmdbHttpClient(config, OkHttp.create())
+            tmdbHttpClient(
+                config = config,
+                engine = OkHttp.create(),
+            )
     }
 }

@@ -9,8 +9,6 @@ import com.shayan.amro.core.testing.fixture.tmdb.TmdbRecording
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.request.HttpRequestData
 import io.ktor.client.request.HttpResponseData
 import io.ktor.http.HttpHeaders
@@ -29,7 +27,6 @@ import kotlin.test.assertTrue
 
 private const val BASE_URL = "https://movies.example/3/"
 
-/** Shaped like the credential it stands in for, so a leak into a URL or a log line is visible. */
 private const val TOKEN = "test-read-access-token"
 
 private const val TRENDING_PATH_SEGMENT = "trending/movie/week"
@@ -56,7 +53,6 @@ private const val KNOWN_MOVIE_ID = "687163"
 
 class TmdbRemoteDataSourceTest {
     private val requests = mutableListOf<HttpRequestData>()
-    private val logLines = mutableListOf<String>()
 
     @Test
     fun `a walk stops once it holds the movies that were asked for`() =
@@ -252,18 +248,6 @@ class TmdbRemoteDataSourceTest {
             assertFalse(request.url.toString().contains(TOKEN), "the credential is in the URL")
         }
 
-    @Test
-    fun `the credential is redacted in what the client logs`() =
-        runTest {
-            dataSource(
-                logLevel = LogLevel.ALL,
-            ) { respondJson(TmdbFixture.Trending.PAGE_1) }.getTrendingMovies(TMDB_PAGE_SIZE)
-
-            val logged = logLines.joinToString("\n")
-            assertTrue(logged.contains(HttpHeaders.Authorization), "no header was logged to redact")
-            assertFalse(logged.contains(TOKEN), "the credential reached the log")
-        }
-
     /** A source answering each successive request with the next recorded page, then with none. */
     private fun pagingSource() = sequenceSource(TmdbFixture.Trending.entries)
 
@@ -301,12 +285,8 @@ class TmdbRemoteDataSourceTest {
 
     /**
      * A source whose every request is answered by [handler].
-     *
-     * @param logLevel raised only by the test that reads what was logged, because the production
-     * level writes no header at all.
      */
     private fun dataSource(
-        logLevel: LogLevel = LogLevel.NONE,
         handler: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData,
     ): TmdbRemoteDataSource {
         val engine =
@@ -314,19 +294,13 @@ class TmdbRemoteDataSourceTest {
                 requests += request
                 handler(request)
             }
+        val config = TmdbConfig(baseUrl = BASE_URL, readAccessToken = TOKEN)
         val client =
             tmdbHttpClient(
-                config = TmdbConfig(baseUrl = BASE_URL, readAccessToken = TOKEN),
+                config = config,
                 engine = engine,
-                logger =
-                    object : Logger {
-                        override fun log(message: String) {
-                            logLines += message
-                        }
-                    },
-                logLevel = logLevel,
             )
-        return TmdbRemoteDataSource(client)
+        return TmdbRemoteDataSource(TmdbApi(client, config))
     }
 
     /**
