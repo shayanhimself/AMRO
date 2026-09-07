@@ -6,7 +6,12 @@ import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
 import androidx.compose.material3.adaptive.navigation3.ListDetailSceneStrategy
 import androidx.compose.material3.adaptive.navigation3.rememberListDetailSceneStrategy
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -41,6 +46,16 @@ internal fun AmroNavDisplay(
         }
     val twoPane = directive.maxHorizontalPartitions > 1
     val listDetailStrategy = rememberListDetailSceneStrategy<NavKey>(directive = directive)
+    val openMovieId = (backStack.lastOrNull() as? MovieDetailKey)?.movieId
+    var isDetailSelectedByDefault by rememberSaveable { mutableStateOf(false) }
+
+    // Undo the auto-selection when the two-pane layout goes away.
+    LaunchedEffect(twoPane) {
+        if (!twoPane && isDetailSelectedByDefault) {
+            isDetailSelectedByDefault = false
+            navigator.back()
+        }
+    }
 
     NavDisplay(
         backStack = backStack,
@@ -57,7 +72,22 @@ internal fun AmroNavDisplay(
         entryProvider =
             entryProvider {
                 entry<TrendingKey>(metadata = ListDetailSceneStrategy.listPane()) {
-                    TrendingRoute(onMovieClick = navigator::openMovie)
+                    TrendingRoute(
+                        selectedMovieId = if (twoPane) openMovieId else null,
+                        onMovieClick = { movieId ->
+                            isDetailSelectedByDefault = false
+                            navigator.openMovie(movieId)
+                        },
+                        onSelectFirstMovie =
+                            if (twoPane) {
+                                { movieId ->
+                                    isDetailSelectedByDefault = true
+                                    navigator.openMovie(movieId)
+                                }
+                            } else {
+                                null
+                            },
+                    )
                 }
                 entry<MovieDetailKey>(metadata = ListDetailSceneStrategy.detailPane()) { key ->
                     MovieDetailRoute(

@@ -3,6 +3,8 @@ package com.shayan.amro.feature.trending.ui
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
@@ -47,6 +49,22 @@ class TrendingScreenTest {
         composeRule.onNodeWithText(TOP_TITLE).performClick()
 
         assertEquals(CACHE.first { it.title == TOP_TITLE }.id, selected)
+    }
+
+    @Test
+    fun `the row the pane beside the list is showing is the selected one`() {
+        val rows = loaded().rows
+        setContent(loaded(), selectedMovieId = rows.first().movieId)
+
+        composeRule.onNodeWithText(rows.first().title).assertIsSelected()
+        composeRule.onNodeWithText(rows[1].title).assertIsNotSelected()
+    }
+
+    @Test
+    fun `a list that is the only pane has no selected row`() {
+        setContent(loaded())
+
+        composeRule.onNodeWithText(TOP_TITLE).assertIsNotSelected()
     }
 
     @Test
@@ -186,13 +204,15 @@ class TrendingScreenTest {
     /** Renders the stateless screen over one state. */
     private fun setContent(
         uiState: TrendingUiState,
+        selectedMovieId: String? = null,
         onMovieClick: (movieId: String) -> Unit = {},
         onRefresh: () -> Unit = {},
-    ) = setContent(mutableStateOf(uiState), onMovieClick, onRefresh)
+    ) = setContent(mutableStateOf(uiState), selectedMovieId, onMovieClick, onRefresh)
 
     /** Renders the stateless screen over a state the test replaces while it is showing. */
     private fun setContent(
         uiState: State<TrendingUiState>,
+        selectedMovieId: String? = null,
         onMovieClick: (movieId: String) -> Unit = {},
         onRefresh: () -> Unit = {},
     ) {
@@ -200,6 +220,7 @@ class TrendingScreenTest {
             AmroTheme {
                 TrendingScreen(
                     uiState = uiState.value,
+                    selectedMovieId = selectedMovieId,
                     onMovieClick = onMovieClick,
                     onRefresh = onRefresh,
                     onToggleGenre = {},

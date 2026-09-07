@@ -27,6 +27,18 @@ private fun TrendingLoadedPreview() {
 @PreviewTest
 @ThemePreviews
 @Composable
+private fun TrendingSelectedPreview() {
+    AmroTheme {
+        TrendingScreenPreviewHost(
+            state = TrendingPreviewData.LOADED,
+            selectedMovieId = TrendingPreviewData.ROWS.first().movieId,
+        )
+    }
+}
+
+@PreviewTest
+@ThemePreviews
+@Composable
 private fun TrendingNarrowedPreview() {
     AmroTheme { TrendingScreenPreviewHost(state = TrendingPreviewData.NARROWED) }
 }

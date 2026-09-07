@@ -62,7 +62,8 @@ internal fun MovieRowSkeleton(
         modifier =
             modifier
                 .fillMaxWidth()
-                .alpha(rowPulseAlpha(index)),
+                .alpha(rowPulseAlpha(index))
+                .padding(MOVIE_ROW_PADDING),
         horizontalArrangement = Arrangement.spacedBy(Spacing.s4),
         verticalAlignment = Alignment.CenterVertically,
     ) {

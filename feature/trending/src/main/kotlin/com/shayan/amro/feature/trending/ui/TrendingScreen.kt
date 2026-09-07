@@ -1,7 +1,7 @@
 package com.shayan.amro.feature.trending.ui
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -33,7 +33,6 @@ import com.shayan.amro.feature.trending.component.MovieRow
 import com.shayan.amro.feature.trending.component.TrendingAppBar
 import com.shayan.amro.feature.trending.component.TrendingNoticeBar
 import com.shayan.amro.feature.trending.component.TrendingSkeleton
-import com.shayan.amro.feature.trending.component.trendingListPadding
 import com.shayan.amro.feature.trending.viewmodel.SelectionUiState
 import com.shayan.amro.feature.trending.viewmodel.SortDirection
 import com.shayan.amro.feature.trending.viewmodel.SortKey
@@ -41,10 +40,18 @@ import com.shayan.amro.feature.trending.viewmodel.TrendingContent
 import com.shayan.amro.feature.trending.viewmodel.TrendingUiState
 import com.shayan.amro.core.ui.R as CoreUiR
 
+private val trendingListPadding =
+    PaddingValues(
+        start = Spacing.s2,
+        end = Spacing.s2,
+        bottom = Spacing.s2,
+    )
+
 /**
  * Shows the list of trending movies, and lets the user filter and sort them. Stateless.
  *
  * @param uiState what to render.
+ * @param selectedMovieId the selected movie when adaptive layout has 2 panes.
  * @param onMovieClick opens one movie, by the provider that issued it and its id there.
  * @param onRefresh fetches the trending set again.
  * @param onToggleGenre selects or deselects one genre.
@@ -57,6 +64,7 @@ import com.shayan.amro.core.ui.R as CoreUiR
 @Composable
 internal fun TrendingScreen(
     uiState: TrendingUiState,
+    selectedMovieId: String?,
     onMovieClick: (movieId: String) -> Unit,
     onRefresh: () -> Unit,
     onToggleGenre: (String) -> Unit,
@@ -86,7 +94,7 @@ internal fun TrendingScreen(
             }
             when (val content = uiState.content) {
                 TrendingContent.Skeleton -> {
-                    TrendingSkeleton()
+                    TrendingSkeleton(modifier = Modifier.padding(trendingListPadding))
                 }
 
                 is TrendingContent.Movies -> {
@@ -101,11 +109,11 @@ internal fun TrendingScreen(
                             state = listState,
                             modifier = Modifier.fillMaxSize(),
                             contentPadding = trendingListPadding,
-                            verticalArrangement = Arrangement.spacedBy(Spacing.s4),
                         ) {
                             items(content.rows, key = { it.movieId }) { row ->
                                 MovieRow(
                                     row = row,
+                                    isSelected = row.movieId == selectedMovieId,
                                     onClick = { onMovieClick(row.movieId) },
                                 )
                             }
@@ -177,6 +185,17 @@ private fun ScrollToTopOnSelectionChange(
 private fun TrendingScreenPreview() {
     AmroTheme {
         TrendingScreenPreviewHost(state = TrendingPreviewData.LOADED)
+    }
+}
+
+@Preview
+@Composable
+private fun TrendingScreenSelectedPreview() {
+    AmroTheme {
+        TrendingScreenPreviewHost(
+            state = TrendingPreviewData.LOADED,
+            selectedMovieId = TrendingPreviewData.ROWS.first().movieId,
+        )
     }
 }
 

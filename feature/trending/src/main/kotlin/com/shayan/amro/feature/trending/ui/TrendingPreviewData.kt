@@ -137,14 +137,19 @@ private fun previewMovie(
  * nothing on screen waits on a network.
  *
  * @param state what the screen renders.
+ * @param selectedMovieId the selected movie when adaptive layout has 2 panes.
  */
 @OptIn(ExperimentalCoilApi::class)
 @Composable
-internal fun TrendingScreenPreviewHost(state: TrendingUiState) {
+internal fun TrendingScreenPreviewHost(
+    state: TrendingUiState,
+    selectedMovieId: String? = null,
+) {
     val previewHandler = AsyncImagePreviewHandler { ColorImage(PREVIEW_POSTER_COLOR.toArgb()) }
     CompositionLocalProvider(LocalAsyncImagePreviewHandler provides previewHandler) {
         TrendingScreen(
             uiState = state,
+            selectedMovieId = selectedMovieId,
             onMovieClick = {},
             onRefresh = {},
             onToggleGenre = {},
