@@ -1,5 +1,5 @@
 <resources>
-    <string name="feature_trending_title">Trending</string>
+    <string name="feature_trending_title">Trending this week</string>
 
     <string name="feature_trending_filter_action">Filter and sort</string>
     <plurals name="feature_trending_filter_action_active">
