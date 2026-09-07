@@ -1,7 +1,7 @@
 package com.shayan.amro.core.database
 
 import app.cash.turbine.test
-import com.shayan.amro.core.database.testDatabase
+import com.shayan.amro.core.model.Rating
 import com.shayan.amro.core.testing.fixture.model.MovieFixture.detail
 import com.shayan.amro.core.testing.fixture.model.MovieFixture.movie
 import kotlinx.coroutines.flow.first
@@ -116,6 +116,33 @@ class RoomMovieLocalDataSourceTest {
 
             assertEquals(refetched, source.getMovieDetailFlow(FIRST_MOVIE.id).first())
         }
+
+    @Test
+    fun `a movie the source knows nothing optional about reads back knowing nothing`() =
+        runLocalDataSourceTest { source ->
+            source.replaceTrending(listOf(BARE_MOVIE))
+
+            assertEquals(BARE_MOVIE, source.getMovieFlow(BARE_MOVIE.id).first())
+        }
+
+    @Test
+    fun `a detail the source knows nothing optional about reads back knowing nothing`() =
+        runLocalDataSourceTest { source ->
+            source.writeMovieDetail(BARE_DETAIL)
+
+            assertEquals(BARE_DETAIL, source.getMovieDetailFlow(BARE_MOVIE.id).first())
+        }
+
+    @Test
+    fun `a rating nobody has voted on reads back with a score and no count`() =
+        runLocalDataSourceTest { source ->
+            source.writeMovieDetail(DETAIL_WITH_UNCOUNTED_RATING)
+
+            assertEquals(
+                DETAIL_WITH_UNCOUNTED_RATING,
+                source.getMovieDetailFlow(FIRST_MOVIE.id).first(),
+            )
+        }
 }
 
 /**
@@ -147,3 +174,39 @@ private val THIRD_MOVIE =
     )
 
 private val FIRST_DETAIL = detail(movie = FIRST_MOVIE)
+
+/**
+ * A movie every optional column of which is empty, so writing it binds a null to each and reading
+ * it back tells a column the source never filled from one holding a zero.
+ */
+private val BARE_MOVIE =
+    movie(
+        id = "634492",
+        title = "Madame Web",
+        releaseDate = null,
+        poster = null,
+    )
+
+/** The record behind [BARE_MOVIE], as empty as the row it is stored in allows. */
+private val BARE_DETAIL =
+    detail(
+        movie = BARE_MOVIE,
+        overview = null,
+        tagline = null,
+        backdrop = null,
+        runtime = null,
+        budget = null,
+        revenue = null,
+        rating = null,
+        imdbId = null,
+    )
+
+/** A score standing on its own, which is the one rating that stores a null beside a value. */
+private val DETAIL_WITH_UNCOUNTED_RATING =
+    detail(
+        movie = FIRST_MOVIE,
+        rating = Rating(
+            average = 6.1,
+            count = null,
+        ),
+    )
