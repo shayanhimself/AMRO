@@ -10,6 +10,7 @@ import com.shayan.amro.core.ui.text.AmroText
 import com.shayan.amro.feature.trending.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.toImmutableSet
 
 /** What sits between two genre names on a row. */
 private const val GENRE_SEPARATOR = " · "
@@ -53,6 +54,11 @@ internal fun List<Movie>.toTrendingUiState(
         activeSelectionCount = selectedGenres.size + if (sort == MovieSort.DEFAULT) 0 else 1,
         notice = refresh.error?.takeIf { isNotEmpty() }?.toNotice(),
         isRefreshing = refresh.isRefreshing,
+        selection =
+            SelectionUiState(
+                genreNames = selectedGenreNames.toImmutableSet(),
+                sort = sort,
+            ),
     )
 }
 

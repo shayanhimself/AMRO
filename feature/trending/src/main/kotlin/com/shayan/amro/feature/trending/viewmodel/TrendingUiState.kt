@@ -3,7 +3,9 @@ package com.shayan.amro.feature.trending.viewmodel
 import androidx.compose.runtime.Immutable
 import com.shayan.amro.core.ui.text.AmroText
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 
 /**
  * Everything the trending screen needs to render.
@@ -14,6 +16,7 @@ import kotlinx.collections.immutable.persistentListOf
  * @property notice a failed refresh, while there are still rows to keep. Null when nothing failed
  * or when the failure took the whole body instead.
  * @property isRefreshing whether a refresh is running.
+ * @property selection holds the sort and filter the user has chosen.
  */
 @Immutable
 internal data class TrendingUiState(
@@ -22,6 +25,22 @@ internal data class TrendingUiState(
     val activeSelectionCount: Int = 0,
     val notice: NoticeUiState? = null,
     val isRefreshing: Boolean = false,
+    val selection: SelectionUiState = SelectionUiState(),
+)
+
+/**
+ * The sort and filter the user has chosen.
+ *
+ * Nothing reads the fields. The screen uses this for pure comparison, to know when the selection
+ * has changed.
+ *
+ * @property genreNames the selected genres, as the enum's own names.
+ * @property sort the order the rows are in.
+ */
+@Immutable
+internal data class SelectionUiState(
+    val genreNames: ImmutableSet<String> = persistentSetOf(),
+    val sort: MovieSort = MovieSort.DEFAULT,
 )
 
 /** The one region of the screen that is exactly one thing at a time. */

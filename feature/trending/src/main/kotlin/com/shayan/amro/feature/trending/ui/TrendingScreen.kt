@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -12,8 +13,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -31,6 +34,7 @@ import com.shayan.amro.feature.trending.component.TrendingAppBar
 import com.shayan.amro.feature.trending.component.TrendingNoticeBar
 import com.shayan.amro.feature.trending.component.TrendingSkeleton
 import com.shayan.amro.feature.trending.component.trendingListPadding
+import com.shayan.amro.feature.trending.viewmodel.SelectionUiState
 import com.shayan.amro.feature.trending.viewmodel.SortDirection
 import com.shayan.amro.feature.trending.viewmodel.SortKey
 import com.shayan.amro.feature.trending.viewmodel.TrendingContent
@@ -64,6 +68,8 @@ internal fun TrendingScreen(
 ) {
     var isSheetOpen by rememberSaveable { mutableStateOf(false) }
     val listState = rememberLazyListState()
+
+    ScrollToTopOnSelectionChange(selection = uiState.selection, listState = listState)
 
     Scaffold(
         modifier = modifier,
@@ -141,6 +147,28 @@ internal fun TrendingScreen(
             onReset = onReset,
             onDismiss = { isSheetOpen = false },
         )
+    }
+}
+
+/**
+ * Returns [listState] to the first row whenever sort or filters change.
+ *
+ * @param selection what the list is narrowed and ordered by.
+ * @param listState the list to return to the top.
+ */
+@Composable
+private fun ScrollToTopOnSelectionChange(
+    selection: SelectionUiState,
+    listState: LazyListState,
+) {
+    // The first run is the screen opening, so it is skipped.
+    var isFirstSelection by remember { mutableStateOf(true) }
+    LaunchedEffect(selection) {
+        if (isFirstSelection) {
+            isFirstSelection = false
+        } else {
+            listState.scrollToItem(0)
+        }
     }
 }
 

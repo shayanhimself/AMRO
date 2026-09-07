@@ -1,9 +1,15 @@
 package com.shayan.amro.feature.trending.ui
 
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.hasScrollAction
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollToNode
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.shayan.amro.core.model.DataError
 import com.shayan.amro.core.model.Genre
@@ -131,16 +137,69 @@ class TrendingScreenTest {
             .assertTouchTargetMeetsMinimum(composeRule.density)
     }
 
+    @Test
+    fun `a changed filter returns the list to the top`() {
+        val uiState = mutableStateOf(loaded(cache = LONG_CACHE))
+        setContent(uiState)
+        scrollToBottom()
+
+        composeRule.runOnIdle {
+            uiState.value = loaded(cache = LONG_CACHE, genreNames = listOf(SHARED_GENRE.name))
+        }
+
+        composeRule.onNodeWithText(TOP_OF_LONG_CACHE).assertIsDisplayed()
+    }
+
+    @Test
+    fun `a changed sort returns the list to the top`() {
+        val uiState = mutableStateOf(loaded(cache = LONG_CACHE))
+        setContent(uiState)
+        scrollToBottom()
+
+        composeRule.runOnIdle {
+            uiState.value =
+                loaded(
+                    cache = LONG_CACHE,
+                    sort = MovieSort(SortKey.RELEASE_DATE, SortDirection.DESCENDING),
+                )
+        }
+
+        composeRule.onNodeWithText(TOP_OF_LONG_CACHE).assertIsDisplayed()
+    }
+
+    @Test
+    fun `rows appended under the same selection leave the list where it is`() {
+        val uiState = mutableStateOf(loaded(cache = LONG_CACHE))
+        setContent(uiState)
+        scrollToBottom()
+
+        composeRule.runOnIdle { uiState.value = loaded(cache = LONG_CACHE + NEXT_PAGE) }
+
+        composeRule.onNodeWithText(BOTTOM_OF_LONG_CACHE).assertIsDisplayed()
+    }
+
+    /** Scrolls the list until its last row is on screen. */
+    private fun scrollToBottom() {
+        composeRule.onNode(hasScrollAction()).performScrollToNode(hasText(BOTTOM_OF_LONG_CACHE))
+    }
+
     /** Renders the stateless screen over one state. */
     private fun setContent(
         uiState: TrendingUiState,
+        onMovieClick: (movieId: String) -> Unit = {},
+        onRefresh: () -> Unit = {},
+    ) = setContent(mutableStateOf(uiState), onMovieClick, onRefresh)
+
+    /** Renders the stateless screen over a state the test replaces while it is showing. */
+    private fun setContent(
+        uiState: State<TrendingUiState>,
         onMovieClick: (movieId: String) -> Unit = {},
         onRefresh: () -> Unit = {},
     ) {
         composeRule.setContent {
             AmroTheme {
                 TrendingScreen(
-                    uiState = uiState,
+                    uiState = uiState.value,
                     onMovieClick = onMovieClick,
                     onRefresh = onRefresh,
                     onToggleGenre = {},
@@ -167,10 +226,47 @@ private val TOP_TITLE = loaded().rows.first().title
  * The state a loaded screen renders, read out of the whole fixture the way the app reads it.
  */
 private fun loaded(
+    cache: List<Movie> = CACHE,
     genreNames: List<String> = emptyList(),
     sort: MovieSort = MovieSort.DEFAULT,
     refresh: RefreshState = RefreshState(),
-) = CACHE.toTrendingUiState(selectedGenreNames = genreNames, sort = sort, refresh = refresh)
+) = cache.toTrendingUiState(selectedGenreNames = genreNames, sort = sort, refresh = refresh)
+
+/** How many rows it takes for a list not to fit on one screen. */
+private const val PAGE_SIZE = 30
+
+/** The popularity the first movie of the first page carries, each one after it carrying less. */
+private const val TOP_POPULARITY = 1000.0
+
+/** The genre every movie a page holds carries, so narrowing by it keeps the whole page. */
+private val SHARED_GENRE = Genre.HORROR
+
+/**
+ * A page of movies, each less popular than the one before, starting at [from]. Ids and titles are
+ * padded, so every ordering the sheet offers reads them in the order the page is built in.
+ */
+private fun page(from: Int) =
+    List(PAGE_SIZE) { index ->
+        val position = "%02d".format(from + index)
+        MovieFixture.movie(
+            id = position,
+            title = "Movie $position",
+            genres = listOf(SHARED_GENRE),
+            popularity = TOP_POPULARITY - (from + index),
+        )
+    }
+
+/** A cache too long to fit on one screen, already in the order the default sort puts it in. */
+private val LONG_CACHE = page(from = 0)
+
+/** What a second page appends, which the default sort puts after every row of [LONG_CACHE]. */
+private val NEXT_PAGE = page(from = PAGE_SIZE)
+
+/** The title of the row every ordering of [LONG_CACHE] leads with. */
+private val TOP_OF_LONG_CACHE = LONG_CACHE.first().title
+
+/** The title of the row [LONG_CACHE] ends on, which a test scrolls to. */
+private val BOTTOM_OF_LONG_CACHE = LONG_CACHE.last().title
 
 /** The state a screen with nothing cached and a failed refresh renders. */
 private fun failed(cause: DataError) =
