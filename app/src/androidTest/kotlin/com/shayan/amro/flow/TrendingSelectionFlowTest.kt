@@ -130,7 +130,7 @@ private fun filterAction(count: Int = 0): String =
         quantityString(R.plurals.feature_trending_filter_action_active, count, count)
     }
 
-private fun genreLabel(): String = string(R.string.feature_trending_genre_comedy)
+private fun genreLabel(): String = string(CoreUiR.string.core_ui_genre_comedy)
 
 private fun sheetTitle(): String = string(R.string.feature_trending_sheet_title)
 

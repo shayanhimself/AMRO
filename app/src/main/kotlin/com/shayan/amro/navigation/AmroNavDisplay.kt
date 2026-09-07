@@ -15,7 +15,7 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
-import com.shayan.amro.feature.detail.MovieDetailRoute
+import com.shayan.amro.feature.detail.ui.MovieDetailRoute
 import com.shayan.amro.feature.trending.ui.TrendingRoute
 
 /**

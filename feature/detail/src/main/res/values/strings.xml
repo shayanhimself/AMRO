@@ -1,0 +1,34 @@
+<resources>
+    <string name="feature_detail_back">Back</string>
+
+    <string name="feature_detail_rating_description">Rated %1$s out of 10, %2$s</string>
+    <string name="feature_detail_rating_description_without_count">Rated %1$s out of 10</string>
+    <plurals name="feature_detail_vote_count">
+        <item quantity="one">from %1$s vote</item>
+        <item quantity="other">from %1$s votes</item>
+    </plurals>
+
+    <string name="feature_detail_fact_runtime">Runtime</string>
+    <string name="feature_detail_fact_release_date">Release date</string>
+    <string name="feature_detail_fact_budget">Budget</string>
+    <string name="feature_detail_fact_revenue">Revenue</string>
+    <string name="feature_detail_fact_status">Status</string>
+    <string name="feature_detail_not_disclosed">Not disclosed</string>
+
+    <string name="feature_detail_runtime_hours_minutes">%1$dh %2$dm</string>
+    <string name="feature_detail_runtime_minutes">%1$dm</string>
+
+    <string name="feature_detail_status_rumored">Rumored</string>
+    <string name="feature_detail_status_planned">Planned</string>
+    <string name="feature_detail_status_in_production">In production</string>
+    <string name="feature_detail_status_post_production">Post production</string>
+    <string name="feature_detail_status_released">Released</string>
+    <string name="feature_detail_status_canceled">Canceled</string>
+
+    <string name="feature_detail_imdb_action">View on IMDB</string>
+    <string name="feature_detail_imdb_action_description">View on IMDB, opens your browser</string>
+
+    <string name="feature_detail_error_no_connectivity">No connection</string>
+    <string name="feature_detail_error_server">Something went wrong</string>
+    <string name="feature_detail_error_empty_response">Nothing to show for this movie</string>
+</resources>

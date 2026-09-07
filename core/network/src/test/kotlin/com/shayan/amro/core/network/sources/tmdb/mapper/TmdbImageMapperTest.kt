@@ -12,7 +12,7 @@ private const val BACKDROP_PATH = "/8Tfys3mDZVp4tNoH2ktm06a0Tau.jpg"
 
 private const val IMAGE_HOST = "https://image.tmdb.org/t/p/"
 
-private const val SMALL_POSTER_URL = IMAGE_HOST + "w185" + POSTER_PATH
+private const val SMALL_POSTER_URL = IMAGE_HOST + "w342" + POSTER_PATH
 private const val LARGE_POSTER_URL = IMAGE_HOST + "w500" + POSTER_PATH
 private const val SMALL_BACKDROP_URL = IMAGE_HOST + "w300" + BACKDROP_PATH
 private const val LARGE_BACKDROP_URL = IMAGE_HOST + "w1280" + BACKDROP_PATH

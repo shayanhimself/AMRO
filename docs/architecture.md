@@ -37,6 +37,8 @@ graph TD
     detail --> ui
     detail --> data
 
+    ui --> model
+
     data --> network
     data --> database
     data --> model
@@ -54,18 +56,18 @@ graph TD
 | `:core:network` | `MovieRemoteDataSource`, the api-neutral contract the data layer depends on, and its TMDB implementation: Ktor client configuration, endpoints, wire DTOs and mappings.
 | `:core:database` | The Room database, entities, and DAOs. A movie arrives with its genres already resolved, so nothing here joins them                                                     |
 | `:core:data` | Repository interfaces and their implementations, and the fetch policy. Names no source                                                                                  |
-| `:core:ui` | Theme, design system tokens and components, and generic strings. Depends on nothing in the project                                                                      |
+| `:core:ui` | Theme, design system tokens and components, generic strings, reusable UI components and helpers                                                                          |
 | `:feature:trending` | The trending list, the filter sheet, their view model, and the filter and sort rules it applies over the fetched set                                                    |
 | `:feature:detail` | The movie detail screen and its view model                                                                                                                              |
 | `:app` | `MainActivity`, the navigator and the `NavDisplay` host, the application class, and the Hilt root                                                                       |
-| `:core:testing` | Fakes, fixtures, and test helpers other modules' tests reuse. Never a production dependency                                                              |
+| `:core:testing` | Fakes, fixtures, and test helpers other modules' tests reuse. Never a production dependency                                                                             |
 
 Dependency rules (hard):
 
 - A feature depends on `:core:data` and `:core:ui` only. Never feature to feature: navigation between
   them goes through the `:app` graph.
-- `:core:ui` depends on nothing in the project. Its components take primitives, so a feature unpacks
-  a model type at the call site.
+- `:core:ui` depends on `:core:model` and on nothing else in the project. Its components take
+  primitives, so a feature unpacks a model type at the call site.
 - `:core:model` depends on nothing and never imports `android.*`.
 - `:app` depends on everything. It is the only module that sees every feature.
 - Ktor types never leave `:core:network`, and Room types never leave `:core:database`. A repository

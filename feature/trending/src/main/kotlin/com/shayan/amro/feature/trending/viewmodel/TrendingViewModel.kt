@@ -64,10 +64,6 @@ internal class TrendingViewModel
 
         /**
          * Fetches the movies the first time the screen is shown, and not again.
-         *
-         * The screen asks for this every time it enters composition, which a configuration change
-         * and a return from the detail screen both are. Holding it to the first of them is what
-         * keeps a rotation from refetching a set the view model already holds.
          */
         fun onLaunch() {
             if (hasRefreshedOnLaunch) return

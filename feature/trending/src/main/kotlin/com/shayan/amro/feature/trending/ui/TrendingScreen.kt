@@ -19,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import com.shayan.amro.core.ui.component.MessagePanel
 import com.shayan.amro.core.ui.designsystem.component.ButtonVariant
 import com.shayan.amro.core.ui.designsystem.icon.Glyphs
 import com.shayan.amro.core.ui.designsystem.theme.AmroTheme
@@ -27,7 +28,6 @@ import com.shayan.amro.feature.trending.R
 import com.shayan.amro.feature.trending.component.FilterSheet
 import com.shayan.amro.feature.trending.component.MovieRow
 import com.shayan.amro.feature.trending.component.TrendingAppBar
-import com.shayan.amro.feature.trending.component.TrendingMessage
 import com.shayan.amro.feature.trending.component.TrendingNoticeBar
 import com.shayan.amro.feature.trending.component.TrendingSkeleton
 import com.shayan.amro.feature.trending.component.trendingListPadding
@@ -108,7 +108,7 @@ internal fun TrendingScreen(
                 }
 
                 TrendingContent.EmptyFromFilter -> {
-                    TrendingMessage(
+                    MessagePanel(
                         glyph = Glyphs.FILTER_ALT_OFF,
                         title = stringResource(R.string.feature_trending_empty_filter_title),
                         body = stringResource(R.string.feature_trending_empty_filter_body),
@@ -120,7 +120,7 @@ internal fun TrendingScreen(
                 }
 
                 is TrendingContent.Error -> {
-                    TrendingMessage(
+                    MessagePanel(
                         glyph = content.glyph,
                         title = stringResource(content.titleRes),
                         actionLabel = stringResource(CoreUiR.string.core_ui_retry),

@@ -5,6 +5,7 @@ import com.shayan.amro.core.model.DataError
 import com.shayan.amro.core.model.Genre
 import com.shayan.amro.core.model.Movie
 import com.shayan.amro.core.ui.designsystem.icon.Glyphs
+import com.shayan.amro.core.ui.label.labelRes
 import com.shayan.amro.feature.trending.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -145,32 +146,6 @@ private val DataError.noticeRes: Int
             DataError.NoConnectivity -> R.string.feature_trending_notice_no_connectivity
             DataError.Server -> R.string.feature_trending_notice_server
             DataError.EmptyResponse -> R.string.feature_trending_notice_empty_response
-        }
-
-/** What a genre is called. */
-@get:StringRes
-private val Genre.labelRes: Int
-    get() =
-        when (this) {
-            Genre.ACTION -> R.string.feature_trending_genre_action
-            Genre.ADVENTURE -> R.string.feature_trending_genre_adventure
-            Genre.ANIMATION -> R.string.feature_trending_genre_animation
-            Genre.COMEDY -> R.string.feature_trending_genre_comedy
-            Genre.CRIME -> R.string.feature_trending_genre_crime
-            Genre.DOCUMENTARY -> R.string.feature_trending_genre_documentary
-            Genre.DRAMA -> R.string.feature_trending_genre_drama
-            Genre.FAMILY -> R.string.feature_trending_genre_family
-            Genre.FANTASY -> R.string.feature_trending_genre_fantasy
-            Genre.HISTORY -> R.string.feature_trending_genre_history
-            Genre.HORROR -> R.string.feature_trending_genre_horror
-            Genre.MUSIC -> R.string.feature_trending_genre_music
-            Genre.MYSTERY -> R.string.feature_trending_genre_mystery
-            Genre.ROMANCE -> R.string.feature_trending_genre_romance
-            Genre.SCIENCE_FICTION -> R.string.feature_trending_genre_science_fiction
-            Genre.TV_MOVIE -> R.string.feature_trending_genre_tv_movie
-            Genre.THRILLER -> R.string.feature_trending_genre_thriller
-            Genre.WAR -> R.string.feature_trending_genre_war
-            Genre.WESTERN -> R.string.feature_trending_genre_western
         }
 
 /** What a sort key is called. */

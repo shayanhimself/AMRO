@@ -184,7 +184,7 @@ private fun failed(cause: DataError) =
 private val TrendingUiState.rows: List<MovieRowUiState>
     get() = (content as TrendingContent.Movies).rows
 
-private fun posterLabel(title: String) = string(R.string.feature_trending_poster_description, title)
+private fun posterLabel(title: String) = string(CoreUiR.string.core_ui_poster_description, title)
 
 /**
  * What the filter action is called.

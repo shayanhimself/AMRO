@@ -8,7 +8,7 @@ private const val TMDB_IMAGE_BASE_URL = "https://image.tmdb.org/t/p/"
 /**
  * The width a small and a large poster resolve to.
  */
-private const val POSTER_SMALL_WIDTH = "w185"
+private const val POSTER_SMALL_WIDTH = "w342"
 private const val POSTER_LARGE_WIDTH = "w500"
 
 /** The width a small and a large backdrop resolve to, under the same rule as the posters. */

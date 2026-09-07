@@ -3,7 +3,7 @@ package com.shayan.amro.core.model
 import kotlinx.datetime.LocalDate
 
 /**
- * The minimal data to show a movie in a list.
+ * The movie summary (minimal data of a movie).
  *
  * @property id identifies the movie.
  * @property genres the app's own genres, already resolved.

@@ -22,4 +22,7 @@ object Glyphs {
     const val MOVIE = "movie"
     const val MOVIE_FILTER = "movie_filter"
     const val FILTER_ALT_OFF = "filter_alt_off"
+    const val STAR = "star"
+    const val SCHEDULE = "schedule"
+    const val OPEN_IN_NEW = "open_in_new"
 }

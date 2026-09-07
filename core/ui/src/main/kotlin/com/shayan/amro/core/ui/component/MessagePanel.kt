@@ -1,4 +1,4 @@
-package com.shayan.amro.feature.trending.component
+package com.shayan.amro.core.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,17 +19,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.shayan.amro.core.ui.R
 import com.shayan.amro.core.ui.designsystem.component.ButtonVariant
 import com.shayan.amro.core.ui.designsystem.component.DsButton
 import com.shayan.amro.core.ui.designsystem.icon.DsIcon
 import com.shayan.amro.core.ui.designsystem.icon.Glyphs
 import com.shayan.amro.core.ui.designsystem.theme.AmroTheme
 import com.shayan.amro.core.ui.designsystem.theme.Spacing
-import com.shayan.amro.feature.trending.R
-import com.shayan.amro.core.ui.R as CoreUiR
+
+/** The disc the glyph sits in, and the glyph inside it. */
+private val PANEL_GLYPH_DISC_SIZE = 72.dp
+private val PANEL_GLYPH_SIZE = 36.dp
 
 /**
- * Shows errors, and other situations that leave the screen without content.
+ * Shows errors, and other situations that leave a screen without content.
  *
  * @param glyph the icon naming the situation.
  * @param title one line saying what happened.
@@ -41,7 +44,7 @@ import com.shayan.amro.core.ui.R as CoreUiR
  * @param actionGlyph the icon on the action.
  */
 @Composable
-internal fun TrendingMessage(
+fun MessagePanel(
     glyph: String,
     title: String,
     actionLabel: String,
@@ -63,7 +66,7 @@ internal fun TrendingMessage(
         Box(
             modifier =
                 Modifier
-                    .size(72.dp)
+                    .size(PANEL_GLYPH_DISC_SIZE)
                     .background(MaterialTheme.colorScheme.surfaceContainer, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
@@ -71,7 +74,7 @@ internal fun TrendingMessage(
                 glyph = glyph,
                 // The title states the icon already.
                 contentDescription = null,
-                size = 36.dp,
+                size = PANEL_GLYPH_SIZE,
                 tint = glyphTint,
             )
         }
@@ -106,13 +109,13 @@ internal fun TrendingMessage(
 
 @Preview
 @Composable
-private fun TrendingMessagePreview() {
+private fun MessagePanelPreview() {
     AmroTheme {
         Surface {
-            TrendingMessage(
+            MessagePanel(
                 glyph = Glyphs.CLOUD_OFF,
-                title = stringResource(R.string.feature_trending_error_no_connectivity),
-                actionLabel = stringResource(CoreUiR.string.core_ui_retry),
+                title = "No connection",
+                actionLabel = stringResource(R.string.core_ui_retry),
                 onAction = {},
                 glyphTint = MaterialTheme.colorScheme.error,
             )
@@ -122,30 +125,15 @@ private fun TrendingMessagePreview() {
 
 @Preview
 @Composable
-private fun TrendingMessageEmptyFromApiPreview() {
+private fun MessagePanelWithBodyPreview() {
     AmroTheme {
         Surface {
-            TrendingMessage(
-                glyph = Glyphs.MOVIE_FILTER,
-                title = stringResource(R.string.feature_trending_error_empty_response),
-                actionLabel = stringResource(CoreUiR.string.core_ui_retry),
-                onAction = {},
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun TrendingMessageEmptyFromFilterPreview() {
-    AmroTheme {
-        Surface {
-            TrendingMessage(
+            MessagePanel(
                 glyph = Glyphs.FILTER_ALT_OFF,
-                title = stringResource(R.string.feature_trending_empty_filter_title),
-                actionLabel = stringResource(R.string.feature_trending_clear_filters),
+                title = "Nothing matches",
+                actionLabel = "Clear filters",
                 onAction = {},
-                body = stringResource(R.string.feature_trending_empty_filter_body),
+                body = "Filters look inside what is already here. They don't search wider.",
                 actionVariant = ButtonVariant.Tonal,
                 actionGlyph = Glyphs.FILTER_ALT_OFF,
             )

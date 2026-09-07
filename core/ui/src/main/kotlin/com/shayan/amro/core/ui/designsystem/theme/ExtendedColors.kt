@@ -7,6 +7,8 @@ import androidx.compose.ui.graphics.Color
 /** Semantic colors M3 has no slot for. */
 @Immutable
 class ExtendedColors(
+    val placeholder: Color,
+    val placeholderMuted: Color,
     val success: Color,
     val onSuccess: Color,
     val successContainer: Color,
@@ -17,6 +19,8 @@ class ExtendedColors(
 
 internal val DarkExtendedColors =
     ExtendedColors(
+        placeholder = ColorPrimitives.Navy31,
+        placeholderMuted = ColorPrimitives.Navy25,
         success = ColorPrimitives.Green50,
         onSuccess = ColorPrimitives.Green08,
         successContainer = ColorPrimitives.Green20,
@@ -27,6 +31,8 @@ internal val DarkExtendedColors =
 
 internal val LightExtendedColors =
     ExtendedColors(
+        placeholder = ColorPrimitives.Sand73,
+        placeholderMuted = ColorPrimitives.Sand81,
         success = ColorPrimitives.Green44,
         onSuccess = ColorPrimitives.White,
         successContainer = ColorPrimitives.Green88,

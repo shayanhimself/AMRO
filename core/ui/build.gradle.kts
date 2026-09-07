@@ -7,10 +7,14 @@ android {
 }
 
 dependencies {
+    api(projects.core.model)
+    api(libs.kotlinx.collections.immutable)
+
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.coil.compose)
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     testImplementation(projects.core.testing)
