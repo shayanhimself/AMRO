@@ -6,9 +6,27 @@ import com.shayan.amro.core.model.Movie
 import com.shayan.amro.core.model.MovieDetail
 import com.shayan.amro.core.model.Rating
 import com.shayan.amro.core.model.ReleaseStatus
+import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.plus
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
+
+/** The genres a generated set cycles through, so a filter for one selects a known share of it. */
+private val GENERATED_GENRES =
+    listOf(Genre.COMEDY, Genre.DRAMA, Genre.HORROR, Genre.SCIENCE_FICTION)
+
+/** What every generated title starts with, so a row is recognisable in a failure message. */
+private const val GENERATED_TITLE_STEM = "Trending Movie"
+
+/** The id a generated set counts up from, clear of the ids the named fixtures carry. */
+private const val GENERATED_FIRST_ID = 900_000
+
+/** The popularity a generated set counts down from, so its first entry is its most popular. */
+private const val GENERATED_TOP_POPULARITY = 1_000.0
+
+/** The date a generated set counts up from, a day per entry, so no two entries share one. */
+private val GENERATED_FIRST_RELEASE = LocalDate.parse("2026-01-01")
 
 /** The fixture of Movie models. */
 object MovieFixture {
@@ -65,6 +83,25 @@ object MovieFixture {
             rating = rating,
             imdbId = imdbId,
         )
+
+    /**
+     * A ranked trending set, as a source answers with one.
+     *
+     * Every field a screen reads varies with the position, so a test names a row by its index and
+     * reads the title back off the set.
+     *
+     * @param count how many movies the set holds.
+     */
+    fun trendingSet(count: Int): List<Movie> =
+        List(count) { position ->
+            movie(
+                id = (GENERATED_FIRST_ID + position).toString(),
+                title = "$GENERATED_TITLE_STEM ${position + 1}",
+                genres = listOf(GENERATED_GENRES[position % GENERATED_GENRES.size]),
+                popularity = GENERATED_TOP_POPULARITY - position,
+                releaseDate = GENERATED_FIRST_RELEASE.plus(position, DateTimeUnit.DAY),
+            )
+        }
 
     /** One movie, where nothing about it decides the test. */
     val MOVIE = movie()

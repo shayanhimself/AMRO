@@ -15,6 +15,8 @@ import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
+internal const val TMDB_BASE_URL = "https://api.themoviedb.org/3/"
+
 private const val BEARER_PREFIX = "Bearer "
 
 private const val CONNECT_TIMEOUT_MILLIS = 10_000L
@@ -24,7 +26,7 @@ private const val REQUEST_TIMEOUT_MILLIS = 20_000L
 /**
  * The HTTP client every TMDB endpoint is called through.
  *
- * @param config holds the base URL and access token for TMDB.
+ * @param config holds the access token for TMDB.
  * @param engine what actually moves the bytes. Taking it as a parameter is what lets a test pass
  * `MockEngine` and production pass OkHttp, and Ktor keeps both main-safe.
  */
@@ -58,6 +60,7 @@ internal fun tmdbHttpClient(
         }
 
         defaultRequest {
+            url(TMDB_BASE_URL)
             header(HttpHeaders.Authorization, BEARER_PREFIX + config.readAccessToken)
         }
     }

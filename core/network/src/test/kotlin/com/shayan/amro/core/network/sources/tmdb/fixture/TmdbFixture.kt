@@ -1,4 +1,4 @@
-package com.shayan.amro.core.testing.fixture.tmdb
+package com.shayan.amro.core.network.sources.tmdb.fixture
 
 /** Every recording is a JSON body, so no entry spells its own extension. */
 private const val FIXTURE_EXTENSION = ".json"

@@ -1,4 +1,4 @@
-package com.shayan.amro.core.testing.fixture.tmdb
+package com.shayan.amro.core.network.sources.tmdb.fixture
 
 import kotlinx.serialization.json.Json
 

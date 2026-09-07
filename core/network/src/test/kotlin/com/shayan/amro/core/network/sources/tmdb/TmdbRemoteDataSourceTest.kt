@@ -4,8 +4,8 @@ import com.shayan.amro.core.model.DataError
 import com.shayan.amro.core.model.Movie
 import com.shayan.amro.core.network.NetworkResult
 import com.shayan.amro.core.network.sources.MovieId
-import com.shayan.amro.core.testing.fixture.tmdb.TmdbFixture
-import com.shayan.amro.core.testing.fixture.tmdb.TmdbRecording
+import com.shayan.amro.core.network.sources.tmdb.fixture.TmdbFixture
+import com.shayan.amro.core.network.sources.tmdb.fixture.TmdbRecording
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
@@ -24,8 +24,6 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
-
-private const val BASE_URL = "https://movies.example/3/"
 
 private const val TOKEN = "test-read-access-token"
 
@@ -110,13 +108,21 @@ class TmdbRemoteDataSourceTest {
         }
 
     @Test
+    fun `every endpoint resolves under the API root`() =
+        runTest {
+            pagingSource().getTrendingMovies(TMDB_PAGE_SIZE)
+
+            val url = requests.single().url.toString()
+
+            assertTrue(url.startsWith(TMDB_BASE_URL + TRENDING_PATH_SEGMENT), url)
+        }
+
+    @Test
     fun `the page number is the only query parameter`() =
         runTest {
             pagingSource().getTrendingMovies(TMDB_PAGE_SIZE)
 
-            val url = requests.single().url
-            assertTrue(url.toString().contains(TRENDING_PATH_SEGMENT), url.toString())
-            assertEquals(FIRST_PAGE.toString(), url.parameters[PAGE_PARAMETER])
+            assertEquals(FIRST_PAGE.toString(), requests.single().url.parameters[PAGE_PARAMETER])
         }
 
     @Test
@@ -294,13 +300,12 @@ class TmdbRemoteDataSourceTest {
                 requests += request
                 handler(request)
             }
-        val config = TmdbConfig(baseUrl = BASE_URL, readAccessToken = TOKEN)
         val client =
             tmdbHttpClient(
-                config = config,
+                config = TmdbConfig(readAccessToken = TOKEN),
                 engine = engine,
             )
-        return TmdbRemoteDataSource(TmdbApi(client, config))
+        return TmdbRemoteDataSource(TmdbApi(client))
     }
 
     /**

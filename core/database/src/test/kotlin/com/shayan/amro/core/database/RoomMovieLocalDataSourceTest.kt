@@ -205,8 +205,9 @@ private val BARE_DETAIL =
 private val DETAIL_WITH_UNCOUNTED_RATING =
     detail(
         movie = FIRST_MOVIE,
-        rating = Rating(
-            average = 6.1,
-            count = null,
-        ),
+        rating =
+            Rating(
+                average = 6.1,
+                count = null,
+            ),
     )

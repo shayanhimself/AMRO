@@ -17,7 +17,6 @@ dependencies {
     api(libs.kotlinx.coroutines.test)
     api(libs.androidx.compose.ui.test.junit4)
 
-    api(libs.kotlinx.serialization.json)
     api(platform(libs.androidx.compose.bom))
     api(libs.androidx.compose.ui.tooling.preview)
     api(libs.androidx.test.core)

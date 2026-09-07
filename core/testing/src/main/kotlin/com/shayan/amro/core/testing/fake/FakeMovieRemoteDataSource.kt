@@ -8,14 +8,15 @@ import com.shayan.amro.core.network.NetworkResult
 /**
  * A source answering each call with the next result it was scripted, and recording what it was
  * asked for.
- *
- * An unscripted call fails the test rather than inventing an answer.
  */
 class FakeMovieRemoteDataSource : MovieRemoteDataSource {
     // A queue read from the front: a call pops the head, so results come back in the order they
     // were scripted. ArrayDeque states that use in the type, where a list would leave it implied.
     private val trendingResults = ArrayDeque<NetworkResult<List<Movie>>>()
     private val detailResults = ArrayDeque<NetworkResult<MovieDetail>>()
+
+    private var standingTrendingResult: NetworkResult<List<Movie>>? = null
+    private var standingDetailResult: NetworkResult<MovieDetail>? = null
 
     private val recordedCounts = mutableListOf<Int>()
     private val recordedIds = mutableListOf<String>()
@@ -44,16 +45,28 @@ class FakeMovieRemoteDataSource : MovieRemoteDataSource {
         detailResults += results
     }
 
+    /**
+     * Answers every [getTrendingMovies] call [result] once the scripted ones run out.
+     */
+    fun alwaysAnswerTrending(result: NetworkResult<List<Movie>>) {
+        standingTrendingResult = result
+    }
+
+    /** Answers every [getMovieDetail] call [result] once the scripted ones run out. */
+    fun alwaysAnswerMovieDetail(result: NetworkResult<MovieDetail>) {
+        standingDetailResult = result
+    }
+
     override suspend fun getTrendingMovies(count: Int): NetworkResult<List<Movie>> {
         recordedCounts += count
-        return checkNotNull(trendingResults.removeFirstOrNull()) {
+        return checkNotNull(trendingResults.removeFirstOrNull() ?: standingTrendingResult) {
             "No trending result scripted for call ${recordedCounts.size}."
         }
     }
 
     override suspend fun getMovieDetail(movieId: String): NetworkResult<MovieDetail> {
         recordedIds += movieId
-        return checkNotNull(detailResults.removeFirstOrNull()) {
+        return checkNotNull(detailResults.removeFirstOrNull() ?: standingDetailResult) {
             "No movie detail result scripted for $movieId."
         }
     }

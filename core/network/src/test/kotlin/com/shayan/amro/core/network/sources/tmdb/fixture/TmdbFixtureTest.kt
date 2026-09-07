@@ -1,6 +1,5 @@
-package com.shayan.amro.core.testing
+package com.shayan.amro.core.network.sources.tmdb.fixture
 
-import com.shayan.amro.core.testing.fixture.tmdb.TmdbFixture
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

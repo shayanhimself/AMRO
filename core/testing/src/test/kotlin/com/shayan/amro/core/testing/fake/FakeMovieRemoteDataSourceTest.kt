@@ -68,4 +68,41 @@ class FakeMovieRemoteDataSourceTest {
         runTest {
             assertFailsWith<IllegalStateException> { source.getTrendingMovies(REQUESTED_COUNT) }
         }
+
+    @Test
+    fun `a standing trending answer serves every call past the scripted ones`() =
+        runTest {
+            source.scriptTrending(NetworkResult.Success(listOf(MOVIE)))
+            source.alwaysAnswerTrending(NetworkResult.Success(listOf(OTHER_MOVIE)))
+
+            assertEquals(
+                listOf(
+                    NetworkResult.Success(listOf(MOVIE)),
+                    NetworkResult.Success(listOf(OTHER_MOVIE)),
+                    NetworkResult.Success(listOf(OTHER_MOVIE)),
+                ),
+                listOf(
+                    source.getTrendingMovies(REQUESTED_COUNT),
+                    source.getTrendingMovies(REQUESTED_COUNT),
+                    source.getTrendingMovies(REQUESTED_COUNT),
+                ),
+            )
+        }
+
+    @Test
+    fun `a standing detail answer serves every call past the scripted ones`() =
+        runTest {
+            source.alwaysAnswerMovieDetail(NetworkResult.Success(detail(movie = OTHER_MOVIE)))
+
+            assertEquals(
+                listOf(
+                    NetworkResult.Success(detail(movie = OTHER_MOVIE)),
+                    NetworkResult.Success(detail(movie = OTHER_MOVIE)),
+                ),
+                listOf(
+                    source.getMovieDetail(MOVIE.id),
+                    source.getMovieDetail(OTHER_MOVIE.id),
+                ),
+            )
+        }
 }

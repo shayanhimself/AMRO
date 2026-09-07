@@ -7,9 +7,9 @@ import com.shayan.amro.core.network.sources.tmdb.TMDB_SOURCE
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbMovieDetailDto
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbMovieDto
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbTrendingPageDto
-import com.shayan.amro.core.testing.fixture.tmdb.TmdbFixture
-import com.shayan.amro.core.testing.fixture.tmdb.TmdbRecording
-import com.shayan.amro.core.testing.fixture.tmdb.decode
+import com.shayan.amro.core.network.sources.tmdb.fixture.TmdbFixture
+import com.shayan.amro.core.network.sources.tmdb.fixture.TmdbRecording
+import com.shayan.amro.core.network.sources.tmdb.fixture.decode
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals

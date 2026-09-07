@@ -1,7 +1,7 @@
-package com.shayan.amro.core.testing.fixture.tmdb
+package com.shayan.amro.core.network.sources.tmdb.fixture
 
 /** Where the recordings sit in the source tree, which is what a reader opening this file wants. */
-private const val TMDB_FIXTURE_DIRECTORY = "core/testing/src/main/resources/fixtures/tmdb/"
+private const val TMDB_FIXTURE_DIRECTORY = "core/network/src/test/resources/fixtures/tmdb/"
 
 /** The same directory as the classpath sees it, which is what reads them at run time. */
 private const val TMDB_FIXTURE_ROOT = "fixtures/tmdb/"
@@ -31,9 +31,5 @@ interface TmdbRecording {
                 ?: error("no recording at $TMDB_FIXTURE_DIRECTORY$path. Re-record with $RECORDER")
 }
 
-/**
- * This recording, read into the wire shape [T] the way the client reads it.
- *
- * The shape is resolved where this is called, so a module's own wire types stay internal to it.
- */
+/** This recording, read into the wire shape [T] the way the client reads it. */
 inline fun <reified T> TmdbRecording.decode(): T = testJson.decodeFromString(json)

@@ -16,11 +16,8 @@ the build and no case for adding one: a mock returns the value the test wrote an
 rather than the result, so it stays green after the real collaborator stops behaving that way. A fake
 asserts what the call produced, so a refactor that preserves the behaviour preserves the test.
 
-Fakes and fixtures live in `:core:testing`, which is what makes them visible to other modules' tests.
-The fixtures are of two kinds: hand-built and recorded from API responses.
-
-Recorded responses sit under `core/testing/src/main/resources/fixtures/`,
-and `scripts/record-fixtures.py` re-records them against the live API.
+Fakes and fixtures live in `:core:testing`, which is what makes them
+visible to other modules' tests.
 
 ## The layers
 
@@ -80,20 +77,27 @@ JVM speed.
 
 **Where:** `app/src/androidTest`, in `com.shayan.amro.flow`. On a device.
 
-**Tools:** Hilt instrumented testing, Compose testing, and MockWebServer answering as the
-provider. Run by `scripts/flowTests.sh`.
+**Tools:** Hilt instrumented testing, Compose testing, and a fake remote source. Run by
+`scripts/flowTests.sh`.
 
-**What goes here:** multi-screen flows, integrating every real layer of the app with only the
-provider replaced. Navigation and the arguments that travel with it, state surviving a configuration
+**What goes here:** multi-screen flows, integrating every real layer of the app with only the remote
+source replaced. Navigation and the arguments that travel with it, state surviving a configuration
 change and process death, the adaptive layout resolving at each width, and content served from the
 database when the next refresh fails.
 
-The real Hilt graph resolving and Room running on the device's own SQLite are covered here rather
-than in a layer of their own, because every flow test starts both.
+Room running on the device's own SQLite is covered here. The Hilt graph is not, since a flow test
+puts a fake remote source into it.
 
-**How the server is replaced:** A flow test uninstalls the Hilt module binding the API address and
-binds a local server in its place. The API base URL is client configuration value, so a test binding
-points it at a local MockWebServer that serves recorded responses.
+**How the source is replaced:** A flow test uninstalls the Hilt module that chooses which source
+backs `MovieRemoteDataSource` and binds `FakeMovieRemoteDataSource` in its place. That interface is
+the app's own, so a flow test arranges its data as movies rather than as a provider's JSON, and
+stays source-agnostic.
+
+A flow test therefore cannot observe anything that only latency produces (ex: a loading placeholder),
+because a fake answers within the frame.
+
+**Every test starts as a fresh install.** A rule empties the app's databases before each one. A
+cached list would otherwise let the test skip the network path.
 
 **Reading a failure:** a flow test failing should mean two layers are wired together wrong. If the
 cause turns out to sit inside one layer, that is also a gap in the cheaper test that should have
@@ -110,10 +114,8 @@ API with a real token. Run by `scripts/e2e.sh`, which selects on the annotation.
 **What makes it end to end:** The app resolves APIs real endpoints with the credential the build
 carries, responses that come back to the device's SQLite, and pulls its posters from the image host.
 
-**What goes here:** only what needs both halves of the real thing at once, the build a user installs
-and the server they reach. Every layer below substitutes one or the other, so a check a local server
-could fail belongs at layer 4, and a check a fake could fail belongs lower still. The wire contract
-alone does not qualify: the client against the live API is a JVM test.
+**What goes here:** Test cases that need to exercise the real API, such as a search that returns a
+result, or a movie that has a poster.
 
 **Every test starts as a fresh install.** A rule empties the app's databases before each one. A
 cached list would otherwise let the test skip the network path.

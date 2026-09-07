@@ -12,9 +12,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
-/** TMDB's real address, which is the whole point of this test. */
-private const val TMDB_BASE_URL = "https://api.themoviedb.org/3/"
-
 private const val SKIPPED = "no TMDB token in local.properties or the environment"
 
 /**
@@ -46,15 +43,14 @@ class TmdbGenreListLiveTest {
     /**
      * Reads TMDB's genre list through the production client and endpoints.
      *
-     * They are built here rather than injected, because the config is bound in the app module,
-     * which this one does not see, and this test runs on the JVM with no Hilt component to read a
-     * binding from.
+     * They are built here rather than injected, because this test runs on the JVM with no Hilt
+     * component to read a binding from.
      */
     private fun publishedGenres(token: String) =
         runBlocking {
-            val config = TmdbConfig(baseUrl = TMDB_BASE_URL, readAccessToken = token)
+            val config = TmdbConfig(readAccessToken = token)
             tmdbHttpClient(config = config, engine = OkHttp.create()).use { client ->
-                val result = TmdbApi(client, config).genreList()
+                val result = TmdbApi(client).genreList()
                 assertIs<NetworkResult.Success<TmdbGenreListDto>>(result).value.genres
             }
         }

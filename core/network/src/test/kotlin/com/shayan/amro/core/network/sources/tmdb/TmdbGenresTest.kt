@@ -2,9 +2,9 @@ package com.shayan.amro.core.network.sources.tmdb
 
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbGenreListDto
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbTrendingPageDto
+import com.shayan.amro.core.network.sources.tmdb.fixture.TmdbFixture
+import com.shayan.amro.core.network.sources.tmdb.fixture.decode
 import com.shayan.amro.core.network.sources.tmdb.mapper.tmdbGenre
-import com.shayan.amro.core.testing.fixture.tmdb.TmdbFixture
-import com.shayan.amro.core.testing.fixture.tmdb.decode
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

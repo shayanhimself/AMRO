@@ -13,16 +13,17 @@ import com.google.android.apps.common.testing.accessibility.framework.Accessibil
 import com.google.android.apps.common.testing.accessibility.framework.AccessibilityCheckResultUtils.matchesChecks
 import com.google.android.apps.common.testing.accessibility.framework.checks.ImageContrastCheck
 import com.google.android.apps.common.testing.accessibility.framework.integrations.espresso.AccessibilityValidator
-import com.shayan.amro.core.network.sources.tmdb.TmdbConfig
-import com.shayan.amro.core.testing.fixture.tmdb.TmdbFixture
+import com.shayan.amro.core.network.MovieRemoteDataSource
+import com.shayan.amro.core.network.NetworkResult
+import com.shayan.amro.core.network.di.RemoteSourceModule
+import com.shayan.amro.core.testing.fake.FakeMovieRemoteDataSource
+import com.shayan.amro.core.testing.fixture.model.MovieFixture
 import com.shayan.amro.core.testing.string
-import com.shayan.amro.di.NetworkModule
 import com.shayan.amro.feature.detail.R
 import com.shayan.amro.helpers.AppLauncher
 import com.shayan.amro.helpers.FreshInstall
 import com.shayan.amro.helpers.awaitText
 import com.shayan.amro.helpers.clickWhenStill
-import com.shayan.amro.wire.LocalTmdb
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -37,8 +38,12 @@ import org.junit.runner.RunWith
 // The checks read the node tree through a platform API that arrived in Android 14, below which
 // the framework has nothing to hand them.
 private const val ACCESSIBILITY_CHECKS_MIN_SDK = 34
-private const val MOST_POPULAR_TITLE = "Spider-Man: Brand New Day"
-private const val RECORDED_MOVIE_TITLE = "Project Hail Mary"
+
+/** More rows than a screen holds, so the row the test opens is one it has to scroll to. */
+private const val TRENDING_SET_SIZE = 40
+
+/** The row the test opens, far enough down that reaching it scrolls the list. */
+private const val DETAIL_ROW_INDEX = 20
 
 /**
  * Whether every state the app puts on screen survives the Accessibility Test Framework's checks: a
@@ -50,7 +55,7 @@ private const val RECORDED_MOVIE_TITLE = "Project Hail Mary"
  * the per-component accessibility tests.
  */
 @HiltAndroidTest
-@UninstallModules(NetworkModule::class)
+@UninstallModules(RemoteSourceModule::class)
 @RunWith(AndroidJUnit4::class)
 @SdkSuppress(minSdkVersion = ACCESSIBILITY_CHECKS_MIN_SDK)
 class A11yFlowTest {
@@ -60,25 +65,29 @@ class A11yFlowTest {
     @get:Rule(order = 1)
     val freshInstall = FreshInstall()
 
-    @get:Rule(order = 2)
-    val localTmdb = LocalTmdb()
-
     // The Activity must not launch until the graph is bound, and createAndroidComposeRule starts
     // it while the rule evaluates, which is before @Before runs.
-    @get:Rule(order = 3)
+    @get:Rule(order = 2)
     val composeRule = createEmptyComposeRule()
 
     private val launcher = AppLauncher()
 
-    /** The address the app resolves its endpoints against, pointed at the local server. */
+    private val trendingMovies = MovieFixture.trendingSet(TRENDING_SET_SIZE)
+
+    private val remote = FakeMovieRemoteDataSource()
+
+    /** The source the app reads movies from. */
     @BindValue
     @JvmField
-    val tmdbConfig: TmdbConfig = localTmdb.config
+    val movieRemoteDataSource: MovieRemoteDataSource = remote
 
     @Before
     fun setUp() {
         hiltRule.inject()
-        mockTrendingMoviesResponse()
+        remote.alwaysAnswerTrending(NetworkResult.Success(trendingMovies))
+        remote.alwaysAnswerMovieDetail(
+            NetworkResult.Success(MovieFixture.detail(movie = trendingMovies[DETAIL_ROW_INDEX])),
+        )
         // Enabling the checks here also runs them ahead of every tap the tests below make.
         composeRule.enableAccessibilityChecks(
             AccessibilityValidator()
@@ -99,22 +108,22 @@ class A11yFlowTest {
     @Test
     fun theTrendingScreenPassesAccessibilityChecks() {
         launcher.launch()
-        composeRule.awaitText(MOST_POPULAR_TITLE)
+        composeRule.awaitText(trendingMovies.first().title)
 
         assertScreenIsAccessible()
     }
 
     @Test
     fun theMovieDetailScreenPassesAccessibilityChecks() {
+        val openedTitle = trendingMovies[DETAIL_ROW_INDEX].title
+
         launcher.launch()
-        composeRule.awaitText(MOST_POPULAR_TITLE)
+        composeRule.awaitText(trendingMovies.first().title)
 
         composeRule
             .onNode(hasScrollAction())
-            .performScrollToNode(hasText(RECORDED_MOVIE_TITLE))
-
-        localTmdb.enqueueJson(TmdbFixture.Movie.RELEASED.json)
-        composeRule.clickWhenStill(hasText(RECORDED_MOVIE_TITLE))
+            .performScrollToNode(hasText(openedTitle))
+        composeRule.clickWhenStill(hasText(openedTitle))
 
         composeRule.awaitText(string(R.string.feature_detail_fact_runtime))
 
@@ -125,12 +134,5 @@ class A11yFlowTest {
     private fun assertScreenIsAccessible() {
         composeRule.waitForIdle()
         composeRule.onRoot().tryPerformAccessibilityChecks()
-    }
-
-    /** Answers one whole fetch of the trending movies set, a page at a time. */
-    private fun mockTrendingMoviesResponse() {
-        TmdbFixture.Trending.entries.forEach { page ->
-            localTmdb.enqueueJson(page.json)
-        }
     }
 }

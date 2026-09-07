@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.amro.android.application)
-    alias(libs.plugins.amro.api.tokens)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
@@ -68,6 +67,4 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.kotlin.test)
-    androidTestImplementation(enforcedPlatform(libs.okhttp.bom))
-    androidTestImplementation(libs.okhttp.mockwebserver)
 }

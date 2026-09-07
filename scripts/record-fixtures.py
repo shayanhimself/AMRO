@@ -20,7 +20,7 @@ import urllib.request
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
 LOCAL_PROPERTIES = REPO_ROOT / "local.properties"
-FIXTURES = REPO_ROOT / "core/testing/src/main/resources/fixtures/tmdb"
+FIXTURES = REPO_ROOT / "core/network/src/test/resources/fixtures/tmdb"
 
 TOKEN_KEY = "tmdb.readAccessToken"
 BASE_URL = "https://api.themoviedb.org/3/"

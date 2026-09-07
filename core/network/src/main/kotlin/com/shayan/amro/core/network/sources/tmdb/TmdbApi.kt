@@ -26,14 +26,12 @@ private const val PAGE_PARAMETER = "page"
 /**
  * Every TMDB endpoint the app calls.
  *
- * @param client Ktor client that carries the requests.
- * @param config holds the base URL and access token for TMDB.
+ * @param client Ktor client that carries the requests, already pointed at the API baseUrl.
  */
 internal class TmdbApi
     @Inject
     constructor(
         private val client: HttpClient,
-        private val config: TmdbConfig,
     ) {
         /**
          * Reads one page of the trending list.
@@ -61,7 +59,7 @@ internal class TmdbApi
         /**
          * Calls one endpoint and parses what came back into [T].
          *
-         * @param path the endpoint, relative to the configured base.
+         * @param path the endpoint, relative to the baseUrl the client carries.
          * @param configure carries whatever the request holds beyond its path.
          * @return the parsed body, or the cause it could not be read.
          */
@@ -70,7 +68,7 @@ internal class TmdbApi
             crossinline configure: HttpRequestBuilder.() -> Unit = {},
         ): NetworkResult<T> =
             apiCall {
-                val response = client.get(config.baseUrl + path) { configure() }
+                val response = client.get(path) { configure() }
                 // A non-2xx is a server failure whatever body came with it, so no error body is
                 // ever parsed.
                 if (!response.status.isSuccess()) {

@@ -1,4 +1,4 @@
-package com.shayan.amro.core.testing.fixture.tmdb
+package com.shayan.amro.core.network.sources.tmdb.fixture
 
 /**
  * Reads one file packaged with this module.
