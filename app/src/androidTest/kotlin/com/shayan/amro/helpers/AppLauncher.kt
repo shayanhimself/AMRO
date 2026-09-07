@@ -1,11 +1,12 @@
-package com.shayan.amro.flow.helpers
+package com.shayan.amro.helpers
 
 import android.content.Intent
 import androidx.test.core.app.ActivityScenario
 import com.shayan.amro.MainActivity
 
 /**
- * Starts and stops the Activity that one flow test drives, so no test leaves one running behind it.
+ * Starts and stops the Activity that one instrumented test drives, so no test leaves an activity
+ * running behind it.
  */
 internal class AppLauncher {
     private var scenario: ActivityScenario<MainActivity>? = null

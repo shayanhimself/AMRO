@@ -1,4 +1,4 @@
-package com.shayan.amro.flow.helpers
+package com.shayan.amro.helpers
 
 import android.os.SystemClock
 import androidx.compose.ui.test.SemanticsMatcher
@@ -14,8 +14,8 @@ private const val STILL_MILLIS = 300L
 /**
  * Blocks until [text] is on screen, and fails the test once the timeout passes without it.
  *
- * A flow waits on work no idling resource covers: a response crosses a real socket and the
- * database writes on its own dispatcher, so a composition that has gone idle says nothing about
+ * A test on a device waits on work no idling resource covers: a response crosses a real socket and
+ * the database writes on its own dispatcher, so a composition that has gone idle says nothing about
  * whether either has landed.
  */
 internal fun ComposeTestRule.awaitText(

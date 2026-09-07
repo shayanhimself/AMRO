@@ -1,4 +1,4 @@
-package com.shayan.amro.e2e.helpers
+package com.shayan.amro.e2e
 
 /**
  * Marks a test as end to end: the app's production code against the live APIs.

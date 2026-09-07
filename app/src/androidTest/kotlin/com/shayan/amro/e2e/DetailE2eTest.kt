@@ -6,13 +6,12 @@ import androidx.compose.ui.test.junit4.v2.createEmptyComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.shayan.amro.core.testing.string
-import com.shayan.amro.e2e.helpers.E2eTest
-import com.shayan.amro.e2e.helpers.FreshInstall
 import com.shayan.amro.e2e.screens.awaitFirstRowTitle
 import com.shayan.amro.feature.detail.R
-import com.shayan.amro.flow.helpers.AppLauncher
-import com.shayan.amro.flow.helpers.awaitText
-import com.shayan.amro.flow.helpers.clickWhenStill
+import com.shayan.amro.helpers.AppLauncher
+import com.shayan.amro.helpers.FreshInstall
+import com.shayan.amro.helpers.awaitText
+import com.shayan.amro.helpers.clickWhenStill
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.After

@@ -1,10 +1,11 @@
-package com.shayan.amro.e2e.helpers
+package com.shayan.amro.helpers
 
 import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.rules.ExternalResource
 
 /**
- * Empties the app's storage before each E2E test, so every one of them starts as a fresh install.
+ * Empties the app's storage before each instrumented test, so every one of them starts as a fresh
+ * install.
  * A second run would otherwise read the list the first one cached and pass with the network path
  * dead.
  */

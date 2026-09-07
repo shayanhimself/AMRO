@@ -22,7 +22,7 @@ APP_TASK=:app:connectedDebugAndroidTest
 APP_TESTS=app/src/androidTest
 
 # Skip E2E tests, they have their own script.
-E2E_ANNOTATION=com.shayan.amro.e2e.helpers.E2eTest
+E2E_ANNOTATION=com.shayan.amro.e2e.E2eTest
 SKIP_E2E="-Pandroid.testInstrumentationRunnerArguments.notAnnotation=${E2E_ANNOTATION}"
 ANNOTATION_SOURCE="${APP_TESTS}/kotlin/${E2E_ANNOTATION//.//}.kt"
 

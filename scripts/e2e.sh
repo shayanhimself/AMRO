@@ -7,7 +7,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
-E2E_ANNOTATION=com.shayan.amro.e2e.helpers.E2eTest
+E2E_ANNOTATION=com.shayan.amro.e2e.E2eTest
 ANNOTATION_SOURCE="app/src/androidTest/kotlin/${E2E_ANNOTATION//.//}.kt"
 
 # If the class cannot be loaded, the script fails.

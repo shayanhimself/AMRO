@@ -15,10 +15,11 @@ import com.shayan.amro.core.testing.quantityString
 import com.shayan.amro.core.testing.string
 import com.shayan.amro.di.NetworkModule
 import com.shayan.amro.feature.trending.R
-import com.shayan.amro.flow.helpers.AppLauncher
-import com.shayan.amro.flow.helpers.awaitContentDescription
-import com.shayan.amro.flow.helpers.awaitText
-import com.shayan.amro.flow.helpers.clickWhenStill
+import com.shayan.amro.helpers.AppLauncher
+import com.shayan.amro.helpers.FreshInstall
+import com.shayan.amro.helpers.awaitContentDescription
+import com.shayan.amro.helpers.awaitText
+import com.shayan.amro.helpers.clickWhenStill
 import com.shayan.amro.wire.LocalTmdb
 import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -49,9 +50,12 @@ class TrendingSelectionFlowTest {
     val hiltRule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
-    val localTmdb = LocalTmdb()
+    val freshInstall = FreshInstall()
 
     @get:Rule(order = 2)
+    val localTmdb = LocalTmdb()
+
+    @get:Rule(order = 3)
     val composeRule = createEmptyComposeRule()
 
     private val launcher = AppLauncher()
