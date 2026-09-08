@@ -140,6 +140,16 @@ Whether a test runs on the JVM or on a device is decided by its source set.
 `test` versus `androidTest` separates them. `@E2eTest` divides the two device layers within
 `androidTest`, and says nothing about where a test runs.
 
+## The coverage bar
+
+**80% line coverage per module.** Kover measures it, `koverVerify` runs as part of `check`, so
+`scripts/unittest.sh` and CI both gate on it. `scripts/coverage.sh` prints the table, worst module
+first, and writes browsable HTML per module.
+
+The number is a floor, not a target. It sits below where every module already is.
+
+Kover does NOT count the screenshot, flow or E2E layers. It only counts unit and screen tests.
+
 ## What is deliberately not tested
 
 **The same assertion at two layers.** A scenario covered by a flow test is not also an E2E.

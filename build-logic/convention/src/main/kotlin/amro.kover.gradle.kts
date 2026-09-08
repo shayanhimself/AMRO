@@ -1,4 +1,8 @@
-// Coverage reporting with the project's shared exclusion filters.
+// Coverage reporting with the project's shared exclusion filters, and sets a minimum coverage
+// threshold for the module.
+import kotlinx.kover.gradle.plugin.dsl.AggregationType
+import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
+
 plugins {
     id("org.jetbrains.kotlinx.kover")
 }
@@ -19,11 +23,19 @@ kover {
                     "*.BuildConfig",
                     "*_Impl",
                 )
+                // Hilt's own aggregation output, which the annotation processor writes into two
+                // packages of its own.
+                packages(
+                    "hilt_aggregated_deps",
+                    "dagger.hilt.internal.aggregatedroot.codegen",
+                )
                 // Android entry points. The framework constructs these, so a JVM test never
-                // enters them; the instrumented suite is what drives them.
+                // enters them; the instrumented tests cover them.
                 classes(
                     "com.shayan.amro.MainActivity",
                     "com.shayan.amro.AmroApplication",
+                    "com.shayan.amro.navigation.AmroAppKt",
+                    "com.shayan.amro.navigation.AmroNavDisplayKt*",
                 )
                 // Hilt modules
                 annotatedBy("dagger.Module")
@@ -35,6 +47,18 @@ kover {
                 classes("*PreviewData*")
                 packages("com.shayan.amro.core.ui.designsystem.preview")
                 annotatedBy("androidx.compose.ui.tooling.preview.Preview")
+            }
+        }
+
+        verify {
+            rule {
+                // Sets the minimum coverage percentage for the module.
+                // The gate fails if the coverage is below this threshold.
+                bound {
+                    minValue = MIN_LINE_COVERAGE_PERCENT
+                    coverageUnits = CoverageUnit.LINE
+                    aggregationForGroup = AggregationType.COVERED_PERCENTAGE
+                }
             }
         }
     }
