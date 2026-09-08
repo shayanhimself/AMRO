@@ -5,9 +5,7 @@ A native Android app for discovering movies, built on the TMDB API.
 Two screens: a **trending list** of this week's top 100 movies, with filter and sort functionality,
 and a **movie detail** screen behind each of them. On a wide window the two show side by side.
 
-The app is **local-first**. Every screen reads from a Room database, and only the data layer writes
-to it. The network fills the database; it never feeds a screen directly. So a cached list renders
-before any request completes, and the app stays usable when a request fails.
+The app is **local-first**. Every screen reads from a Room database, the network fills the database, so the app stays usable when offline (only for the data that is fetched already. The app doesn't prefetch).
 
 |                        Trending                        |                              Detail                              |
 |:------------------------------------------------------:|:----------------------------------------------------------------:|
