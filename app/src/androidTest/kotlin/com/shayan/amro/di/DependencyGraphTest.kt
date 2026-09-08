@@ -4,7 +4,6 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.shayan.amro.core.data.MovieDetailRepository
 import com.shayan.amro.core.data.TrendingMoviesRepository
 import com.shayan.amro.core.network.MovieRemoteDataSource
-import com.shayan.amro.core.network.sources.tmdb.TmdbConfig
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Rule
@@ -23,9 +22,6 @@ class DependencyGraphTest {
     val hiltRule = HiltAndroidRule(this)
 
     @Inject
-    lateinit var tmdbConfig: TmdbConfig
-
-    @Inject
     lateinit var movieRemoteDataSource: MovieRemoteDataSource
 
     @Inject
@@ -38,7 +34,6 @@ class DependencyGraphTest {
     fun everyStartupBindingResolves() {
         hiltRule.inject()
 
-        assertNotNull(tmdbConfig)
         assertNotNull(movieRemoteDataSource)
         assertNotNull(trendingMoviesRepository)
         assertNotNull(movieDetailRepository)

@@ -5,6 +5,6 @@ package com.shayan.amro.core.network.sources.tmdb
  *
  * @property readAccessToken the v4 credential sent as a bearer token.
  */
-data class TmdbConfig(
+internal data class TmdbConfig(
     val readAccessToken: String,
 )
