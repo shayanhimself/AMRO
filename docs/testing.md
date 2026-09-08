@@ -23,10 +23,9 @@ visible to other modules' tests.
 
 ### 1. Unit
 
-**Where:** `core/*/src/test` and the view model tests in `feature/*/src/test`.
-
-**Tools:** JUnit4, `kotlin.test`, `kotlinx-coroutines-test`, Ktor `MockEngine`, Room in-memory under
-Robolectric.
+- **Where:** `core/*/src/test` and the view model tests in `feature/*/src/test`.
+- **Tools:** JUnit4, `kotlin.test`, `kotlinx-coroutines-test`, Ktor `MockEngine`, Room in-memory
+  under Robolectric.
 
 **What goes here:** one class against its collaborators' fakes. The rules a mapper or a repository
 owns, ordering and selection over a fixture, anything decided against an injected clock, every
@@ -39,13 +38,12 @@ is worse than no fake.
 
 ### 2. Screenshot
 
-**Where:** `core/ui/src/screenshotTest` and `feature/*/src/screenshotTest`, with goldens checked in
-under `src/screenshotTestDebug/reference`.
-
-**Tools:** Compose Preview Screenshot Testing, `@PreviewTest` on a `@Preview`. Gated by `check`, so
-`scripts/unittest.sh` runs it. `scripts/screenshotTest.sh` validates the goldens on their own, which
-is the fast loop while a component is being changed, and `scripts/screenshotUpdate.sh` re-records
-them.
+- **Where:** `core/ui/src/screenshotTest` and `feature/*/src/screenshotTest`, with goldens checked
+  in under `src/screenshotTestDebug/reference`.
+- **Tools:** Compose Preview Screenshot Testing, `@PreviewTest` on a `@Preview`. Gated by `check`,
+  so `scripts/unittest.sh` runs it. `scripts/screenshotTest.sh` validates the goldens on their own,
+  which is the fast loop while a component is being changed, and `scripts/screenshotUpdate.sh`
+  re-records them.
 
 **What goes here:** rendering. Every component in light and dark, every distinct visual state of a
 screen, the form factors including the two-pane layout, and the large-font setting.
@@ -62,9 +60,8 @@ can still be broken behind it.
 
 ### 3. Screen
 
-**Where:** `feature/*/src/test` and `core/ui/src/test`.
-
-**Tools:** Compose testing on Robolectric. No emulator.
+- **Where:** `feature/*/src/test` and `core/ui/src/test`.
+- **Tools:** Compose testing on Robolectric. No emulator.
 
 **What goes here:** behaviour inside a single screen or component. Conditional visibility, which
 callback fires, how a control's state follows the state it reflects, and the accessibility
@@ -75,10 +72,9 @@ JVM speed.
 
 ### 4. Flow
 
-**Where:** `app/src/androidTest`, in `com.shayan.amro.flow`. On a device.
-
-**Tools:** Hilt instrumented testing, Compose testing, and a fake remote source. Run by
-`scripts/flowTests.sh`.
+- **Where:** `app/src/androidTest`, in `com.shayan.amro.flow`. On a device.
+- **Tools:** Hilt instrumented testing, Compose testing, and a fake remote source. Run by
+  `scripts/flowTests.sh`.
 
 **What goes here:** multi-screen flows, integrating every real layer of the app with only the remote
 source replaced. Navigation and the arguments that travel with it, state surviving a configuration
@@ -105,11 +101,10 @@ caught it, and both get fixed.
 
 ### 5. E2E
 
-**Where:** `app/src/androidTest`, in `com.shayan.amro.e2e`, marked `@E2eTest`. On a device.
-
-**Tools:** Hilt instrumented testing and Compose testing over the app's own graph, against the live
-API with a real token. Run by `scripts/e2e.sh`, which selects on the annotation.
-`scripts/flowTests.sh` excludes it, which is what keeps the two device layers apart.
+- **Where:** `app/src/androidTest`, in `com.shayan.amro.e2e`, marked `@E2eTest`. On a device.
+- **Tools:** Hilt instrumented testing and Compose testing over the app's own graph, against the
+  live API with a real token. Run by `scripts/e2e.sh`, which selects on the annotation.
+  `scripts/flowTests.sh` excludes it, which is what keeps the two device layers apart.
 
 **What makes it end to end:** The app resolves APIs real endpoints with the credential the build
 carries, responses that come back to the device's SQLite, and pulls its posters from the image host.
@@ -152,23 +147,12 @@ Kover does NOT count the screenshot, flow or E2E layers. It only counts unit and
 
 ## What is deliberately not tested
 
-**The same assertion at two layers.** A scenario covered by a flow test is not also an E2E.
-Duplication does not add confidence, it adds a second place to diagnose the same failure and a second
-thing to update.
-
-**Framework and library behaviour.** We test our adapter, not the library under it. Mapping a page of
-a provider's JSON onto our types is ours and is tested; whether Ktor's `MockEngine` reports a dropped
-connection the same way OkHttp does is theirs and is not.
-
-**Failure branches above layer 1.** Cheap as a value the engine returns, awful to provoke on a device
-or against a live API.
-
-**Every state crossed with every theme and form factor as a golden.** Combinatorial. Representative
-screen states, plus component goldens for the rest.
-
-**Anything non-deterministic in a screenshot.** Skeleton placeholders animate and a network image
-arrives when it arrives, so a golden capturing either would fail on its own schedule. Freeze the
-animation and serve the image locally.
+- **The same assertion at two layers.**
+- **Framework and library behaviour.**
+- **Failure branches above layer 1:** Cheap to fail in layer 1, awful on a
+  device or against a live API.
+- **Every state crossed with every theme and form factor as a golden.**
+- **Anything non-deterministic in a screenshot:** Freeze the animation and serve the image locally.
 
 ## Golden maintenance
 
