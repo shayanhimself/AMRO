@@ -1,0 +1,12 @@
+# Copy to local.properties and fill in.
+#
+# The TMDB API Read Access Token, from Settings -> API on themoviedb.org. The long bearer
+# credential, not the shorter API key beside it.
+# CI supplies it as the TMDB_READ_ACCESS_TOKEN environment variable instead.
+#
+# Without it the project still builds: the app runs, its requests fail, and it shows its error
+# state.
+tmdb.readAccessToken=
+
+# Android Studio writes the SDK location here as well.
+#sdk.dir=/Users/you/Library/Android/sdk
