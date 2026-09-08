@@ -74,13 +74,14 @@ and no empty-state race.
 
 Two tests guard that table, both in `core/network/src/test`:
 
-| Test | Fails when |
-|---|---|
-| `TmdbGenresTest` | The table has a gap against the recorded genre list or the recorded trending pages. It reads a recording, so it cannot notice TMDB publishing a new genre |
-| `TmdbGenreListLiveTest` | **This is the one that breaks when we drift.** It calls the live genre endpoint through the production client and fails when TMDB publishes a genre the table has no entry for, or the table carries an id TMDB has retired |
+| Test | Fails when                                                                                                                                                                                           |
+|---|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `TmdbGenresTest` | The table has a gap against the recorded genre list or the recorded trending pages. (It reads a recorded response, so it cannot notice TMDB publishing a new genre)                                  |
+| `TmdbGenreListLiveTest` | **This is the one that breaks when we drift.** It calls the live genre endpoint and fails when TMDB publishes a new genre, or retires one. (This is the only test for which CI needs the TMDB token) |
 
 The live test needs a token and a network, so it skips itself when there is none. A failure means
-TMDB changed: add or remove the entry, then re-record with `scripts/record-fixtures.py`.
+TMDB changed its genres. In that case: add or remove the entry, then re-record with `scripts/record-fixtures.py`.
+When we drift, the app still works, but either it doesn't show the missing genre, or it shows a retired genre in the filters that no movie carries. That is the cost we pay for owning the genre list.
 
 ## Adding a second source
 

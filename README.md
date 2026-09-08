@@ -104,6 +104,16 @@ More info: [docs/design-system.md](docs/design-system.md).
 | `scripts/format.sh`         | Format using Spotless with ktlint.                            |
 | `scripts/clear-data.sh`     | Wipes the installed app's storage on the connected device     |
 
+## CI
+
+[`.github/workflows/ci.yml`](.github/workflows/ci.yml), on every pull request and every push to
+`main`, in two parallel jobs:
+
+| Job | Runs                                                                                                                                                                                            |
+|---|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Build and Test** | `scripts/unittest.sh`, so unit tests, screen tests, screenshot goldens and the ktlint gate, then `scripts/coverage.sh`. The TMDB token comes from a repository secret (for the live genre test) |
+| **Flow tests** | `scripts/flowTests.sh` on an API 34 emulator with hardware acceleration enabled                                                                                                                 |
+
 ## More
 
 - [Movie API sources](docs/movie-api-sources.md): how TMDB is abstracted, what the app owns and how to add a second source.
