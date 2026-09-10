@@ -51,7 +51,7 @@ class PlaceholderTest {
         var alpha = 0f
         composeRule.setContent {
             CompositionLocalProvider(LocalInspectionMode provides true) {
-                alpha = placeholderPulseAlpha()
+                alpha = rememberPlaceholderPulseAlpha().value
             }
         }
 

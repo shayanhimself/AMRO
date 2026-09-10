@@ -16,9 +16,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -27,7 +27,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.shayan.amro.core.ui.component.PlaceholderBlock
 import com.shayan.amro.core.ui.component.PosterTile
-import com.shayan.amro.core.ui.component.placeholderPulseAlpha
+import com.shayan.amro.core.ui.component.pulsingAlpha
+import com.shayan.amro.core.ui.component.rememberPlaceholderPulseAlpha
 import com.shayan.amro.core.ui.designsystem.theme.AmroExtendedTheme
 import com.shayan.amro.core.ui.designsystem.theme.AmroTheme
 import com.shayan.amro.core.ui.designsystem.theme.RadiusPrimitives
@@ -82,7 +83,7 @@ internal fun DetailSkeleton(
     bottomPadding: Dp,
     modifier: Modifier = Modifier,
 ) {
-    val pulse = placeholderPulseAlpha()
+    val alpha = rememberPlaceholderPulseAlpha()
     // The header goes edge to edge, the rest have is inset.
     Column(
         modifier =
@@ -90,7 +91,7 @@ internal fun DetailSkeleton(
                 .fillMaxWidth()
                 .padding(bottom = bottomPadding),
     ) {
-        SkeletonHeader(title = title, posterUrl = content.posterUrl, pulse = pulse)
+        SkeletonHeader(title = title, posterUrl = content.posterUrl, alpha = alpha)
 
         // Insets the sections under the header, and spaces them.
         Column(
@@ -114,7 +115,7 @@ internal fun DetailSkeleton(
                         Modifier
                             .fillMaxWidth(TAGLINE_LINE_WIDTH_FRACTION)
                             .height(TAGLINE_LINE_HEIGHT)
-                            .alpha(pulse),
+                            .pulsingAlpha(alpha),
                     color = AmroExtendedTheme.colors.placeholder,
                 )
             }
@@ -124,7 +125,7 @@ internal fun DetailSkeleton(
                     description = content.genreDescription,
                 )
             }
-            AwaitedBody(pulse = pulse)
+            AwaitedBody(alpha = alpha)
         }
     }
 }
@@ -132,13 +133,13 @@ internal fun DetailSkeleton(
 /**
  * The backdrop, the poster over it and the rating's placeholder.
  *
- * @param pulse the opacity the placeholders are drawn at.
+ * @param alpha the opacity the placeholders are drawn at.
  */
 @Composable
 private fun SkeletonHeader(
     title: String,
     posterUrl: String?,
-    pulse: Float,
+    alpha: State<Float>,
     modifier: Modifier = Modifier,
 ) {
     // The poster hangs off the bottom of the backdrop, so the two are stacked rather than in a
@@ -156,7 +157,7 @@ private fun SkeletonHeader(
                     .align(Alignment.TopStart)
                     .fillMaxWidth()
                     .height(BACKDROP_HEIGHT)
-                    .alpha(pulse)
+                    .pulsingAlpha(alpha)
                     .background(AmroExtendedTheme.colors.placeholderMuted),
         ) {
             BackdropFade()
@@ -189,7 +190,7 @@ private fun SkeletonHeader(
                         .padding(bottom = Spacing.s2)
                         .fillMaxWidth(BADGE_LINE_WIDTH_FRACTION)
                         .height(BADGE_LINE_HEIGHT)
-                        .alpha(pulse),
+                        .pulsingAlpha(alpha),
                 color = AmroExtendedTheme.colors.placeholder,
             )
         }
@@ -199,11 +200,11 @@ private fun SkeletonHeader(
 /**
  * The movie overview, facts placeholders.
  *
- * @param pulse the opacity the placeholders are drawn at.
+ * @param alpha the opacity the placeholders are drawn at.
  */
 @Composable
 private fun AwaitedBody(
-    pulse: Float,
+    alpha: State<Float>,
     modifier: Modifier = Modifier,
 ) {
     val loading = stringResource(CoreUiR.string.core_ui_loading)
@@ -212,7 +213,7 @@ private fun AwaitedBody(
         modifier =
             modifier
                 .fillMaxWidth()
-                .alpha(pulse)
+                .pulsingAlpha(alpha)
                 .semantics(mergeDescendants = true) { contentDescription = loading },
     ) {
         // Overview placeholder lines.

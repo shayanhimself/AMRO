@@ -10,13 +10,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.tooling.preview.Preview
 import com.shayan.amro.core.ui.component.PlaceholderBlock
-import com.shayan.amro.core.ui.component.placeholderPulseAlpha
+import com.shayan.amro.core.ui.component.pulsingAlpha
+import com.shayan.amro.core.ui.component.rememberPlaceholderPulseAlpha
 import com.shayan.amro.core.ui.designsystem.theme.AmroExtendedTheme
 import com.shayan.amro.core.ui.designsystem.theme.AmroTheme
 import com.shayan.amro.core.ui.designsystem.theme.RadiusPrimitives
@@ -58,11 +59,15 @@ internal fun MovieRowSkeleton(
             val widths = Random(index)
             widths.nextWidth(TITLE_LINE_WIDTHS) to widths.nextWidth(GENRE_LINE_WIDTHS)
         }
+    val alpha = rememberPlaceholderPulseAlpha(
+        startOffsetMillis = (index % PULSE_PHASES) * PULSE_STAGGER_MILLIS,
+    )
+
     Row(
         modifier =
             modifier
                 .fillMaxWidth()
-                .alpha(rowPulseAlpha(index))
+                .pulsingAlpha(alpha)
                 .padding(MOVIE_ROW_PADDING),
         horizontalArrangement = Arrangement.spacedBy(Spacing.s4),
         verticalAlignment = Alignment.CenterVertically,
@@ -104,19 +109,6 @@ internal fun MovieRowSkeleton(
  */
 private fun Random.nextWidth(range: ClosedFloatingPointRange<Float>): Float =
     nextDouble(range.start.toDouble(), range.endInclusive.toDouble()).toFloat()
-
-/**
- * The breathing opacity this row is drawn at, offset from the row before it so the list does not
- * breathe as one block.
- *
- * @param index which row this is.
- * @return the alpha to draw the row at.
- */
-@Composable
-private fun rowPulseAlpha(index: Int): Float =
-    placeholderPulseAlpha(
-        startOffsetMillis = (index % PULSE_PHASES) * PULSE_STAGGER_MILLIS,
-    )
 
 @Preview
 @Composable
