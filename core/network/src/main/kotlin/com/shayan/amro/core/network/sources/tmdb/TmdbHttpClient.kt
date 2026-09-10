@@ -6,6 +6,7 @@ import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.logging.ANDROID
 import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
@@ -52,8 +53,8 @@ internal fun tmdbHttpClient(
         }
 
         install(Logging) {
-            this.logger = Logger.DEFAULT
-            level = if (BuildConfig.DEBUG) LogLevel.ALL else LogLevel.NONE
+            this.logger = Logger.ANDROID
+            level = if (BuildConfig.DEBUG) LogLevel.INFO else LogLevel.NONE
             // The credential is on every request, and logging is the one place that would
             // otherwise write it out.
             sanitizeHeader { header -> header == HttpHeaders.Authorization }
