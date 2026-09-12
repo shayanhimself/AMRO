@@ -59,9 +59,10 @@ internal fun MovieRowSkeleton(
             val widths = Random(index)
             widths.nextWidth(TITLE_LINE_WIDTHS) to widths.nextWidth(GENRE_LINE_WIDTHS)
         }
-    val alpha = rememberPlaceholderPulseAlpha(
-        startOffsetMillis = (index % PULSE_PHASES) * PULSE_STAGGER_MILLIS,
-    )
+    val alpha =
+        rememberPlaceholderPulseAlpha(
+            startOffsetMillis = (index % PULSE_PHASES) * PULSE_STAGGER_MILLIS,
+        )
 
     Row(
         modifier =

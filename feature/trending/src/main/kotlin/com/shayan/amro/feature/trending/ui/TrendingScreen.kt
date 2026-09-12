@@ -2,6 +2,8 @@ package com.shayan.amro.feature.trending.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,8 +22,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import com.shayan.amro.core.ui.component.MessagePanel
 import com.shayan.amro.core.ui.designsystem.component.ButtonVariant
 import com.shayan.amro.core.ui.designsystem.icon.Glyphs
@@ -39,13 +43,6 @@ import com.shayan.amro.feature.trending.viewmodel.SortKey
 import com.shayan.amro.feature.trending.viewmodel.TrendingContent
 import com.shayan.amro.feature.trending.viewmodel.TrendingUiState
 import com.shayan.amro.core.ui.R as CoreUiR
-
-private val trendingListPadding =
-    PaddingValues(
-        start = Spacing.s2,
-        end = Spacing.s2,
-        bottom = Spacing.s2,
-    )
 
 /**
  * Shows the list of trending movies, and lets the user filter and sort them. Stateless.
@@ -88,13 +85,23 @@ internal fun TrendingScreen(
             )
         },
     ) { contentPadding ->
-        Column(modifier = Modifier.fillMaxSize().padding(contentPadding)) {
+        val layoutDirection = LocalLayoutDirection.current
+        // The bottom is left to the list, so it scrolls behind the navigation bar.
+        val paddingExceptBottom =
+            PaddingValues(
+                start = contentPadding.calculateStartPadding(layoutDirection),
+                top = contentPadding.calculateTopPadding(),
+                end = contentPadding.calculateEndPadding(layoutDirection),
+            )
+        val bottomInset = contentPadding.calculateBottomPadding()
+        val listPadding = trendingListPadding(bottomInset)
+        Column(modifier = Modifier.fillMaxSize().padding(paddingExceptBottom)) {
             uiState.notice?.let { notice ->
                 TrendingNoticeBar(notice = notice, onRetry = onRefresh)
             }
             when (val content = uiState.content) {
                 TrendingContent.Skeleton -> {
-                    TrendingSkeleton(modifier = Modifier.padding(trendingListPadding))
+                    TrendingSkeleton(modifier = Modifier.padding(listPadding))
                 }
 
                 is TrendingContent.Movies -> {
@@ -105,7 +112,7 @@ internal fun TrendingScreen(
                         LazyColumn(
                             state = listState,
                             modifier = Modifier.fillMaxSize(),
-                            contentPadding = trendingListPadding,
+                            contentPadding = listPadding,
                         ) {
                             items(content.rows, key = { it.movieId }) { row ->
                                 MovieRow(
@@ -127,6 +134,7 @@ internal fun TrendingScreen(
                         onAction = onClearGenres,
                         actionVariant = ButtonVariant.Tonal,
                         actionGlyph = Glyphs.FILTER_ALT_OFF,
+                        modifier = Modifier.padding(bottom = bottomInset),
                     )
                 }
 
@@ -137,6 +145,7 @@ internal fun TrendingScreen(
                         actionLabel = stringResource(CoreUiR.string.core_ui_retry),
                         onAction = onRefresh,
                         glyphTint = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(bottom = bottomInset),
                     )
                 }
             }
@@ -154,6 +163,18 @@ internal fun TrendingScreen(
         )
     }
 }
+
+/**
+ * The list's own spacing, plus what the navigation bar takes off the bottom of the window.
+ *
+ * @param bottomInset the navigation bar's height, which the list scrolls behind.
+ */
+private fun trendingListPadding(bottomInset: Dp) =
+    PaddingValues(
+        start = Spacing.s2,
+        end = Spacing.s2,
+        bottom = Spacing.s2 + bottomInset,
+    )
 
 /**
  * Returns [listState] to the first row whenever sort or filters change.
