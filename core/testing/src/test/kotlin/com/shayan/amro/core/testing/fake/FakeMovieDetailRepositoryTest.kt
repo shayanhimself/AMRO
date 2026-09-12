@@ -5,10 +5,13 @@ import com.shayan.amro.core.model.DataError
 import com.shayan.amro.core.testing.fixture.model.MovieFixture.MOVIE
 import com.shayan.amro.core.testing.fixture.model.MovieFixture.OTHER_MOVIE
 import com.shayan.amro.core.testing.fixture.model.MovieFixture.detail
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 
 class FakeMovieDetailRepositoryTest {
@@ -63,6 +66,22 @@ class FakeMovieDetailRepositoryTest {
             repository.seedMovie(MOVIE)
 
             assertEquals(MOVIE, repository.getMovieFlow(MOVIE.id).first())
+        }
+
+    @Test
+    fun `a held refresh does not return until it is released`() =
+        runTest {
+            repository.scriptRefresh(detail(movie = MOVIE))
+            val gate = repository.holdRefreshes()
+
+            val refresh = async { repository.refresh(MOVIE.id) }
+            runCurrent()
+
+            assertFalse(refresh.isCompleted)
+
+            gate.complete(Unit)
+
+            assertNull(refresh.await())
         }
 
     @Test

@@ -1,7 +1,6 @@
 package com.shayan.amro.feature.detail.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
@@ -29,8 +28,6 @@ fun MovieDetailRoute(
         }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val uriHandler = LocalUriHandler.current
-
-    LaunchedEffect(Unit) { viewModel.onLaunch() }
 
     MovieDetailScreen(
         uiState = uiState,

@@ -4,6 +4,7 @@ import com.shayan.amro.core.data.MovieDetailRepository
 import com.shayan.amro.core.model.DataError
 import com.shayan.amro.core.model.Movie
 import com.shayan.amro.core.model.MovieDetail
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -20,8 +21,18 @@ class FakeMovieDetailRepository : MovieDetailRepository {
     private val refreshes = mutableMapOf<String, DetailRefresh>()
     private val recordedIds = mutableListOf<String>()
 
+    private var gate: CompletableDeferred<Unit>? = null
+
     /** The id each [refresh] call asked for, in call order. */
     val requestedIds: List<String> get() = recordedIds.toList()
+
+    /**
+     * Pauses every refresh from now on, so a test can check the state while a refresh is still
+     * loading.
+     *
+     * @return the gate. Call `complete(Unit)` on it to let the paused refreshes finish.
+     */
+    fun holdRefreshes(): CompletableDeferred<Unit> = CompletableDeferred<Unit>().also { gate = it }
 
     /**
      * Sets what [getMovieFlow] emits, as a trending set cached before the test began.
@@ -69,6 +80,7 @@ class FakeMovieDetailRepository : MovieDetailRepository {
 
     override suspend fun refresh(id: String): DataError? {
         recordedIds += id
+        gate?.await()
         val next =
             checkNotNull(refreshes[id]) {
                 "No refresh outcome scripted for $id."

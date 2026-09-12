@@ -36,9 +36,10 @@ class FakeTrendingMoviesRepository : TrendingMoviesRepository {
         private set
 
     /**
-     * Holds every later refresh at its start, so a caller can be read while one is running.
+     * Pauses every refresh from now on, so a test can check the state while a refresh is still
+     * loading.
      *
-     * @return the gate to complete when the held refreshes should go on and finish.
+     * @return the gate. Call `complete(Unit)` on it to let the paused refreshes finish.
      */
     fun holdRefreshes(): CompletableDeferred<Unit> = CompletableDeferred<Unit>().also { gate = it }
 

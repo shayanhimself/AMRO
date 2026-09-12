@@ -9,7 +9,10 @@ import com.shayan.amro.core.testing.fake.FakeTrendingMoviesRepository
 import com.shayan.amro.core.testing.fixture.model.MovieFixture
 import com.shayan.amro.core.testing.rule.MainDispatcherRule
 import com.shayan.amro.core.ui.text.AmroText
+import com.shayan.amro.core.ui.viewmodel.SUBSCRIPTION_TIMEOUT_MILLIS
 import com.shayan.amro.feature.trending.R
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -17,7 +20,9 @@ import org.junit.runner.RunWith
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.milliseconds
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
 class TrendingViewModelTest {
     @get:Rule
@@ -28,6 +33,7 @@ class TrendingViewModelTest {
     @Test
     fun `an empty cache with no error is the skeleton`() =
         runTest {
+            repository.scriptRefresh(emptyList())
             val viewModel = viewModel()
 
             viewModel.uiState.test {
@@ -39,6 +45,7 @@ class TrendingViewModelTest {
     fun `a cached set renders in popularity descending order`() =
         runTest {
             repository.seedTrending(CACHE)
+            repository.scriptRefresh(CACHE)
             val viewModel = viewModel()
 
             viewModel.uiState.test {
@@ -61,9 +68,7 @@ class TrendingViewModelTest {
             val viewModel = viewModel()
 
             viewModel.uiState.test {
-                awaitItem()
-                viewModel.onRefresh()
-                val content = expectMostRecentItem().content
+                val content = awaitItem().content
 
                 assertTrue(content is TrendingContent.Error, "expected an error, was $content")
                 assertEquals(
@@ -81,9 +86,7 @@ class TrendingViewModelTest {
             val viewModel = viewModel()
 
             viewModel.uiState.test {
-                awaitItem()
-                viewModel.onRefresh()
-                val state = expectMostRecentItem()
+                val state = awaitItem()
 
                 assertEquals(CACHE.size, state.rows().size)
                 assertEquals(
@@ -104,7 +107,6 @@ class TrendingViewModelTest {
             viewModel.uiState.test {
                 awaitItem()
                 viewModel.onRefresh()
-                viewModel.onRefresh()
 
                 assertNull(expectMostRecentItem().notice)
             }
@@ -119,11 +121,9 @@ class TrendingViewModelTest {
             val viewModel = viewModel()
 
             viewModel.uiState.test {
-                awaitItem()
-                viewModel.onRefresh()
                 assertEquals(
                     AmroText.Resource(R.string.feature_trending_notice_server),
-                    expectMostRecentItem().notice?.message,
+                    awaitItem().notice?.message,
                 )
 
                 val gate = repository.holdRefreshes()
@@ -143,8 +143,10 @@ class TrendingViewModelTest {
             repository.scriptRefresh(CACHE)
             val viewModel = viewModel()
 
-            viewModel.onLaunch()
-            viewModel.onLaunch()
+            viewModel.uiState.test { awaitItem() }
+            // Past the subscription timeout, so the next collector starts the flow again.
+            advanceTimeBy((SUBSCRIPTION_TIMEOUT_MILLIS + 1).milliseconds)
+            viewModel.uiState.test { awaitItem() }
 
             assertEquals(1, repository.refreshCount)
         }
@@ -156,8 +158,10 @@ class TrendingViewModelTest {
             repository.scriptRefresh(CACHE)
             val viewModel = viewModel()
 
-            viewModel.onLaunch()
-            viewModel.onRefresh()
+            viewModel.uiState.test {
+                awaitItem()
+                viewModel.onRefresh()
+            }
 
             assertEquals(2, repository.refreshCount)
         }
@@ -166,6 +170,7 @@ class TrendingViewModelTest {
     fun `a selection that matches nothing is empty from filter, not an error`() =
         runTest {
             repository.seedTrending(CACHE)
+            repository.scriptRefresh(CACHE)
             val viewModel = viewModel()
 
             viewModel.uiState.test {
@@ -180,6 +185,7 @@ class TrendingViewModelTest {
     fun `an empty selection over a cached set is never empty from filter`() =
         runTest {
             repository.seedTrending(CACHE)
+            repository.scriptRefresh(CACHE)
             val viewModel = viewModel()
 
             viewModel.uiState.test {
@@ -197,6 +203,7 @@ class TrendingViewModelTest {
     fun `the active count is the genres plus one for a sort away from the default`() =
         runTest {
             repository.seedTrending(CACHE)
+            repository.scriptRefresh(CACHE)
             val viewModel = viewModel()
 
             viewModel.uiState.test {
@@ -219,6 +226,7 @@ class TrendingViewModelTest {
     fun `clearing genres empties the selection and leaves the sort`() =
         runTest {
             repository.seedTrending(CACHE)
+            repository.scriptRefresh(CACHE)
             val viewModel = viewModel()
 
             viewModel.uiState.test {
@@ -237,6 +245,9 @@ class TrendingViewModelTest {
     fun `a selection written to the handle is restored by a view model built on it`() =
         runTest {
             repository.seedTrending(CACHE)
+            // One launch refresh for each view model.
+            repository.scriptRefresh(CACHE)
+            repository.scriptRefresh(CACHE)
             val handle = SavedStateHandle()
             val before = viewModel(handle)
 

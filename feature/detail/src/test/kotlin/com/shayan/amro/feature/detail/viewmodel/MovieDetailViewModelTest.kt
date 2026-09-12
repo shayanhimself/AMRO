@@ -9,7 +9,10 @@ import com.shayan.amro.core.testing.fake.FakeMovieDetailRepository
 import com.shayan.amro.core.testing.fixture.model.MovieFixture
 import com.shayan.amro.core.testing.rule.MainDispatcherRule
 import com.shayan.amro.core.ui.text.AmroText
+import com.shayan.amro.core.ui.viewmodel.SUBSCRIPTION_TIMEOUT_MILLIS
 import com.shayan.amro.feature.detail.R
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.Test
@@ -17,7 +20,9 @@ import org.junit.runner.RunWith
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.milliseconds
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
 class MovieDetailViewModelTest {
     @get:Rule
@@ -30,6 +35,7 @@ class MovieDetailViewModelTest {
         runTest {
             repository.seedMovie(MOVIE)
             repository.seedDetail(CACHED)
+            repository.holdRefreshes()
             val viewModel = viewModel()
 
             viewModel.uiState.test {
@@ -44,6 +50,7 @@ class MovieDetailViewModelTest {
     fun `nothing cached and nothing failed is the skeleton`() =
         runTest {
             repository.seedMovie(MOVIE)
+            repository.holdRefreshes()
             val viewModel = viewModel()
 
             viewModel.uiState.test {
@@ -59,9 +66,7 @@ class MovieDetailViewModelTest {
             val viewModel = viewModel()
 
             viewModel.uiState.test {
-                awaitItem()
-                viewModel.onRetry()
-                val content = expectMostRecentItem().content
+                val content = awaitItem().content
 
                 assertTrue(content is MovieDetailContent.Error, "expected an error, was $content")
                 assertEquals(
@@ -96,11 +101,12 @@ class MovieDetailViewModelTest {
             repository.seedMovie(MOVIE)
             repository.seedDetail(CACHED)
             repository.scriptRefresh(RELEASED)
+            val gate = repository.holdRefreshes()
             val viewModel = viewModel()
 
             viewModel.uiState.test {
                 awaitItem()
-                viewModel.onRetry()
+                gate.complete(Unit)
                 val content = expectMostRecentItem().content
 
                 assertTrue(content is MovieDetailContent.Loaded, "expected loaded, was $content")
@@ -114,6 +120,7 @@ class MovieDetailViewModelTest {
     fun `the title is the cached movie's before any record arrives`() =
         runTest {
             repository.seedMovie(MOVIE)
+            repository.holdRefreshes()
             val viewModel = viewModel()
 
             viewModel.uiState.test {
@@ -128,12 +135,10 @@ class MovieDetailViewModelTest {
             repository.scriptRefresh(CACHED)
             val viewModel = viewModel()
 
-            viewModel.uiState.test {
-                awaitItem()
-                viewModel.onLaunch()
-                viewModel.onLaunch()
-                expectMostRecentItem()
-            }
+            viewModel.uiState.test { awaitItem() }
+            // Past the subscription timeout, so the next collector starts the flow again.
+            advanceTimeBy((SUBSCRIPTION_TIMEOUT_MILLIS + 1).milliseconds)
+            viewModel.uiState.test { awaitItem() }
 
             assertEquals(listOf(MOVIE.id), repository.requestedIds)
         }
@@ -147,7 +152,6 @@ class MovieDetailViewModelTest {
 
             viewModel.uiState.test {
                 awaitItem()
-                viewModel.onLaunch()
                 repository.scriptRefreshFailure(MOVIE.id, DataError.Server)
                 viewModel.onRetry()
                 val content = expectMostRecentItem().content
@@ -168,7 +172,6 @@ class MovieDetailViewModelTest {
 
             viewModel.uiState.test {
                 awaitItem()
-                viewModel.onLaunch()
                 repository.scriptRefresh(RELEASED)
                 viewModel.onRetry()
                 val content = expectMostRecentItem().content

@@ -28,8 +28,6 @@ fun TrendingRoute(
     val viewModel: TrendingViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) { viewModel.onLaunch() }
-
     val firstMovieId = (uiState.content as? TrendingContent.Movies)?.rows?.firstOrNull()?.movieId
     SelectFirstMovieWhereNothingIsSelected(
         firstMovieId = firstMovieId,

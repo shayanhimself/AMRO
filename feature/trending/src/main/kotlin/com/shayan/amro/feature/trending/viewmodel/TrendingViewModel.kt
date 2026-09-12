@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -56,20 +57,12 @@ internal class TrendingViewModel
                 refreshState,
             ) { movies, names, sort, refresh ->
                 movies.toTrendingUiState(selectedGenreNames = names, sort = sort, refresh = refresh)
-            }.stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(SUBSCRIPTION_TIMEOUT_MILLIS),
-                initialValue = TrendingUiState(),
-            )
-
-        /**
-         * Fetches the movies the first time the screen is shown, and not again.
-         */
-        fun onLaunch() {
-            if (hasRefreshedOnLaunch) return
-            hasRefreshedOnLaunch = true
-            onRefresh()
-        }
+            }.onStart { refreshOnLaunch() }
+                .stateIn(
+                    scope = viewModelScope,
+                    started = SharingStarted.WhileSubscribed(SUBSCRIPTION_TIMEOUT_MILLIS),
+                    initialValue = TrendingUiState(),
+                )
 
         /** Fetches the trending set again, and reports what that attempt did. */
         fun onRefresh() {
@@ -115,4 +108,13 @@ internal class TrendingViewModel
             onClearGenres()
             sort.value = MovieSort.DEFAULT
         }
+
+    /**
+     * Fetches the movies the first time it's called, and not again.
+     */
+    private fun refreshOnLaunch() {
+        if (hasRefreshedOnLaunch) return
+        hasRefreshedOnLaunch = true
+        onRefresh()
     }
+}
