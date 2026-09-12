@@ -2,35 +2,37 @@
 
 What the MVP deliberately does not do, and what it costs when the time comes.
 
-## The trending list grows past a hundred
+## The list reaches past ten thousand movies
 
-Today the set is exactly a hundred movies. The remote source fetches all of them in one call, the
-local source reads the whole table as one `Flow`, and `:feature:trending` filters and sorts that list
-in Kotlin (`MovieFiltering.kt`, `MovieSorting.kt`). At a hundred items that is
-cheap, and it puts the ordering rules where a plain JVM test can assert them against a fixture.
-SQL complication is not worth it for the MVP.
+The list is paged, and both the narrowing and the ordering are the provider's: a selection reaches
+the remote source, which asks `/discover/movie` for that genre union in that order. The database
+holds one list of positions per selection and the screen reads a window of it, so nothing is ordered
+in memory and a chip tap re-queries a table rather than re-sorting a list.
 
-At thousands of items it becomes expensive, it's in memory and on every chip tap it's recalculated.
+What still bounds it is the provider. TMDB refuses page 501, so ten thousand movies is the deepest
+any one selection reaches, and `total_pages` counts a catalogue the list cannot walk to. A reader
+who reaches the end of a selection has reached the end of what TMDB will serve for it, not the end
+of the catalogue.
 
-### Two changes:
+Going past that means narrowing further rather than paging further: a year, a rating floor or a
+language turns one unreachable selection into several reachable ones. Each is another facet on
+`MovieSelection`, another segment in the query key, and another parameter in the discover mapper.
+Nothing else moves, because the key is built from the selection alone and the database branches on
+neither.
 
-### **Paginate, on both sides.**
-The remote source gains a second argument, the page number, so a caller
-asks for page N of `count` distinct movies. Remote source keeps abstracting how many api call it takes
-or whether the api accepts page size argument at all. A repository says how many movies per page it
-wants.
+## A source that cannot filter and sort
 
-The local source reads a window rather than the whole table, so the screen holds the rows it renders
-instead of every row it fetched.
+A source backing this screen has to narrow by genre and order by every key in both directions. Four
+of the twelve movie APIs surveyed can. One that cannot is still useful for movie details, and it
+reaches the app as a second binding behind `MovieRemoteDataSource` rather than as a fallback inside
+the list: two filter implementations behind one list would leave no way to tell which produced what
+is on screen.
 
-The deduplication of the movies can be done either in the remote source or in
-the local source.
+## Offline outside a selection already run
 
-### **Move filter and sort into SQL.**
-A `WHERE` and an `ORDER BY` over the table, not a pass over a list
-in Kotlin, because Kotlin can only order what it already holds and a paginated screen holds a page.
-Two things move with it: genres need a real column or a cross-reference table to be queryable, and
-the ordering rules become the database's.
-
-Paging 3 is the tool to use. PagingData, `PagingSource`, `Pager`, and `RemoteMediator` are the
-pieces, which will enter both data layer and UI layer.
+The only thing this design serves with no network is a selection the device has already run. A new
+narrowing with no connection is the full-screen error, even while the database holds ten thousand
+movies under another key. Filtering those in Kotlin would be a second filter implementation ordered
+by a comparator the provider does not use, so the list would differ from what the same selection
+shows online. Mitigating it means prefetching selections nobody has asked for, which is a storage
+budget the MVP does not have.

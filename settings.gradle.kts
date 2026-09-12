@@ -39,6 +39,6 @@ include(
     ":core:data",
     ":core:ui",
     ":core:testing",
-    ":feature:trending",
+    ":feature:discover",
     ":feature:detail",
 )

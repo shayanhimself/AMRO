@@ -5,8 +5,8 @@ private const val FIXTURE_EXTENSION = ".json"
 
 /** The recordings, grouped the way the fixture tree is. */
 object TmdbFixture {
-    /** The head of the trending list, recorded in one sequence. */
-    enum class Trending(
+    /** The head of the catalogue, recorded in one sequence under the ordering the app opens on. */
+    enum class Discover(
         private val file: String,
     ) : TmdbRecording {
         PAGE_1("page-1"),
@@ -17,21 +17,7 @@ object TmdbFixture {
         PAGE_6("page-6"),
         ;
 
-        override val path get() = "trending/$file$FIXTURE_EXTENSION"
-    }
-
-    /**
-     * Pages assembled from recorded rows so that rows repeat across the boundary, which is what
-     * TMDB re-ranking mid-sequence produces.
-     */
-    enum class Overlap(
-        private val file: String,
-    ) : TmdbRecording {
-        PAGE_1("page-1"),
-        PAGE_2("page-2"),
-        ;
-
-        override val path get() = "trending/overlap/$file$FIXTURE_EXTENSION"
+        override val path get() = "discover/$file$FIXTURE_EXTENSION"
     }
 
     /** A single movie's record, one per release status the detail screen renders. */
@@ -83,5 +69,5 @@ object TmdbFixture {
      * reads this rather than any one group.
      */
     val ALL: List<TmdbRecording> =
-        Trending.entries + Overlap.entries + Movie.entries + Error.entries + Genres
+        Discover.entries + Movie.entries + Error.entries + Genres
 }

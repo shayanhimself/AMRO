@@ -12,7 +12,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
  */
 @Composable
 fun AmroApp(modifier: Modifier = Modifier) {
-    val backStack = rememberNavBackStack(TrendingKey)
+    val backStack = rememberNavBackStack(DiscoverKey)
     val navigator = remember(backStack) { AmroNavigator(backStack) }
 
     // The app's root surface, which is the background for every screen.

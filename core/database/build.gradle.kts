@@ -15,11 +15,13 @@ room {
 }
 
 dependencies {
-    // Both are on this module's contract: `Movie` and `Flow`.
+    // All three are on this module's contract: `Movie`, `Flow` and `PagingSource`.
     api(projects.core.model)
     api(libs.kotlinx.coroutines.core)
+    api(libs.androidx.paging.common)
 
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.paging)
     implementation(libs.hilt.android)
     ksp(libs.androidx.room.compiler)
     ksp(libs.hilt.compiler)
@@ -31,4 +33,5 @@ dependencies {
     testImplementation(libs.robolectric)
     testImplementation(libs.turbine)
     testImplementation(libs.androidx.test.core)
+    testImplementation(libs.androidx.paging.testing)
 }

@@ -6,7 +6,8 @@ import com.shayan.amro.core.network.NetworkResult
 import com.shayan.amro.core.network.apiCall
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbGenreListDto
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbMovieDetailDto
-import com.shayan.amro.core.network.sources.tmdb.dto.TmdbTrendingPageDto
+import com.shayan.amro.core.network.sources.tmdb.dto.TmdbMoviePageDto
+import com.shayan.amro.core.network.sources.tmdb.mapper.TmdbDiscoverQuery
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.HttpRequestBuilder
@@ -15,13 +16,17 @@ import io.ktor.client.request.parameter
 import io.ktor.http.isSuccess
 import javax.inject.Inject
 
-private const val TRENDING_PATH = "trending/movie/week"
+private const val DISCOVER_PATH = "discover/movie"
 
 private const val MOVIE_PATH = "movie/"
 
 private const val GENRE_LIST_PATH = "genre/movie/list"
 
 private const val PAGE_PARAMETER = "page"
+
+private const val SORT_BY_PARAMETER = "sort_by"
+
+private const val WITH_GENRES_PARAMETER = "with_genres"
 
 /**
  * Every TMDB endpoint the app calls.
@@ -34,13 +39,23 @@ internal class TmdbApi
         private val client: HttpClient,
     ) {
         /**
-         * Reads one page of the trending list.
+         * Reads one page of the catalogue a query narrows and orders.
+         *
+         * `include_adult` defaults to false and is not sent.
          *
          * @param page which page to read, counted from one. TMDB fixes the page size, so a page
          * holds [TMDB_PAGE_SIZE] movies.
+         * @param query how the catalogue is narrowed and ordered.
          */
-        suspend fun trendingPage(page: Int): NetworkResult<TmdbTrendingPageDto> =
-            get(TRENDING_PATH) { parameter(PAGE_PARAMETER, page) }
+        suspend fun discoverPage(
+            page: Int,
+            query: TmdbDiscoverQuery,
+        ): NetworkResult<TmdbMoviePageDto> =
+            get(DISCOVER_PATH) {
+                parameter(PAGE_PARAMETER, page)
+                parameter(SORT_BY_PARAMETER, query.sortBy)
+                query.withGenres?.let { parameter(WITH_GENRES_PARAMETER, it) }
+            }
 
         /**
          * Reads the fuller details behind one movie.

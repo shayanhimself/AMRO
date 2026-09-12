@@ -184,7 +184,7 @@ class MovieDetailViewModelTest {
         )
 }
 
-/** The movie the trending set holds, which the screen was opened from. */
+/** The movie a list row holds, which the screen was opened from. */
 private val MOVIE = MovieFixture.MOVIE
 
 /** The record cached before the test began: unreleased, so it carries no rating. */

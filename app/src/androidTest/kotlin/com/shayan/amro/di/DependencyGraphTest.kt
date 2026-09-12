@@ -2,7 +2,7 @@ package com.shayan.amro.di
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.shayan.amro.core.data.MovieDetailRepository
-import com.shayan.amro.core.data.TrendingMoviesRepository
+import com.shayan.amro.core.data.MoviesRepository
 import com.shayan.amro.core.network.MovieRemoteDataSource
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -25,7 +25,7 @@ class DependencyGraphTest {
     lateinit var movieRemoteDataSource: MovieRemoteDataSource
 
     @Inject
-    lateinit var trendingMoviesRepository: TrendingMoviesRepository
+    lateinit var moviesRepository: MoviesRepository
 
     @Inject
     lateinit var movieDetailRepository: MovieDetailRepository
@@ -35,7 +35,7 @@ class DependencyGraphTest {
         hiltRule.inject()
 
         assertNotNull(movieRemoteDataSource)
-        assertNotNull(trendingMoviesRepository)
+        assertNotNull(moviesRepository)
         assertNotNull(movieDetailRepository)
     }
 }

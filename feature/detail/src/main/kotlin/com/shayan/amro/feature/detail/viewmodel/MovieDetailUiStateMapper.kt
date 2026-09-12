@@ -21,7 +21,7 @@ private const val GENRE_SEPARATOR = ", "
  * Maps the movie, the details behind it and the cause of the last fetch to UI state for the
  * movie detail screen.
  *
- * @param movie the summary the trending set holds, which names the screen before a record arrives.
+ * @param movie the summary a list row holds, which names the screen before a record arrives.
  * @param detail the record, from the cache or from an answer.
  * @param error the cause the last fetch failed with, or null.
  * @return what the screen renders.

@@ -2,14 +2,15 @@
 
 A native Android app for discovering movies, built on the TMDB API.
 
-Two screens: a **trending list** of this week's top 100 movies, with filter and sort functionality,
-and a **movie detail** screen behind each of them. On a wide window the two show side by side.
+Two screens: a **discover list** of the TMDB catalogue, narrowed by genre and ordered by
+popularity, title or release date, and a **movie detail** screen behind each of them. The list pages
+as it is scrolled. On a wide window the two show side by side.
 
 The app is **local-first**. Every screen reads from a Room database, the network fills the database, so the app stays usable when offline (only for the data that is fetched already).
 
-|                        Trending                        |                              Detail                              |
+|                        Discover                        |                              Detail                              |
 |:------------------------------------------------------:|:----------------------------------------------------------------:|
-| <img src="docs/images/trending-loaded-dark.png" width="240"> | <img src="docs/images/detail-loaded-dark-spiderman.png" width="240"> |
+| <img src="docs/images/discover-loaded-dark.png" width="240"> | <img src="docs/images/detail-loaded-dark-spiderman.png" width="240"> |
 
 |               Tablet                                        |
 |:-----------------------------------------------------------:|
@@ -28,6 +29,7 @@ The app is **local-first**. Every screen reads from a Room database, the network
 | Async       | Coroutines, Flow                                                                          |
 | Networking  | Ktor client on OkHttp                                                                     |
 | Storage     | Room                                                                                      |
+| Paging      | Paging 3, a `RemoteMediator` over a Room `PagingSource`                                   |
 | Image Loader      | Coil                                                                                      |
 | Testing     | JUnit4, Robolectric, Turbine, Compose testing, Compose Preview Screenshot Testing, Kover  |
 | Formatting  | Spotless with ktlint                                                                      |

@@ -7,7 +7,7 @@ import kotlin.time.Duration
  *
  * It embeds the movie rather than repeating its fields, so each field is declared once.
  *
- * @property movie the fields the trending list already renders.
+ * @property movie the fields a list row already renders.
  * @property runtime null when the source does not know the running time.
  * @property budget null when the money was never disclosed.
  * @property revenue null under the same rule as [budget].

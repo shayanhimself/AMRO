@@ -113,10 +113,10 @@ private val CROWDED =
  * The states the movie detail screen is previewed and captured in.
  */
 internal object MovieDetailPreviewData {
-    /** A first load: the trending set names the screen, and the record has not arrived. */
+    /** A first load: the row the screen was opened from names it, and the record has not arrived. */
     val SKELETON = previewState(detail = null)
 
-    /** A first load on a movie no trending row was read for, which has nothing to draw. */
+    /** A first load on a movie no row was read for, which has nothing to draw. */
     val SKELETON_WITHOUT_SUMMARY = toMovieDetailUiState(movie = null, detail = null, error = null)
 
     /** The record, complete. */
@@ -131,7 +131,7 @@ internal object MovieDetailPreviewData {
     /** A movie never opened before, whose fetch failed. */
     val ERROR = previewState(detail = null, error = DataError.NoConnectivity)
 
-    /** The film a first load already names, which the trending row handed over. */
+    /** The film a first load already names, which the list row handed over. */
     val SKELETON_TITLE = SKELETON.title.orEmpty()
 
     /** What a first load draws, which only a skeleton state has. */
@@ -196,7 +196,7 @@ private fun previewMovie(
 /**
  * Builds one record the screen renders.
  *
- * @param movie the fields the trending list already holds.
+ * @param movie the fields a list row already holds.
  */
 private fun previewDetail(
     movie: Movie,

@@ -9,14 +9,14 @@ private const val FIRST_MOVIE = "603"
 private const val SECOND_MOVIE = "604"
 
 class AmroNavigatorTest {
-    private val backStack = NavBackStack<NavKey>(TrendingKey)
+    private val backStack = NavBackStack<NavKey>(DiscoverKey)
     private val navigator = AmroNavigator(backStack)
 
     @Test
     fun `opening a movie from the list puts it over the list`() {
         navigator.openMovie(FIRST_MOVIE)
 
-        assertEquals(listOf(TrendingKey, MovieDetailKey(FIRST_MOVIE)), backStack.toList())
+        assertEquals(listOf(DiscoverKey, MovieDetailKey(FIRST_MOVIE)), backStack.toList())
     }
 
     @Test
@@ -24,7 +24,7 @@ class AmroNavigatorTest {
         navigator.openMovie(FIRST_MOVIE)
         navigator.openMovie(SECOND_MOVIE)
 
-        assertEquals(listOf(TrendingKey, MovieDetailKey(SECOND_MOVIE)), backStack.toList())
+        assertEquals(listOf(DiscoverKey, MovieDetailKey(SECOND_MOVIE)), backStack.toList())
     }
 
     @Test
@@ -32,7 +32,7 @@ class AmroNavigatorTest {
         navigator.openMovie(FIRST_MOVIE)
         navigator.openMovie(FIRST_MOVIE)
 
-        assertEquals(listOf(TrendingKey, MovieDetailKey(FIRST_MOVIE)), backStack.toList())
+        assertEquals(listOf(DiscoverKey, MovieDetailKey(FIRST_MOVIE)), backStack.toList())
     }
 
     @Test
@@ -41,13 +41,13 @@ class AmroNavigatorTest {
 
         navigator.back()
 
-        assertEquals(listOf(TrendingKey), backStack.toList())
+        assertEquals(listOf(DiscoverKey), backStack.toList())
     }
 
     @Test
     fun `going back from the last entry leaves it in place`() {
         navigator.back()
 
-        assertEquals(listOf(TrendingKey), backStack.toList())
+        assertEquals(listOf(DiscoverKey), backStack.toList())
     }
 }

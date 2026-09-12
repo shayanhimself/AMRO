@@ -8,6 +8,7 @@ import com.shayan.amro.core.database.MovieLocalDataSource
 import com.shayan.amro.core.database.RoomMovieLocalDataSource
 import com.shayan.amro.core.database.dao.MovieDao
 import com.shayan.amro.core.database.dao.MovieDetailDao
+import com.shayan.amro.core.database.dao.MovieQueryDao
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -47,6 +48,9 @@ internal abstract class DatabaseModule {
 
         @Provides
         fun provideMovieDao(database: AmroDatabase): MovieDao = database.movieDao()
+
+        @Provides
+        fun provideMovieQueryDao(database: AmroDatabase): MovieQueryDao = database.movieQueryDao()
 
         @Provides
         fun provideMovieDetailDao(database: AmroDatabase): MovieDetailDao =

@@ -12,7 +12,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 private const val TITLE = "Clear your filters?"
-private const val BODY = "The list goes back to everything trending."
+private const val BODY = "The list goes back to everything."
 private const val CONFIRM = "Clear"
 private const val DISMISS = "Keep them"
 

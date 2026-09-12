@@ -12,20 +12,20 @@ import kotlinx.datetime.plus
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
-/** The genres a generated set cycles through, so a filter for one selects a known share of it. */
+/** The genres a generated list cycles through, so a filter for one selects a known share of it. */
 private val GENERATED_GENRES =
     listOf(Genre.COMEDY, Genre.DRAMA, Genre.HORROR, Genre.SCIENCE_FICTION)
 
 /** What every generated title starts with, so a row is recognisable in a failure message. */
-private const val GENERATED_TITLE_STEM = "Trending Movie"
+private const val GENERATED_TITLE_STEM = "Ranked Movie"
 
-/** The id a generated set counts up from, clear of the ids the named fixtures carry. */
+/** The id a generated list counts up from, clear of the ids the named fixtures carry. */
 private const val GENERATED_FIRST_ID = 900_000
 
-/** The popularity a generated set counts down from, so its first entry is its most popular. */
+/** The popularity a generated list counts down from, so its first entry is its most popular. */
 private const val GENERATED_TOP_POPULARITY = 1_000.0
 
-/** The date a generated set counts up from, a day per entry, so no two entries share one. */
+/** The date a generated list counts up from, a day per entry, so no two entries share one. */
 private val GENERATED_FIRST_RELEASE = LocalDate.parse("2026-01-01")
 
 /** The fixture of Movie models. */
@@ -85,14 +85,14 @@ object MovieFixture {
         )
 
     /**
-     * A ranked trending set, as a source answers with one.
+     * A ranked list of movies, as a source answers with one.
      *
      * Every field a screen reads varies with the position, so a test names a row by its index and
      * reads the title back off the set.
      *
-     * @param count how many movies the set holds.
+     * @param count how many movies the list holds.
      */
-    fun trendingSet(count: Int): List<Movie> =
+    fun rankedMovies(count: Int): List<Movie> =
         List(count) { position ->
             movie(
                 id = (GENERATED_FIRST_ID + position).toString(),

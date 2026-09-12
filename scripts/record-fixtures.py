@@ -7,9 +7,8 @@ provider actually produces rather than the ones its author remembered.
 The read access token comes from local.properties, which is not in the repository. The script
 refuses to run without one rather than recording an unauthorised body over a real fixture.
 
-The assembled fixtures under trending/overlap are never touched: they are built from
-recorded rows so the deduplication test fails for the right reason on every run, and a recording
-would only reproduce duplicate ids on a day TMDB happens to re-rank mid-sequence.
+The discover pages are recorded in one run under the ordering the app opens on, so a test walking
+them walks what the app walks.
 """
 
 import json
@@ -25,7 +24,10 @@ FIXTURES = REPO_ROOT / "core/network/src/test/resources/fixtures/tmdb"
 TOKEN_KEY = "tmdb.readAccessToken"
 BASE_URL = "https://api.themoviedb.org/3/"
 
-TRENDING_PAGES = 6
+DISCOVER_PAGES = 6
+
+# The ordering the app opens on, which is what the recorded pages are taken under.
+DISCOVER_SORT = "popularity.desc"
 
 # One movie per shape the detail screen has to render, keyed by the file it is recorded into.
 MOVIE_IDS = {
@@ -91,11 +93,11 @@ def main() -> None:
     token = read_token()
     print(f"recording into {FIXTURES.relative_to(REPO_ROOT)}")
 
-    for page in range(1, TRENDING_PAGES + 1):
-        path = f"trending/movie/week?page={page}"
+    for page in range(1, DISCOVER_PAGES + 1):
+        path = f"discover/movie?page={page}&sort_by={DISCOVER_SORT}"
         status, body = fetch(path, token)
         expect(status, path, 200)
-        write(f"trending/page-{page}.json", body)
+        write(f"discover/page-{page}.json", body)
 
     status, body = fetch("genre/movie/list", token)
     expect(status, "genre/movie/list", 200)
@@ -111,8 +113,8 @@ def main() -> None:
     expect(status, f"movie/{UNKNOWN_MOVIE_ID}", 404)
     write("error/404.json", body)
 
-    status, body = fetch("trending/movie/week", INVALID_TOKEN)
-    expect(status, "trending/movie/week with an invalid token", 401)
+    status, body = fetch("discover/movie", INVALID_TOKEN)
+    expect(status, "discover/movie with an invalid token", 401)
     write("error/401.json", body)
 
 

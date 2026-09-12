@@ -21,7 +21,7 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.shayan.amro.feature.detail.ui.MovieDetailRoute
-import com.shayan.amro.feature.trending.ui.TrendingRoute
+import com.shayan.amro.feature.discover.ui.DiscoverRoute
 
 /**
  * Maps every key to its route and lets the adaptive scene arrange them.
@@ -71,8 +71,8 @@ internal fun AmroNavDisplay(
             ),
         entryProvider =
             entryProvider {
-                entry<TrendingKey>(metadata = ListDetailSceneStrategy.listPane()) {
-                    TrendingRoute(
+                entry<DiscoverKey>(metadata = ListDetailSceneStrategy.listPane()) {
+                    DiscoverRoute(
                         selectedMovieId = if (twoPane) openMovieId else null,
                         onMovieClick = { movieId ->
                             isDetailSelectedByDefault = false

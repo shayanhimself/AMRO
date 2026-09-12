@@ -2,7 +2,7 @@
 # Run the flow tests: the device tests in :app that answer from a local server.
 #
 #   scripts/flowTests.sh                     every flow test
-#   scripts/flowTests.sh 'trending screen'   the tests whose name matches
+#   scripts/flowTests.sh 'discover screen'   the tests whose name matches
 #   scripts/flowTests.sh A11yFlowTest        likewise, by class
 #
 # A filter is a regex matched against `package.Class#method`, and the run narrows to the modules

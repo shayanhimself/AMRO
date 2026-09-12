@@ -6,7 +6,7 @@ package com.shayan.amro.core.network.sources.tmdb.fixture
  * It goes through the classpath rather than an Android context, so it works in a plain JVM test
  * with no Robolectric.
  *
- * @param path the resource's path, as in `fixtures/tmdb/trending/page-1.json`.
+ * @param path the resource's path, as in `fixtures/tmdb/discover/page-1.json`.
  * @return the file's contents, or null when nothing is packaged at that path.
  */
 internal fun classpathResource(path: String): String? =

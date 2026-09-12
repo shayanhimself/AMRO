@@ -12,6 +12,7 @@ dependencies {
     api(projects.core.database)
     api(projects.core.network)
     api(libs.kotlinx.coroutines.core)
+    api(libs.androidx.paging.common)
 
     api(libs.junit)
     api(libs.kotlinx.coroutines.test)
@@ -23,4 +24,5 @@ dependencies {
 
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.turbine)
+    testImplementation(libs.androidx.paging.testing)
 }

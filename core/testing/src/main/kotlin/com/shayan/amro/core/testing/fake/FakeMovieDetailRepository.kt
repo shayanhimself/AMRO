@@ -24,7 +24,7 @@ class FakeMovieDetailRepository : MovieDetailRepository {
     val requestedIds: List<String> get() = recordedIds.toList()
 
     /**
-     * Sets what [getMovieFlow] emits, as a trending set cached before the test began.
+     * Sets what [getMovieFlow] emits, as a list cached before the test began.
      *
      * @param movie the movie that set holds.
      */

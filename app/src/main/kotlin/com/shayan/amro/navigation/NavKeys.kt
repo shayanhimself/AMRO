@@ -3,9 +3,9 @@ package com.shayan.amro.navigation
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
-/** The list of trending movies. */
+/** The movie list the app opens on. */
 @Serializable
-data object TrendingKey : NavKey
+data object DiscoverKey : NavKey
 
 /**
  * One movie's detail.

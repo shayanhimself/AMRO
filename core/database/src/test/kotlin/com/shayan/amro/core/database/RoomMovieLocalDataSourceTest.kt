@@ -1,6 +1,13 @@
 package com.shayan.amro.core.database
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingSource
+import androidx.paging.testing.asSnapshot
 import app.cash.turbine.test
+import com.shayan.amro.core.model.Cursor
+import com.shayan.amro.core.model.Movie
+import com.shayan.amro.core.model.MoviePage
 import com.shayan.amro.core.model.Rating
 import com.shayan.amro.core.testing.fixture.model.MovieFixture.detail
 import com.shayan.amro.core.testing.fixture.model.MovieFixture.movie
@@ -13,56 +20,159 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 /** What the same movie's tagline reads as once TMDB has been asked again. */
 private const val SECOND_TAGLINE = "It bites twice."
 
+/** Two queries, so a write under one can be shown not to reach the other. */
+private const val POPULAR_KEY = ":POPULARITY:DESCENDING"
+private const val COMEDIES_KEY = "COMEDY:TITLE:ASCENDING"
+
+private val FIRST_CURSOR = Cursor("2")
+private val SECOND_CURSOR = Cursor("3")
+
 @RunWith(RobolectricTestRunner::class)
 class RoomMovieLocalDataSourceTest {
     @Test
-    fun `a replace emits once with the new set and never an empty list`() =
+    fun `a read joins and orders by the position the source put a movie at`() =
         runLocalDataSourceTest { source ->
-            source.getTrendingMoviesFlow().test {
-                assertEquals(emptyList(), awaitItem())
-
-                source.replaceTrending(listOf(FIRST_MOVIE, SECOND_MOVIE))
-
-                assertEquals(listOf(FIRST_MOVIE, SECOND_MOVIE), awaitItem().sortedBy { it.title })
-                expectNoEvents()
-            }
-        }
-
-    @Test
-    fun `a replace removes the rows the new set does not contain`() =
-        runLocalDataSourceTest { source ->
-            source.replaceTrending(listOf(FIRST_MOVIE, SECOND_MOVIE))
-
-            source.replaceTrending(listOf(SECOND_MOVIE, THIRD_MOVIE))
+            source.replaceQuery(POPULAR_KEY, page(THIRD_MOVIE, FIRST_MOVIE, SECOND_MOVIE))
 
             assertEquals(
-                listOf(SECOND_MOVIE, THIRD_MOVIE),
-                source.getTrendingMoviesFlow().first().sortedBy { it.title },
+                listOf(THIRD_MOVIE, FIRST_MOVIE, SECOND_MOVIE),
+                source.moviesPagingSource(POPULAR_KEY).snapshot(),
             )
         }
 
     @Test
-    fun `a detail written for a movie the trending table does not hold still reads back`() =
+    fun `an append carries on after everything the query holds`() =
+        runLocalDataSourceTest { source ->
+            source.replaceQuery(POPULAR_KEY, page(FIRST_MOVIE))
+
+            source.appendQuery(POPULAR_KEY, page(SECOND_MOVIE, THIRD_MOVIE))
+
+            assertEquals(
+                listOf(FIRST_MOVIE, SECOND_MOVIE, THIRD_MOVIE),
+                source.moviesPagingSource(POPULAR_KEY).snapshot(),
+            )
+        }
+
+    @Test
+    fun `a movie an append repeats keeps the place it first took`() =
+        runLocalDataSourceTest { source ->
+            source.replaceQuery(POPULAR_KEY, page(FIRST_MOVIE, SECOND_MOVIE))
+
+            source.appendQuery(POPULAR_KEY, page(SECOND_MOVIE, THIRD_MOVIE))
+
+            assertEquals(
+                listOf(FIRST_MOVIE, SECOND_MOVIE, THIRD_MOVIE),
+                source.moviesPagingSource(POPULAR_KEY).snapshot(),
+            )
+        }
+
+    @Test
+    fun `a movie one query repeats is still its own row under another`() =
+        runLocalDataSourceTest { source ->
+            source.replaceQuery(POPULAR_KEY, page(FIRST_MOVIE))
+
+            source.replaceQuery(COMEDIES_KEY, page(FIRST_MOVIE))
+
+            assertEquals(listOf(FIRST_MOVIE), source.moviesPagingSource(POPULAR_KEY).snapshot())
+            assertEquals(listOf(FIRST_MOVIE), source.moviesPagingSource(COMEDIES_KEY).snapshot())
+        }
+
+    @Test
+    fun `a replace clears one query and leaves another intact`() =
+        runLocalDataSourceTest { source ->
+            source.replaceQuery(COMEDIES_KEY, page(THIRD_MOVIE))
+            source.replaceQuery(POPULAR_KEY, page(FIRST_MOVIE, SECOND_MOVIE))
+
+            source.replaceQuery(POPULAR_KEY, page(SECOND_MOVIE))
+
+            assertEquals(listOf(SECOND_MOVIE), source.moviesPagingSource(POPULAR_KEY).snapshot())
+            assertEquals(listOf(THIRD_MOVIE), source.moviesPagingSource(COMEDIES_KEY).snapshot())
+        }
+
+    @Test
+    fun `a replace leaves the movie rows the query no longer references`() =
+        runLocalDataSourceTest { source ->
+            source.replaceQuery(POPULAR_KEY, page(FIRST_MOVIE))
+
+            source.replaceQuery(POPULAR_KEY, page(SECOND_MOVIE))
+
+            assertEquals(FIRST_MOVIE, source.getMovieFlow(FIRST_MOVIE.id).first())
+        }
+
+    @Test
+    fun `a cursor is read back under the query it was written for`() =
+        runLocalDataSourceTest { source ->
+            source.replaceQuery(POPULAR_KEY, page(FIRST_MOVIE, next = FIRST_CURSOR))
+            source.replaceQuery(COMEDIES_KEY, page(SECOND_MOVIE, next = SECOND_CURSOR))
+
+            assertEquals(FIRST_CURSOR, source.queryCursor(POPULAR_KEY))
+            assertEquals(SECOND_CURSOR, source.queryCursor(COMEDIES_KEY))
+        }
+
+    @Test
+    fun `an append overwrites the cursor with where the list now resumes`() =
+        runLocalDataSourceTest { source ->
+            source.replaceQuery(POPULAR_KEY, page(FIRST_MOVIE, next = FIRST_CURSOR))
+
+            source.appendQuery(POPULAR_KEY, page(SECOND_MOVIE, next = SECOND_CURSOR))
+
+            assertEquals(SECOND_CURSOR, source.queryCursor(POPULAR_KEY))
+        }
+
+    @Test
+    fun `a query the source has served everything for holds no cursor`() =
+        runLocalDataSourceTest { source ->
+            source.replaceQuery(POPULAR_KEY, page(FIRST_MOVIE, next = null))
+
+            assertNull(source.queryCursor(POPULAR_KEY))
+        }
+
+    @Test
+    fun `a write invalidates a read that was already open over that query`() =
+        runLocalDataSourceTest { source ->
+            val paging = source.moviesPagingSource(POPULAR_KEY)
+            paging.load(
+                PagingSource.LoadParams.Refresh(
+                    key = null,
+                    loadSize = SNAPSHOT_PAGE_SIZE,
+                    placeholdersEnabled = false,
+                ),
+            )
+
+            source.replaceQuery(POPULAR_KEY, page(FIRST_MOVIE))
+
+            assertTrue(paging.invalid, "the rows a write added never reach a reader")
+        }
+
+    @Test
+    fun `a query nothing has been written for reads as an empty list`() =
+        runLocalDataSourceTest { source ->
+            assertEquals(emptyList(), source.moviesPagingSource(POPULAR_KEY).snapshot())
+        }
+
+    @Test
+    fun `a detail written for a movie no query references still reads back`() =
         runLocalDataSourceTest { source ->
             source.writeMovieDetail(FIRST_DETAIL)
 
-            source.replaceTrending(listOf(SECOND_MOVIE))
+            source.replaceQuery(POPULAR_KEY, page(SECOND_MOVIE))
 
             assertEquals(FIRST_DETAIL, source.getMovieDetailFlow(FIRST_MOVIE.id).first())
         }
 
     @Test
-    fun `writing a detail leaves the trending table untouched`() =
+    fun `writing a detail leaves the movie rows untouched`() =
         runLocalDataSourceTest { source ->
-            source.replaceTrending(listOf(SECOND_MOVIE))
+            source.replaceQuery(POPULAR_KEY, page(SECOND_MOVIE))
 
             source.writeMovieDetail(FIRST_DETAIL)
 
-            assertEquals(listOf(SECOND_MOVIE), source.getTrendingMoviesFlow().first())
+            assertEquals(listOf(SECOND_MOVIE), source.moviesPagingSource(POPULAR_KEY).snapshot())
         }
 
     @Test
@@ -72,19 +182,15 @@ class RoomMovieLocalDataSourceTest {
         }
 
     @Test
-    fun `a movie read for one a refresh dropped emits null`() =
+    fun `a movie read for one nothing has written emits null`() =
         runLocalDataSourceTest { source ->
-            source.replaceTrending(listOf(FIRST_MOVIE))
-
-            source.replaceTrending(listOf(SECOND_MOVIE))
-
             assertNull(source.getMovieFlow(FIRST_MOVIE.id).first())
         }
 
     @Test
-    fun `a movie read for one the trending set holds emits it`() =
+    fun `a movie read for one a query put there emits it`() =
         runLocalDataSourceTest { source ->
-            source.replaceTrending(listOf(FIRST_MOVIE, SECOND_MOVIE))
+            source.replaceQuery(POPULAR_KEY, page(FIRST_MOVIE, SECOND_MOVIE))
 
             assertEquals(FIRST_MOVIE, source.getMovieFlow(FIRST_MOVIE.id).first())
         }
@@ -120,7 +226,7 @@ class RoomMovieLocalDataSourceTest {
     @Test
     fun `a movie the source knows nothing optional about reads back knowing nothing`() =
         runLocalDataSourceTest { source ->
-            source.replaceTrending(listOf(BARE_MOVIE))
+            source.replaceQuery(POPULAR_KEY, page(BARE_MOVIE))
 
             assertEquals(BARE_MOVIE, source.getMovieFlow(BARE_MOVIE.id).first())
         }
@@ -153,11 +259,37 @@ private fun runLocalDataSourceTest(
 ): TestResult =
     runTest {
         val database = testDatabase()
-        body(RoomMovieLocalDataSource(database.movieDao(), database.movieDetailDao()))
+        body(
+            RoomMovieLocalDataSource(
+                moviesDao = database.movieDao(),
+                queriesDao = database.movieQueryDao(),
+                detailsDao = database.movieDetailDao(),
+            ),
+        )
     }
 
 /**
- * Three movies of one trending set.
+ * One stretch of a list, as a source answers with one.
+ *
+ * @param next where the list resumes, which most cases here do not turn on.
+ */
+private fun page(
+    vararg movies: Movie,
+    next: Cursor? = FIRST_CURSOR,
+): MoviePage = MoviePage(movies = movies.toList(), next = next)
+
+/** More rows than any fixture here holds, so one page is the whole list. */
+private const val SNAPSHOT_PAGE_SIZE = 50
+
+/** Everything a paged read holds, in the order it holds it. */
+private suspend fun PagingSource<Int, Movie>.snapshot(): List<Movie> =
+    Pager(
+        config = PagingConfig(pageSize = SNAPSHOT_PAGE_SIZE, enablePlaceholders = false),
+        pagingSourceFactory = { this },
+    ).flow.asSnapshot()
+
+/**
+ * Three movies one query produced.
  */
 private val FIRST_MOVIE = movie(title = "The Mongoose")
 

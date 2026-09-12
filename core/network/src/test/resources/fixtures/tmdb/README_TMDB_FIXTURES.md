@@ -1,17 +1,16 @@
 # TMDB fixtures
 
 Recorded TMDB responses, each written exactly as the API sent it. A test reads them through the
-`TmdbFixture` enum in `:core:testing`.
+`TmdbFixture` enum beside them.
 
-`scripts/record-fixtures.py` re-records everything here except the assembled pages. It reads the
-token from `local.properties`, refuses to run without one, and prints which files changed.
+`scripts/record-fixtures.py` re-records everything here. It reads the token from
+`local.properties`, refuses to run without one, and prints which files changed.
 
 ## What each file is
 
 | File | Is |
 |---|---|
-| `trending/page-1.json` to `page-6.json` | Six sequential pages of `/trending/movie/week`, one run |
-| `trending/overlap/page-1.json`, `page-2.json` | Two pages assembled from those recordings, see below |
+| `discover/page-1.json` to `page-6.json` | Six sequential pages of `/discover/movie` under `popularity.desc`, one run |
 | `genres.json` | `/genre/movie/list`, the evidence the app's genre table is total over what TMDB sends |
 | `movie/released.json` | A released movie with every field populated |
 | `movie/in-production.json` | A movie in production: empty tagline, zero budget, revenue and votes |
@@ -23,18 +22,9 @@ The three movies are one per shape the detail screen renders. Each file is named
 and the recorder holds the id behind it. A re-record checks nothing about that shape: if TMDB
 updates one of them, the test that reads it fails and a different id has to be picked.
 
-## The assembled pages
-
-TMDB re-ranks its trending list between requests, so a movie sitting on a page boundary is served on
-two sequential pages while another is missed. The walk that fetches a hundred distinct movies has
-to drop the repeat, and that needs a fixture that repeats.
-
-A recording only reproduces this on a day TMDB happens to re-rank mid-run, so the two pages under
-`overlap/` are built instead: `overlap/page-2.json` opens with the last three rows of
-`overlap/page-1.json`, and the rest of it is `trending/page-2.json`'s own rows. Every row is a real
-recorded row. Forty rows, thirty-seven distinct.
-
-The recorder leaves them alone, because a re-record would quietly disarm the test that reads them.
+The discover pages are recorded under the ordering the app opens on, so a walk over them is the
+walk the app makes. Paging there is stable: page one repeated is identical and adjacent pages share
+no movie, so no recording has to reproduce a repeat.
 
 ## What is not recorded
 

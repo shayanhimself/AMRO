@@ -13,6 +13,7 @@ import com.google.android.apps.common.testing.accessibility.framework.Accessibil
 import com.google.android.apps.common.testing.accessibility.framework.AccessibilityCheckResultUtils.matchesChecks
 import com.google.android.apps.common.testing.accessibility.framework.checks.ImageContrastCheck
 import com.google.android.apps.common.testing.accessibility.framework.integrations.espresso.AccessibilityValidator
+import com.shayan.amro.core.model.MoviePage
 import com.shayan.amro.core.network.MovieRemoteDataSource
 import com.shayan.amro.core.network.NetworkResult
 import com.shayan.amro.core.network.di.RemoteSourceModule
@@ -40,7 +41,7 @@ import org.junit.runner.RunWith
 private const val ACCESSIBILITY_CHECKS_MIN_SDK = 34
 
 /** More rows than a screen holds, so the row the test opens is one it has to scroll to. */
-private const val TRENDING_SET_SIZE = 40
+private const val MOVIE_COUNT = 40
 
 /** The row the test opens, far enough down that reaching it scrolls the list. */
 private const val DETAIL_ROW_INDEX = 20
@@ -72,7 +73,7 @@ class A11yFlowTest {
 
     private val launcher = AppLauncher()
 
-    private val trendingMovies = MovieFixture.trendingSet(TRENDING_SET_SIZE)
+    private val movies = MovieFixture.rankedMovies(MOVIE_COUNT)
 
     private val remote = FakeMovieRemoteDataSource()
 
@@ -84,9 +85,9 @@ class A11yFlowTest {
     @Before
     fun setUp() {
         hiltRule.inject()
-        remote.alwaysAnswerTrending(NetworkResult.Success(trendingMovies))
+        remote.alwaysAnswerMovies(NetworkResult.Success(MoviePage(movies = movies, next = null)))
         remote.alwaysAnswerMovieDetail(
-            NetworkResult.Success(MovieFixture.detail(movie = trendingMovies[DETAIL_ROW_INDEX])),
+            NetworkResult.Success(MovieFixture.detail(movie = movies[DETAIL_ROW_INDEX])),
         )
         // Enabling the checks here also runs them ahead of every tap the tests below make.
         composeRule.enableAccessibilityChecks(
@@ -106,19 +107,19 @@ class A11yFlowTest {
     }
 
     @Test
-    fun theTrendingScreenPassesAccessibilityChecks() {
+    fun theDiscoverScreenPassesAccessibilityChecks() {
         launcher.launch()
-        composeRule.awaitText(trendingMovies.first().title)
+        composeRule.awaitText(movies.first().title)
 
         assertScreenIsAccessible()
     }
 
     @Test
     fun theMovieDetailScreenPassesAccessibilityChecks() {
-        val openedTitle = trendingMovies[DETAIL_ROW_INDEX].title
+        val openedTitle = movies[DETAIL_ROW_INDEX].title
 
         launcher.launch()
-        composeRule.awaitText(trendingMovies.first().title)
+        composeRule.awaitText(movies.first().title)
 
         composeRule
             .onNode(hasScrollAction())

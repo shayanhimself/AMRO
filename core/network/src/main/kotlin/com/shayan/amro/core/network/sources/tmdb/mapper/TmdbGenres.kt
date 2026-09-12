@@ -30,6 +30,9 @@ private val GENRES_BY_TMDB_ID =
         37 to Genre.WESTERN,
     )
 
+/** The same table read the other way, which is what a genre filter sends. */
+private val TMDB_IDS_BY_GENRE = GENRES_BY_TMDB_ID.entries.associate { (id, genre) -> genre to id }
+
 /**
  * Every TMDB genre id the table carries.
  *
@@ -45,3 +48,11 @@ internal val tmdbGenreIds: Set<Int> get() = GENRES_BY_TMDB_ID.keys
  * one the filter sheet also offers.
  */
 internal fun tmdbGenre(id: Int): Genre? = GENRES_BY_TMDB_ID[id]
+
+/**
+ * The TMDB id one app genre is asked for by.
+ *
+ * Every genre has one, and a round trip test asserts it, so the two directions of one table cannot
+ * disagree.
+ */
+internal fun tmdbGenreId(genre: Genre): Int = TMDB_IDS_BY_GENRE.getValue(genre)

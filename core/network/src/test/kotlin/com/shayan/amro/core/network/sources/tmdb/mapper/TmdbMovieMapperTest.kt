@@ -6,7 +6,7 @@ import com.shayan.amro.core.network.sources.MovieId
 import com.shayan.amro.core.network.sources.tmdb.TMDB_SOURCE
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbMovieDetailDto
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbMovieDto
-import com.shayan.amro.core.network.sources.tmdb.dto.TmdbTrendingPageDto
+import com.shayan.amro.core.network.sources.tmdb.dto.TmdbMoviePageDto
 import com.shayan.amro.core.network.sources.tmdb.fixture.TmdbFixture
 import com.shayan.amro.core.network.sources.tmdb.fixture.TmdbRecording
 import com.shayan.amro.core.network.sources.tmdb.fixture.decode
@@ -32,7 +32,7 @@ private const val ROW_TITLE = "A row"
 private const val ROW_POPULARITY = 42.5
 
 /** The smallest score seen across the recorded pages, so no real row sorts below an unscored one. */
-private const val LOWEST_TMDB_SCORE = 2.1233
+private const val LOWEST_TMDB_SCORE = 18.2025
 
 /** An id TMDB does not issue, so a row carrying it has a genre the table has no entry for. */
 private const val UNKNOWN_GENRE_ID = 999_999
@@ -44,11 +44,11 @@ private const val EMPTY_DATE = ""
 private const val SCORE = 7.5
 private const val VOTES = 120
 
-/** The first row of the recorded trending page, which carries every field a row can. */
-private const val RECORDED_ROW_ID = "1386315"
-private const val RECORDED_ROW_TITLE = "The Runner"
-private const val RECORDED_ROW_POPULARITY = 161.6957
-private val RECORDED_ROW_RELEASE_DATE = LocalDate(2026, 9, 3)
+/** The first row of the recorded catalogue page, which carries every field a row can. */
+private const val RECORDED_ROW_ID = "969681"
+private const val RECORDED_ROW_TITLE = "Spider-Man: Brand New Day"
+private const val RECORDED_ROW_POPULARITY = 839.8698
+private val RECORDED_ROW_RELEASE_DATE = LocalDate(2026, 7, 29)
 
 class TmdbMovieMapperTest {
     @Test
@@ -159,7 +159,10 @@ class TmdbMovieMapperTest {
 
         assertEquals(MovieId(TMDB_SOURCE, RECORDED_ROW_ID).qualified, movie.id)
         assertEquals(RECORDED_ROW_TITLE, movie.title)
-        assertEquals(listOf(Genre.THRILLER), movie.genres)
+        assertEquals(
+            listOf(Genre.SCIENCE_FICTION, Genre.ACTION, Genre.ADVENTURE),
+            movie.genres,
+        )
         assertEquals(RECORDED_ROW_RELEASE_DATE, movie.releaseDate)
         assertEquals(RECORDED_ROW_POPULARITY, movie.popularity)
         assertNotNull(movie.poster)
@@ -170,14 +173,14 @@ class TmdbMovieMapperTest {
 private fun recorded(fixture: TmdbRecording) = fixture.decode<TmdbMovieDetailDto>()
 
 /**
- * The first row of a recorded trending page, decoded the way the client decodes it.
+ * The first row of a recorded catalogue page, decoded the way the client decodes it.
  *
  * A built row cannot catch a wire name that stops matching, because it never travels over the wire.
  * This one does, so a renamed field reaches the assertions as an absence.
  */
 private fun recordedRow() =
-    TmdbFixture.Trending.PAGE_1
-        .decode<TmdbTrendingPageDto>()
+    TmdbFixture.Discover.PAGE_1
+        .decode<TmdbMoviePageDto>()
         .results
         .first()
 

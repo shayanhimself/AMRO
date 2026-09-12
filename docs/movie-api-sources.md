@@ -8,14 +8,23 @@ This is how we use movie API sources. TMDB is the first source, it might be swap
 
 ```kotlin
 interface MovieRemoteDataSource {
-    suspend fun getTrendingMovies(count: Int): NetworkResult<List<Movie>>
+    suspend fun getMovies(
+        selection: MovieSelection,
+        count: Int,
+        after: Cursor?,
+    ): NetworkResult<MoviePage>
 
     suspend fun getMovieDetail(movieId: String): NetworkResult<MovieDetail>
 }
 ```
 
-A caller (Repository) asks for a number of movies and gets distinct ones. How many requests that took and how large
-a page, are the implementation's business.
+A caller (Repository) says which movies it wants, how many, and where it left off. How many requests
+that took, how large a provider's own page is, and whether it pages by number or by token are the
+implementation's business: the cursor is opaque and only the source that wrote one reads it.
+
+**A source narrows and orders its own catalogue.** The selection is the app's genre type and the
+app's sort, never a provider's vocabulary, and a source that cannot serve both can still serve movie
+details.
 
 The response contains app's domain models (Movie, MovieDetail), not the APIs DTO.
 
@@ -55,16 +64,27 @@ These types are owned by the app's domail model `Movie` and `MovieDetail`.
 
 Nullability carries the missing-data rule. The mappers should turn: 0, empty string, absent field -> `null`. UI treats: `rating == null` omits the rating block, `budget == null` reads "Not disclosed".
 
-## The paging workaround
+## The walk
 
-TMDB serves trending twenty movies per page. Worse, it re-ranks between requests
-([1](https://www.themoviedb.org/talk/5ee3abd1590086001f50b3c1),
-[2](https://www.themoviedb.org/talk/5bbabe890e0a2616d7005bd6)), so a movie on a page boundary is
-served twice while another is missed. Five pages measured 100 rows and only 92 distinct movies!
+TMDB serves twenty movies per page and ignores every page size parameter, so a caller asking for
+sixty is three requests. `TmdbRemoteDataSource.getMovies` is where that is absorbed: it walks pages
+from the one its cursor names until it holds the count, and writes the next page number into the
+cursor it returns.
 
-`TmdbRemoteDataSource.getTrendingMovies` is where that is absorbed. It walks pages from one, drops a
-repeated movie, and keeps going on **distinct movies held**. A page that fails takes down the whole walk with
-it, because showing less than 100 movies is confusing, we show error & retry button.
+Discover's paging is far steadier than trending's: page one repeated is identical and adjacent
+pages share no movie, so the walk concatenates whole pages and drops nothing. It is not perfectly
+stable, though. TMDB re-ranks between one walk and the next, so a movie can arrive on both sides of
+the boundary between two calls, and a list holding it twice would repeat a row. `query_results`
+carries a unique index on the movie within a query, so the movie keeps the place it first took. A
+page that fails takes the whole call down with it, because a caller cannot tell a list cut short
+from one that is simply short.
+
+TMDB refuses page 501, so a walk ends there. `total_pages` counts what exists rather than what is
+served, and nothing reads it.
+
+`TmdbDiscoverMapper.kt` is the only file that knows what TMDB calls a genre filter and a sort: genre
+ids joined on a pipe, which is the union the product asks for, and `original_title` rather than the
+localised title, because the app sends no language and holds original titles.
 
 ## Keeping the genre list in sync
 
@@ -76,8 +96,8 @@ Two tests guard that table, both in `core/network/src/test`:
 
 | Test | Fails when                                                                                                                                                                                           |
 |---|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `TmdbGenresTest` | The table has a gap against the recorded genre list or the recorded trending pages. (It reads a recorded response, so it cannot notice TMDB publishing a new genre)                                  |
-| `TmdbGenreListLiveTest` | **This is the one that breaks when we drift.** It calls the live genre endpoint and fails when TMDB publishes a new genre, or retires one. (This is the only test for which CI needs the TMDB token) |
+| `TmdbGenresTest` | The table has a gap against the recorded genre list or the recorded catalogue pages, or its two directions disagree. (It reads a recorded response, so it cannot notice TMDB publishing a new genre)  |
+| `TmdbLiveTest` | **This is the one that breaks when we drift.** It calls the live endpoints and fails when TMDB publishes a new genre or retires one, when the page ceiling moves, or when a pipe-joined genre filter stops being a union. (This is the only test for which CI needs the TMDB token) |
 
 The live test needs a token and a network, so it skips itself when there is none. A failure means
 TMDB changed its genres. In that case: add or remove the entry, then re-record with `scripts/record-fixtures.py`.
@@ -123,7 +143,11 @@ Only a source can say which movie ids are its own, so the contract asks it:
 
 ```kotlin
 interface MovieRemoteDataSource {
-    suspend fun getTrendingMovies(count: Int): NetworkResult<List<Movie>>
+    suspend fun getMovies(
+        selection: MovieSelection,
+        count: Int,
+        after: Cursor?,
+    ): NetworkResult<MoviePage>
 
     suspend fun getMovieDetail(movieId: String): NetworkResult<MovieDetail>
 
@@ -157,8 +181,8 @@ fetched by anyone, so it answers like a failed read and the cached record keeps 
 
 
 ### Open product decision
-`TrendingMoviesRepository` asks every source and writes what comes back. Whether to **combine trending lists of multiple sources** is a product decision that needs to be made.
-- **What a second source means.** Merging two trending lists, preferring one, or showing them apart
+`MoviesRepository` asks every source and writes what comes back. Whether to **combine the lists of multiple sources** is a product decision that needs to be made.
+- **What a second source means.** Merging two lists, preferring one, or showing them apart
   is a product decision. The data layer can express any of them.
 - **Cross-source identity.** One film served by two providers is two rows. Matching them needs a rule
   of its own, on `imdbId` if both carry it, and otherwise on title and release date.

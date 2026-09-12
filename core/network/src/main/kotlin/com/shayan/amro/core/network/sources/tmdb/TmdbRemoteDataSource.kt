@@ -1,11 +1,14 @@
 package com.shayan.amro.core.network.sources.tmdb
 
-import com.shayan.amro.core.model.DataError
+import com.shayan.amro.core.model.Cursor
 import com.shayan.amro.core.model.Movie
 import com.shayan.amro.core.model.MovieDetail
+import com.shayan.amro.core.model.MoviePage
+import com.shayan.amro.core.model.MovieSelection
 import com.shayan.amro.core.network.MovieRemoteDataSource
 import com.shayan.amro.core.network.NetworkResult
 import com.shayan.amro.core.network.sources.MovieId
+import com.shayan.amro.core.network.sources.tmdb.mapper.toDiscoverQuery
 import com.shayan.amro.core.network.sources.tmdb.mapper.toMovie
 import com.shayan.amro.core.network.sources.tmdb.mapper.toMovieDetail
 import javax.inject.Inject
@@ -26,49 +29,46 @@ internal class TmdbRemoteDataSource
         private val api: TmdbApi,
     ) : MovieRemoteDataSource {
         /**
-         * Returns [count] trending movies.
+         * Reads the catalogue TMDB's discover endpoint narrows and orders for [selection].
          *
-         * It walks TMDB's pages until it holds [count] distinct movies. TMDB has a fixed page size
-         * and it re-ranks between requests, so a movie can arrive twice while another is missed. So
-         * paging is the only way to reach a count here. A page that fails takes the walk down with
-         * it.
+         * Discover's paging is stable: page one repeated is identical and adjacent pages share no
+         * movie. So the walk concatenates whole pages with nothing to deduplicate and nothing to
+         * trim, and stops once it holds [count] of them.
          *
-         * It's a workaround for a known issue:
-         * https://www.themoviedb.org/talk/5ee3abd1590086001f50b3c1
-         * https://www.themoviedb.org/talk/5bbabe890e0a2616d7005bd6
-         *
-         * @return up to [count] distinct movies. Fewer means the source ran out of them or the walk
-         * reached [TMDB_PAGE_CAP], both of which are complete answers rather than failures.
+         * @return at least [count] movies while the catalogue lasts, and the page to resume on.
+         * A null cursor means TMDB has served everything it will for this query, which is either
+         * an empty page or the deepest page it answers.
          */
-        override suspend fun getTrendingMovies(count: Int): NetworkResult<List<Movie>> {
-            val held = LinkedHashMap<String, Movie>()
-            var page = FIRST_PAGE
+        override suspend fun getMovies(
+            selection: MovieSelection,
+            count: Int,
+            after: Cursor?,
+        ): NetworkResult<MoviePage> {
+            val query = selection.toDiscoverQuery()
+            var page = after?.toPage() ?: FIRST_PAGE
+            // A cursor beyond the last page TMDB answers is the end of the list rather than a
+            // request that would come back a 400.
+            if (page > TMDB_LAST_PAGE) return NetworkResult.Success(MoviePage(emptyList(), null))
 
-            while (held.size < count && page <= TMDB_PAGE_CAP) {
-                when (val result = api.trendingPage(page)) {
-                    is NetworkResult.Failure -> {
-                        return result
-                    }
+            val movies = mutableListOf<Movie>()
+            while (true) {
+                val rows =
+                    when (val result = api.discoverPage(page = page, query = query)) {
+                        // A page that fails fails the call, discarding what was read before it: a
+                        // caller cannot tell a list cut short from one that is simply short.
+                        is NetworkResult.Failure -> return result
 
-                    is NetworkResult.Success -> {
-                        val rows = result.value.results
-                        if (rows.isEmpty()) {
-                            return if (page == FIRST_PAGE) {
-                                NetworkResult.Failure(DataError.EmptyResponse)
-                            } else {
-                                held.upTo(count)
-                            }
-                        }
-                        rows.forEach { row ->
-                            val movie = row.toMovie()
-                            held.putIfAbsent(movie.id, movie)
-                        }
+                        is NetworkResult.Success -> result.value.results
                     }
-                }
+                if (rows.isEmpty()) break
+                movies += rows.map { it.toMovie() }
+                if (page == TMDB_LAST_PAGE) break
                 page++
+                if (movies.size >= count) {
+                    return NetworkResult.Success(MoviePage(movies, Cursor(page.toString())))
+                }
             }
-
-            return held.upTo(count)
+            return NetworkResult.Success(MoviePage(movies, null))
         }
 
         override suspend fun getMovieDetail(movieId: String): NetworkResult<MovieDetail> {
@@ -82,7 +82,9 @@ internal class TmdbRemoteDataSource
     }
 
 /**
- * The movies in this map, at most [count] of them, as a success.
+ * The page this cursor resumes on.
+ *
+ * TMDB pages by number, so this source writes one into every cursor it issues. Anything else was
+ * not written here, and the head of the list is the only honest place to resume from.
  */
-private fun Map<String, Movie>.upTo(count: Int): NetworkResult<List<Movie>> =
-    NetworkResult.Success(values.take(count))
+private fun Cursor.toPage(): Int = value.toIntOrNull() ?: FIRST_PAGE

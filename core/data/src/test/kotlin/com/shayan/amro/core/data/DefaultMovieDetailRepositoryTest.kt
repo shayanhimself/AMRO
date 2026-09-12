@@ -1,6 +1,8 @@
 package com.shayan.amro.core.data
 
 import com.shayan.amro.core.model.DataError
+import com.shayan.amro.core.model.Movie
+import com.shayan.amro.core.model.MoviePage
 import com.shayan.amro.core.network.NetworkResult
 import com.shayan.amro.core.testing.fake.FakeMovieLocalDataSource
 import com.shayan.amro.core.testing.fake.FakeMovieRemoteDataSource
@@ -15,6 +17,12 @@ import kotlin.test.assertNull
 
 /** What the cached record's tagline reads as before the source has been asked again. */
 private const val CACHED_TAGLINE = "As it was cached."
+
+/** The one query these tests put movies under, since none of them turns on which query it is. */
+private const val QUERY_KEY = ":POPULARITY:DESCENDING"
+
+/** One stretch of a list, as a source answers with one. */
+private fun page(vararg movies: Movie) = MoviePage(movies = movies.toList(), next = null)
 
 class DefaultMovieDetailRepositoryTest {
     private val local = FakeMovieLocalDataSource()
@@ -55,28 +63,28 @@ class DefaultMovieDetailRepositoryTest {
         }
 
     @Test
-    fun `a refresh leaves the trending flow untouched`() =
+    fun `a refresh leaves the movies a query produced untouched`() =
         runTest {
-            local.replaceTrending(listOf(OTHER_MOVIE))
+            local.replaceQuery(QUERY_KEY, page(OTHER_MOVIE))
             remote.scriptMovieDetail(NetworkResult.Success(detail(movie = MOVIE)))
 
             repository.refresh(MOVIE.id)
 
-            assertEquals(listOf(OTHER_MOVIE), local.getTrendingMoviesFlow().first())
+            assertEquals(listOf(OTHER_MOVIE), local.queryResults(QUERY_KEY))
         }
 
     @Test
-    fun `the movie read emits null for one the trending set does not hold`() =
+    fun `the movie read emits null for one no query produced`() =
         runTest {
-            local.replaceTrending(listOf(OTHER_MOVIE))
+            local.replaceQuery(QUERY_KEY, page(OTHER_MOVIE))
 
             assertNull(repository.getMovieFlow(MOVIE.id).first())
         }
 
     @Test
-    fun `the movie read emits the one the trending set holds`() =
+    fun `the movie read emits the one a query produced`() =
         runTest {
-            local.replaceTrending(listOf(MOVIE, OTHER_MOVIE))
+            local.replaceQuery(QUERY_KEY, page(MOVIE, OTHER_MOVIE))
 
             assertEquals(MOVIE, repository.getMovieFlow(MOVIE.id).first())
         }

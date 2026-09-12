@@ -1,7 +1,10 @@
 package com.shayan.amro.core.network.sources.tmdb
 
+import com.shayan.amro.core.model.Cursor
 import com.shayan.amro.core.model.DataError
-import com.shayan.amro.core.model.Movie
+import com.shayan.amro.core.model.Genre
+import com.shayan.amro.core.model.MoviePage
+import com.shayan.amro.core.model.MovieSelection
 import com.shayan.amro.core.network.NetworkResult
 import com.shayan.amro.core.network.sources.MovieId
 import com.shayan.amro.core.network.sources.tmdb.fixture.TmdbFixture
@@ -23,26 +26,25 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 private const val TOKEN = "test-read-access-token"
 
-private const val TRENDING_PATH_SEGMENT = "trending/movie/week"
+private const val DISCOVER_PATH_SEGMENT = "discover/movie"
 private const val PAGE_PARAMETER = "page"
+private const val SORT_BY_PARAMETER = "sort_by"
+private const val WITH_GENRES_PARAMETER = "with_genres"
 private const val FIRST_PAGE = 1
 
-/** Fewer than the recorded pages hold, so the walk stops on the count rather than on the pages. */
-private const val WANTED = 100
+/** A whole number of provider pages, so a walk to it takes exactly that many requests. */
+private const val WANTED = 60
 
-/** How many recorded pages reaching [WANTED] distinct movies took on the day they were recorded. */
-private const val PAGES_FOR_WANTED = 6
+/** How many provider pages [WANTED] movies take. */
+private const val PAGES_FOR_WANTED = 3
 
-/** More than any one page holds, so a source repeating one page is stopped by the cap alone. */
-private const val MORE_THAN_ANY_PAGE_HOLDS = 500
-
-/** Rows across the two assembled pages, and how many of them are distinct. */
-private const val OVERLAP_ROWS = 40
-private const val OVERLAP_DISTINCT = 37
+/** A count between two page boundaries, which whole pages can only run past. */
+private const val WANTED_MID_PAGE = 25
 
 private const val EMPTY_RESULTS = """{"page":1,"results":[],"total_pages":0}"""
 private const val NOT_JSON = "<html>a gateway said no</html>"
@@ -53,56 +55,87 @@ class TmdbRemoteDataSourceTest {
     private val requests = mutableListOf<HttpRequestData>()
 
     @Test
-    fun `a walk stops once it holds the movies that were asked for`() =
+    fun `a walk concatenates pages in order until it holds the count`() =
         runTest {
-            val result = pagingSource().getTrendingMovies(WANTED)
+            val result = pagingSource().getMovies(MovieSelection(), WANTED, after = null)
 
-            val movies = assertIs<NetworkResult.Success<List<Movie>>>(result).value
-
-            assertEquals(WANTED, movies.size)
-        }
-
-    @Test
-    fun `a movie served on two pages is held once`() =
-        runTest {
-            val result = overlapSource().getTrendingMovies(OVERLAP_ROWS)
-
-            val movies = assertIs<NetworkResult.Success<List<Movie>>>(result).value
-            val ids = movies.map { it.id }
-            assertEquals(ids.distinct(), ids, "a repeated movie reached the caller twice")
-            assertEquals(OVERLAP_DISTINCT, ids.size)
-        }
-
-    @Test
-    fun `a walk asks for as many pages as reaching the count takes`() =
-        runTest {
-            pagingSource().getTrendingMovies(WANTED)
-
-            assertEquals(PAGES_FOR_WANTED, requests.size)
+            val page = assertIs<NetworkResult.Success<MoviePage>>(result).value
+            assertEquals(WANTED, page.movies.size)
             assertEquals(
-                (1..PAGES_FOR_WANTED).map { it.toString() },
+                (FIRST_PAGE..PAGES_FOR_WANTED).map { it.toString() },
                 requests.map { it.url.parameters[PAGE_PARAMETER] },
             )
         }
 
     @Test
-    fun `a walk asks for no more than the page cap`() =
+    fun `a walk keeps every movie of the page that carried it past the count`() =
         runTest {
-            val result = repeatingSource().getTrendingMovies(MORE_THAN_ANY_PAGE_HOLDS)
+            val result = pagingSource().getMovies(MovieSelection(), WANTED_MID_PAGE, after = null)
 
-            assertEquals(TMDB_PAGE_CAP, requests.size)
-            val movies = assertIs<NetworkResult.Success<List<Movie>>>(result).value
+            val page = assertIs<NetworkResult.Success<MoviePage>>(result).value
+            assertEquals(TMDB_PAGE_SIZE * 2, page.movies.size)
+        }
+
+    @Test
+    fun `a walk resumes on the page its cursor names`() =
+        runTest {
+            val resumed = pagingSource().getMovies(MovieSelection(), WANTED, after = Cursor("4"))
+
+            assertIs<NetworkResult.Success<MoviePage>>(resumed)
             assertEquals(
-                TMDB_PAGE_SIZE,
-                movies.size,
-                "the same page over again is one page of movies",
+                listOf("4", "5", "6"),
+                requests.map { it.url.parameters[PAGE_PARAMETER] },
             )
         }
 
     @Test
-    fun `a page that fails after the first fails the walk rather than returning a part of it`() =
+    fun `a cursor past the last page TMDB answers ends pagination without a request`() =
         runTest {
-            val result = failingAfterFirstPageSource().getTrendingMovies(WANTED)
+            val result =
+                pagingSource().getMovies(
+                    selection = MovieSelection(),
+                    count = WANTED,
+                    after = Cursor((TMDB_LAST_PAGE + 1).toString()),
+                )
+
+            val page = assertIs<NetworkResult.Success<MoviePage>>(result).value
+            assertEquals(emptyList(), page.movies)
+            assertNull(page.next)
+            assertEquals(emptyList(), requests)
+        }
+
+    @Test
+    fun `an empty page ends pagination with what the walk already held`() =
+        runTest {
+            val result =
+                pagingSource().getMovies(
+                    MovieSelection(),
+                    count = Int.MAX_VALUE,
+                    after = null,
+                )
+
+            val page = assertIs<NetworkResult.Success<MoviePage>>(result).value
+            assertEquals(TmdbFixture.Discover.entries.size * TMDB_PAGE_SIZE, page.movies.size)
+            assertNull(page.next)
+        }
+
+    @Test
+    fun `an empty first page is a list with nothing in it rather than a failure`() =
+        runTest {
+            val result =
+                dataSource { respondJson(EMPTY_RESULTS) }
+                    .getMovies(MovieSelection(), WANTED, after = null)
+
+            val page = assertIs<NetworkResult.Success<MoviePage>>(result).value
+            assertEquals(emptyList(), page.movies)
+            assertNull(page.next)
+        }
+
+    @Test
+    fun `a page that fails after the first fails the call rather than returning a part of it`() =
+        runTest {
+            val result =
+                failingAfterFirstPageSource().getMovies(MovieSelection(), WANTED, after = null)
 
             assertEquals(DataError.NoConnectivity, assertIs<NetworkResult.Failure>(result).error)
         }
@@ -110,19 +143,32 @@ class TmdbRemoteDataSourceTest {
     @Test
     fun `every endpoint resolves under the API root`() =
         runTest {
-            pagingSource().getTrendingMovies(TMDB_PAGE_SIZE)
+            pagingSource().getMovies(MovieSelection(), TMDB_PAGE_SIZE, after = null)
 
-            val url = requests.single().url.toString()
+            val url = requests.first().url.toString()
 
-            assertTrue(url.startsWith(TMDB_BASE_URL + TRENDING_PATH_SEGMENT), url)
+            assertTrue(url.startsWith(TMDB_BASE_URL + DISCOVER_PATH_SEGMENT), url)
         }
 
     @Test
-    fun `the page number is the only query parameter`() =
+    fun `a selection reaches the request as the ordering and the genres it names`() =
         runTest {
-            pagingSource().getTrendingMovies(TMDB_PAGE_SIZE)
+            val selection = MovieSelection(genres = setOf(Genre.COMEDY, Genre.HORROR))
 
-            assertEquals(FIRST_PAGE.toString(), requests.single().url.parameters[PAGE_PARAMETER])
+            pagingSource().getMovies(selection, TMDB_PAGE_SIZE, after = null)
+
+            val parameters = requests.first().url.parameters
+            assertEquals(FIRST_PAGE.toString(), parameters[PAGE_PARAMETER])
+            assertEquals("popularity.desc", parameters[SORT_BY_PARAMETER])
+            assertEquals("27|35", parameters[WITH_GENRES_PARAMETER])
+        }
+
+    @Test
+    fun `an unfiltered selection sends no genre parameter`() =
+        runTest {
+            pagingSource().getMovies(MovieSelection(), TMDB_PAGE_SIZE, after = null)
+
+            assertNull(requests.first().url.parameters[WITH_GENRES_PARAMETER])
         }
 
     @Test
@@ -145,7 +191,9 @@ class TmdbRemoteDataSourceTest {
     @Test
     fun `a dropped connection is no connectivity`() =
         runTest {
-            val result = dataSource { throw IOException("dropped") }.getTrendingMovies(WANTED)
+            val result =
+                dataSource { throw IOException("dropped") }
+                    .getMovies(MovieSelection(), WANTED, after = null)
 
             assertEquals(DataError.NoConnectivity, assertIs<NetworkResult.Failure>(result).error)
         }
@@ -153,7 +201,9 @@ class TmdbRemoteDataSourceTest {
     @Test
     fun `an unresolved host is no connectivity rather than a server fault`() =
         runTest {
-            val result = dataSource { throw UnresolvedAddressException() }.getTrendingMovies(WANTED)
+            val result =
+                dataSource { throw UnresolvedAddressException() }
+                    .getMovies(MovieSelection(), WANTED, after = null)
 
             assertEquals(DataError.NoConnectivity, assertIs<NetworkResult.Failure>(result).error)
         }
@@ -163,8 +213,8 @@ class TmdbRemoteDataSourceTest {
         runTest {
             val result =
                 dataSource {
-                    respondJson(TmdbFixture.Trending.PAGE_1, HttpStatusCode.Unauthorized)
-                }.getTrendingMovies(WANTED)
+                    respondJson(TmdbFixture.Discover.PAGE_1, HttpStatusCode.Unauthorized)
+                }.getMovies(MovieSelection(), WANTED, after = null)
 
             assertEquals(DataError.Server, assertIs<NetworkResult.Failure>(result).error)
         }
@@ -173,11 +223,8 @@ class TmdbRemoteDataSourceTest {
     fun `the recorded unauthorised body never becomes movies`() =
         runTest {
             val result =
-                dataSource {
-                    respondJson(
-                        TmdbFixture.Error.UNAUTHORISED,
-                    )
-                }.getTrendingMovies(WANTED)
+                dataSource { respondJson(TmdbFixture.Error.UNAUTHORISED) }
+                    .getMovies(MovieSelection(), WANTED, after = null)
 
             assertEquals(DataError.Server, assertIs<NetworkResult.Failure>(result).error)
         }
@@ -187,11 +234,8 @@ class TmdbRemoteDataSourceTest {
         runTest {
             val result =
                 dataSource {
-                    respondJson(
-                        EMPTY_RESULTS,
-                        HttpStatusCode.InternalServerError,
-                    )
-                }.getTrendingMovies(WANTED)
+                    respondJson(EMPTY_RESULTS, HttpStatusCode.InternalServerError)
+                }.getMovies(MovieSelection(), WANTED, after = null)
 
             assertEquals(DataError.Server, assertIs<NetworkResult.Failure>(result).error)
         }
@@ -221,17 +265,11 @@ class TmdbRemoteDataSourceTest {
     @Test
     fun `a body that cannot be parsed is a server failure`() =
         runTest {
-            val result = dataSource { respondJson(NOT_JSON) }.getTrendingMovies(WANTED)
+            val result =
+                dataSource { respondJson(NOT_JSON) }
+                    .getMovies(MovieSelection(), WANTED, after = null)
 
             assertEquals(DataError.Server, assertIs<NetworkResult.Failure>(result).error)
-        }
-
-    @Test
-    fun `an empty results array is an empty response`() =
-        runTest {
-            val result = dataSource { respondJson(EMPTY_RESULTS) }.getTrendingMovies(WANTED)
-
-            assertEquals(DataError.EmptyResponse, assertIs<NetworkResult.Failure>(result).error)
         }
 
     @Test
@@ -239,15 +277,15 @@ class TmdbRemoteDataSourceTest {
         runTest {
             assertFailsWith<CancellationException> {
                 dataSource { throw CancellationException("navigated away") }
-                    .getTrendingMovies(WANTED)
+                    .getMovies(MovieSelection(), WANTED, after = null)
             }
         }
 
     @Test
     fun `every request carries the credential as a bearer header and never in the URL`() =
         runTest {
-            dataSource { respondJson(TmdbFixture.Trending.PAGE_1) }
-                .getTrendingMovies(TMDB_PAGE_SIZE)
+            dataSource { respondJson(TmdbFixture.Discover.PAGE_1) }
+                .getMovies(MovieSelection(), TMDB_PAGE_SIZE, after = null)
 
             val request = requests.single()
             assertEquals("Bearer $TOKEN", request.headers[HttpHeaders.Authorization])
@@ -255,13 +293,7 @@ class TmdbRemoteDataSourceTest {
         }
 
     /** A source answering each successive request with the next recorded page, then with none. */
-    private fun pagingSource() = sequenceSource(TmdbFixture.Trending.entries)
-
-    /** A source answering with the two assembled pages that repeat rows across their boundary. */
-    private fun overlapSource() = sequenceSource(TmdbFixture.Overlap.entries)
-
-    /** A source answering every request with the same page, so the walk can only end on the cap. */
-    private fun repeatingSource() = dataSource { respondJson(TmdbFixture.Trending.PAGE_1) }
+    private fun pagingSource() = sequenceSource(TmdbFixture.Discover.entries)
 
     /**
      * A source that serves [pages] in order and answers every request past them with an empty
@@ -282,7 +314,7 @@ class TmdbRemoteDataSourceTest {
         return dataSource {
             request++
             if (request == FIRST_PAGE) {
-                respondJson(TmdbFixture.Trending.PAGE_1)
+                respondJson(TmdbFixture.Discover.PAGE_1)
             } else {
                 throw IOException("dropped")
             }

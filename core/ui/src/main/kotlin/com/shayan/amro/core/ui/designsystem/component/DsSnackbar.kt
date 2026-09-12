@@ -23,7 +23,7 @@ private val PreviewSnackbarData =
     object : SnackbarData {
         override val visuals =
             object : SnackbarVisuals {
-                override val message = "Couldn't load trending"
+                override val message = "Couldn't load movies"
                 override val actionLabel = "Retry"
                 override val withDismissAction = false
                 override val duration = SnackbarDuration.Short

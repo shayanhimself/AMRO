@@ -15,7 +15,7 @@ not a mode the app enters: it is what a failed request means.
 graph TD
     app[":app"]
 
-    trending[":feature:trending"]
+    discover[":feature:discover"]
     detail[":feature:detail"]
 
     ui[":core:ui"]
@@ -28,14 +28,14 @@ graph TD
         coreTest[":core:testing"]
     end
 
-    app --> trending
+    app --> discover
     app --> detail
     app --> ui
     app --> data
     app --> network
 
-    trending --> ui
-    trending --> data
+    discover --> ui
+    discover --> data
     detail --> ui
     detail --> data
 
@@ -47,7 +47,7 @@ graph TD
     network --> model
     database --> model
 
-    trending -.-> coreTest
+    discover -.-> coreTest
     detail -.-> coreTest
     data -.-> coreTest
 ```
@@ -55,11 +55,11 @@ graph TD
 | Module | Holds                                                                                                                                                                   |
 |---|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `:core:model` | The types every other module speaks in. Types only, pure Kotlin, no Android dependency                                                                                  |
-| `:core:network` | `MovieRemoteDataSource`, the api-neutral contract the data layer depends on, and its TMDB implementation: Ktor client configuration, endpoints, wire DTOs and mappings.
-| `:core:database` | The Room database, entities, and DAOs. A movie arrives with its genres already resolved, so nothing here joins them                                                     |
-| `:core:data` | Repository interfaces and their implementations, and the fetch policy. Names no source                                                                                  |
+| `:core:network` | `MovieRemoteDataSource`, the api-neutral contract the data layer depends on, and its TMDB implementation: Ktor client configuration, endpoints, wire DTOs and mappings. A source narrows and orders its own catalogue |
+| `:core:database` | The Room database, entities, and DAOs. The movies, the lists one selection produced, and where each of those resumes                                                    |
+| `:core:data` | Repository interfaces and their implementations, the `Pager` and its `RemoteMediator`, and the fetch policy. Names no source                                            |
 | `:core:ui` | Theme, design system tokens and components, generic strings, reusable UI components and helpers                                                                          |
-| `:feature:trending` | The trending list, the filter sheet, their view model, and the filter and sort rules it applies over the fetched set                                                    |
+| `:feature:discover` | The movie list, the filter sheet, and their view model                                                                                                                  |
 | `:feature:detail` | The movie detail screen and its view model                                                                                                                              |
 | `:app` | `MainActivity`, the navigator and the `NavDisplay` host, the application class, and the Hilt root                                                                       |
 | `:core:testing` | Fakes, fixtures, and test helpers other modules' tests reuse. Never a production dependency                                                                             |
@@ -86,13 +86,13 @@ graph TD
     subgraph UILAYER["UI layer (:feature:*, :app)"]
         Screen["Screen composable, stateless"]
         Route["Route, collects state and passes lambdas"]
-        VM["ViewModel, owns UiState and the filter"]
+        VM["ViewModel, owns UiState and the selection"]
     end
 
     subgraph DATALAYER["Data layer (:core:data, :core:database)"]
-        TrendingRepo["TrendingMoviesRepository"]
+        MoviesRepo["MoviesRepository<br/>Pager + RemoteMediator"]
         DetailRepo["MovieDetailRepository"]
-        Room[("MovieLocalDataSource<br/>Room: movies, movie_details")]
+        Room[("MovieLocalDataSource<br/>Room: movies, movie_details,<br/>query_results, query_keys")]
     end
 
     subgraph SOURCE["Remote source (:core:network)"]
@@ -107,12 +107,12 @@ graph TD
     Route -->|UiState| Screen
     VM -->|StateFlow| Route
 
-    VM -->|"suspend refresh"| TrendingRepo
-    TrendingRepo -->|Flow| VM
+    VM -->|MovieSelection| MoviesRepo
+    MoviesRepo -->|"Flow&lt;PagingData&gt;"| VM
     VM --> DetailRepo
 
-    TrendingRepo --> Room
-    TrendingRepo --> Contract
+    MoviesRepo --> Room
+    MoviesRepo --> Contract
     DetailRepo --> Room
     DetailRepo --> Contract
     Tmdb -.->|implements| Contract
@@ -127,8 +127,8 @@ graph TD
   source.
 - **A repository speaks to a data source interface.**
 - **Room is the single source of truth.** A repository exposes its data as a `Flow` off Room and
-  never returns network results directly. The network path only writes. A cached list therefore
-  renders before any request completes.
+  never returns network results directly. The network path only writes, and for the paged list that
+  writer is the `RemoteMediator`. A cached list therefore renders before any request completes.
 - **Data crossing a layer boundary is immutable**, and mutation happens only inside the owner.
 
 ## Navigation and the adaptive layout
@@ -142,7 +142,7 @@ mutates it. Features receive lambdas and know nothing about navigation.
 graph LR
     Nav["AmroNavigator, owns the back stack"] --> Display["NavDisplay"]
     Display --> Scene["List-detail scene strategy"]
-    Scene --> Routes["TrendingRoute<br/>DetailRoute"]
+    Scene --> Routes["DiscoverRoute<br/>DetailRoute"]
 ```
 
 One graph plus the scene strategy gives a compact window a stack of screens and an expanded window

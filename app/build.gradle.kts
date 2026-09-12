@@ -37,7 +37,7 @@ dependencies {
     implementation(projects.core.ui)
     implementation(projects.core.data)
     implementation(projects.core.network)
-    implementation(projects.feature.trending)
+    implementation(projects.feature.discover)
     implementation(projects.feature.detail)
 
     implementation(platform(libs.androidx.compose.bom))

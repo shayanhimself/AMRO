@@ -114,7 +114,7 @@ class MovieDetailUiStateMapperTest {
     }
 
     @Test
-    fun `a first load carries the poster and the genres the trending row handed over`() {
+    fun `a first load carries the poster and the genres the list row handed over`() {
         val movie = MovieFixture.detail().movie
 
         val content = skeleton(movie)
