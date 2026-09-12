@@ -98,9 +98,6 @@ internal fun TrendingScreen(
                 }
 
                 is TrendingContent.Movies -> {
-                    // The gesture and its indicator are built only where there is a list to pull
-                    // and a cache worth preserving, which is what keeps them off every other
-                    // branch with no condition at the render site.
                     PullToRefreshBox(
                         isRefreshing = uiState.isRefreshing,
                         onRefresh = onRefresh,

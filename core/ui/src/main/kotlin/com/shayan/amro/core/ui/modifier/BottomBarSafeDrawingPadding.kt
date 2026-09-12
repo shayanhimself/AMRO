@@ -1,4 +1,4 @@
-package com.shayan.amro.core.ui.designsystem.modifier
+package com.shayan.amro.core.ui.modifier
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
