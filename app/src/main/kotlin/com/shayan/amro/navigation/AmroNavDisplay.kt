@@ -1,5 +1,8 @@
 package com.shayan.amro.navigation
 
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfoV2
 import androidx.compose.material3.adaptive.layout.calculatePaneScaffoldDirective
@@ -22,6 +25,9 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.shayan.amro.feature.detail.ui.MovieDetailRoute
 import com.shayan.amro.feature.trending.ui.TrendingRoute
+
+/** The fraction of the screen used for sliding transition. */
+private const val SLIDE_DIVISOR = 4
 
 /**
  * Maps every key to its route and lets the adaptive scene arrange them.
@@ -62,6 +68,14 @@ internal fun AmroNavDisplay(
         modifier = modifier,
         onBack = { navigator.back() },
         sceneStrategies = listOf(listDetailStrategy),
+        transitionSpec = {
+            slideInHorizontally { width -> width } togetherWith
+                slideOutHorizontally { width -> -width / SLIDE_DIVISOR }
+        },
+        popTransitionSpec = {
+            slideInHorizontally { width -> -width / SLIDE_DIVISOR } togetherWith
+                slideOutHorizontally { width -> width }
+        },
         entryDecorators =
             listOf(
                 rememberSaveableStateHolderNavEntryDecorator(),
