@@ -2,7 +2,6 @@ package com.shayan.amro.core.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -63,21 +62,18 @@ fun MessagePanel(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(Spacing.s4, Alignment.CenterVertically),
     ) {
-        Box(
+        DsIcon(
+            glyph = glyph,
+            // The title states the icon already.
+            contentDescription = null,
             modifier =
                 Modifier
                     .size(PANEL_GLYPH_DISC_SIZE)
                     .background(MaterialTheme.colorScheme.surfaceContainer, CircleShape),
-            contentAlignment = Alignment.Center,
-        ) {
-            DsIcon(
-                glyph = glyph,
-                // The title states the icon already.
-                contentDescription = null,
-                size = PANEL_GLYPH_SIZE,
-                tint = glyphTint,
-            )
-        }
+            size = PANEL_GLYPH_SIZE,
+            tint = glyphTint,
+        )
+        // The title and body are in a column so they can sit closer together.
         Column(
             modifier = Modifier.padding(horizontal = Spacing.s6),
             horizontalAlignment = Alignment.CenterHorizontally,
