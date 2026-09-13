@@ -1,4 +1,4 @@
-package com.shayan.amro.core.ui.component
+package com.shayan.amro.core.ui.component.placeholder
 
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.StartOffset

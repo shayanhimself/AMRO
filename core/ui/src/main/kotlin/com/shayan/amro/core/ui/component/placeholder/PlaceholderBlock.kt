@@ -1,4 +1,4 @@
-package com.shayan.amro.core.ui.component
+package com.shayan.amro.core.ui.component.placeholder
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

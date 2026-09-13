@@ -1,4 +1,4 @@
-package com.shayan.amro.core.ui.component
+package com.shayan.amro.core.ui.component.placeholder
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.CompositionLocalProvider

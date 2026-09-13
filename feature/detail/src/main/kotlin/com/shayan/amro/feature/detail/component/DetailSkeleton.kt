@@ -17,6 +17,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -25,45 +26,44 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.shayan.amro.core.ui.component.PlaceholderBlock
 import com.shayan.amro.core.ui.component.PosterTile
-import com.shayan.amro.core.ui.component.pulsingAlpha
-import com.shayan.amro.core.ui.component.rememberPlaceholderPulseAlpha
+import com.shayan.amro.core.ui.component.placeholder.PlaceholderBlock
+import com.shayan.amro.core.ui.component.placeholder.nextWidth
+import com.shayan.amro.core.ui.component.placeholder.pulsingAlpha
+import com.shayan.amro.core.ui.component.placeholder.rememberPlaceholderPulseAlpha
 import com.shayan.amro.core.ui.designsystem.theme.AmroExtendedTheme
 import com.shayan.amro.core.ui.designsystem.theme.AmroTheme
 import com.shayan.amro.core.ui.designsystem.theme.RadiusPrimitives
 import com.shayan.amro.core.ui.designsystem.theme.Spacing
 import com.shayan.amro.feature.detail.ui.MovieDetailPreviewData
 import com.shayan.amro.feature.detail.viewmodel.MovieDetailContent
+import kotlin.random.Random
 import com.shayan.amro.core.ui.R as CoreUiR
 
-/** The block standing in for the rating beside the poster, and the share of the row it runs to. */
-private val BADGE_LINE_HEIGHT = Spacing.s6
 private const val BADGE_LINE_WIDTH_FRACTION = 0.56f
 
-/** The line the tagline will become, and the share of the width it runs to. */
-private val TAGLINE_LINE_HEIGHT = Spacing.s4
 private const val TAGLINE_LINE_WIDTH_FRACTION = 0.52f
 
-/** Each line the overview will become, as the share of the width it runs to. */
-private val OVERVIEW_LINE_HEIGHT = Spacing.s4
-private val OVERVIEW_LINE_WIDTHS =
-    listOf(0.96f, 0.92f, 0.97f, 0.88f, 0.94f, 0.90f, 0.96f, 0.54f)
+/** How many lines the overview will become. */
+private const val OVERVIEW_LINE_COUNT = 8
 
-/** Each cell the grid will become, as the share of its column the label and the value run to. */
-private val FACT_LABEL_HEIGHT = Spacing.s3
-private val FACT_VALUE_HEIGHT = Spacing.s4
+/** How wide a full line of the overview runs, as a share of the width. */
+private val OVERVIEW_LINE_WIDTHS = 0.88f..0.97f
 
-/** Pairs of the label widths and value widths, in the order they are drawn.
- * Percentages of their parent column width.
- */
-private val FACT_WIDTHS =
-    listOf(
-        0.44f to 0.62f,
-        0.58f to 0.80f,
-        0.38f to 0.72f,
-        0.48f to 0.66f,
-    )
+/** How wide the last line runs, short like the end of a paragraph. */
+private val OVERVIEW_LAST_LINE_WIDTHS = 0.40f..0.65f
+
+/** How many cells the grid will become. */
+private const val FACT_COUNT = 4
+
+/** How wide a fact's label runs, as a share of its column. */
+private val FACT_LABEL_WIDTHS = 0.38f..0.58f
+
+/** How wide a fact's value runs. */
+private val FACT_VALUE_WIDTHS = 0.62f..0.80f
+
+/** What every placeholder width is drawn from, fixed so the skeleton reads the same each time. */
+private const val PLACEHOLDER_WIDTHS_SEED = 1000
 
 /** How many cells a row of the grid holds, which is the grid the record fills. */
 private const val FACTS_COLUMN_COUNT = 2
@@ -114,7 +114,7 @@ internal fun DetailSkeleton(
                     modifier =
                         Modifier
                             .fillMaxWidth(TAGLINE_LINE_WIDTH_FRACTION)
-                            .height(TAGLINE_LINE_HEIGHT)
+                            .height(Spacing.s4)
                             .pulsingAlpha(alpha),
                     color = AmroExtendedTheme.colors.placeholder,
                 )
@@ -189,7 +189,7 @@ private fun SkeletonHeader(
                     Modifier
                         .padding(bottom = Spacing.s2)
                         .fillMaxWidth(BADGE_LINE_WIDTH_FRACTION)
-                        .height(BADGE_LINE_HEIGHT)
+                        .height(Spacing.s6)
                         .pulsingAlpha(alpha),
                 color = AmroExtendedTheme.colors.placeholder,
             )
@@ -208,6 +208,8 @@ private fun AwaitedBody(
     modifier: Modifier = Modifier,
 ) {
     val loading = stringResource(CoreUiR.string.core_ui_loading)
+    val overviewLineWidths = rememberOverviewLineWidths()
+    val factWidths = rememberFactWidths()
     // One node for the whole region, so the wait is announced once and not per block.
     Column(
         modifier =
@@ -221,12 +223,12 @@ private fun AwaitedBody(
             modifier = Modifier.padding(top = Spacing.s1),
             verticalArrangement = Arrangement.spacedBy(Spacing.s3),
         ) {
-            OVERVIEW_LINE_WIDTHS.forEach { width ->
+            overviewLineWidths.forEach { width ->
                 PlaceholderBlock(
                     modifier =
                         Modifier
                             .fillMaxWidth(width)
-                            .height(OVERVIEW_LINE_HEIGHT),
+                            .height(Spacing.s4),
                     color = AmroExtendedTheme.colors.placeholder,
                 )
             }
@@ -240,7 +242,7 @@ private fun AwaitedBody(
             modifier = Modifier.padding(top = Spacing.s5),
             verticalArrangement = Arrangement.spacedBy(Spacing.s5),
         ) {
-            FACT_WIDTHS.chunked(FACTS_COLUMN_COUNT).forEach { row ->
+            factWidths.chunked(FACTS_COLUMN_COUNT).forEach { row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(Spacing.s6)) {
                     row.forEach { (labelWidth, valueWidth) ->
                         FactPlaceholder(
@@ -275,18 +277,48 @@ private fun FactPlaceholder(
             modifier =
                 Modifier
                     .fillMaxWidth(labelWidth)
-                    .height(FACT_LABEL_HEIGHT),
+                    .height(Spacing.s3),
             color = AmroExtendedTheme.colors.placeholderMuted,
         )
         PlaceholderBlock(
             modifier =
                 Modifier
                     .fillMaxWidth(valueWidth)
-                    .height(FACT_VALUE_HEIGHT),
+                    .height(Spacing.s4),
             color = AmroExtendedTheme.colors.placeholder,
         )
     }
 }
+
+/**
+ * The share of the width each overview line runs to, the last one is short like the end of a
+ * paragraph.
+ *
+ * Widths are drawn from a fixed seed rather than from chance, so the skeleton keeps its shape.
+ */
+@Composable
+private fun rememberOverviewLineWidths(): List<Float> =
+    remember {
+        val widths = Random(seed = PLACEHOLDER_WIDTHS_SEED)
+        List(OVERVIEW_LINE_COUNT) { line ->
+            val isLast = line == OVERVIEW_LINE_COUNT - 1
+            widths.nextWidth(if (isLast) OVERVIEW_LAST_LINE_WIDTHS else OVERVIEW_LINE_WIDTHS)
+        }
+    }
+
+/**
+ * The share of its column each fact's label and value run to, in the order they are drawn.
+ *
+ * Drawn from a fixed seed, like the overview lines.
+ */
+@Composable
+private fun rememberFactWidths(): List<Pair<Float, Float>> =
+    remember {
+        val widths = Random(seed = PLACEHOLDER_WIDTHS_SEED)
+        List(FACT_COUNT) {
+            widths.nextWidth(FACT_LABEL_WIDTHS) to widths.nextWidth(FACT_VALUE_WIDTHS)
+        }
+    }
 
 @Preview
 @Composable

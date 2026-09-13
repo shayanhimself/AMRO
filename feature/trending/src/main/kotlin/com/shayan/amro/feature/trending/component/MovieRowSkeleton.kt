@@ -15,9 +15,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.shayan.amro.core.ui.component.PlaceholderBlock
-import com.shayan.amro.core.ui.component.pulsingAlpha
-import com.shayan.amro.core.ui.component.rememberPlaceholderPulseAlpha
+import com.shayan.amro.core.ui.component.placeholder.PlaceholderBlock
+import com.shayan.amro.core.ui.component.placeholder.nextWidth
+import com.shayan.amro.core.ui.component.placeholder.pulsingAlpha
+import com.shayan.amro.core.ui.component.placeholder.rememberPlaceholderPulseAlpha
 import com.shayan.amro.core.ui.designsystem.theme.AmroExtendedTheme
 import com.shayan.amro.core.ui.designsystem.theme.AmroTheme
 import com.shayan.amro.core.ui.designsystem.theme.RadiusPrimitives
@@ -56,7 +57,7 @@ internal fun MovieRowSkeleton(
     // across a recomposition and a golden captures the same skeleton every time.
     val (titleWidth, genreWidth) =
         remember(index) {
-            val widths = Random(index)
+            val widths = Random(seed = index)
             widths.nextWidth(TITLE_LINE_WIDTHS) to widths.nextWidth(GENRE_LINE_WIDTHS)
         }
     val alpha =
@@ -102,14 +103,6 @@ internal fun MovieRowSkeleton(
         }
     }
 }
-
-/**
- * A width inside [range].
- *
- * @return the share of the row the line runs to.
- */
-private fun Random.nextWidth(range: ClosedFloatingPointRange<Float>): Float =
-    nextDouble(range.start.toDouble(), range.endInclusive.toDouble()).toFloat()
 
 @Preview
 @Composable
