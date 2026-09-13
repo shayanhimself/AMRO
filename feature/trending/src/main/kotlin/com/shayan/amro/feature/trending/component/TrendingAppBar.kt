@@ -19,9 +19,6 @@ import com.shayan.amro.core.ui.designsystem.icon.Glyphs
 import com.shayan.amro.core.ui.designsystem.theme.AmroTheme
 import com.shayan.amro.feature.trending.R
 
-/** How far the badge is pulled onto the filter action it counts for. */
-private val BADGE_INSET = 6.dp
-
 /**
  * The screen's name, and the action that opens the sheet.
  *
@@ -40,34 +37,42 @@ internal fun TrendingAppBar(
         modifier = modifier,
         title = { Text(text = stringResource(R.string.feature_trending_title)) },
         actions = {
-            Box {
-                DsIconButton(
-                    glyph = Glyphs.TUNE,
-                    contentDescription =
-                        if (activeSelectionCount == 0) {
-                            stringResource(R.string.feature_trending_filter_action)
-                        } else {
-                            pluralStringResource(
-                                R.plurals.feature_trending_filter_action_active,
-                                activeSelectionCount,
-                                activeSelectionCount,
-                            )
-                        },
-                    onClick = onFilterClick,
-                )
-                if (activeSelectionCount > 0) {
-                    DsBadge(
-                        tone = BadgeTone.Primary,
-                        text = activeSelectionCount.toString(),
-                        modifier =
-                            Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(top = BADGE_INSET, end = BADGE_INSET),
-                    )
-                }
-            }
+            FilterButton(activeSelectionCount, onFilterClick)
         },
     )
+}
+
+@Composable
+private fun FilterButton(
+    activeSelectionCount: Int,
+    onFilterClick: () -> Unit,
+) {
+    Box {
+        DsIconButton(
+            glyph = Glyphs.TUNE,
+            contentDescription =
+                if (activeSelectionCount == 0) {
+                    stringResource(R.string.feature_trending_filter_action)
+                } else {
+                    pluralStringResource(
+                        R.plurals.feature_trending_filter_action_active,
+                        activeSelectionCount,
+                        activeSelectionCount,
+                    )
+                },
+            onClick = onFilterClick,
+        )
+        if (activeSelectionCount > 0) {
+            DsBadge(
+                tone = BadgeTone.Primary,
+                text = activeSelectionCount.toString(),
+                modifier =
+                    Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(top = 6.dp, end = 6.dp),
+            )
+        }
+    }
 }
 
 @Preview
