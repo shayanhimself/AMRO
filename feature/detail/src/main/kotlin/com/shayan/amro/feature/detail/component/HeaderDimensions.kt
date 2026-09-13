@@ -10,7 +10,7 @@ internal val POSTER_HEIGHT = 138.dp
 internal val POSTER_OUTLINE_WIDTH = 1.dp
 
 /** How tall the backdrop opens the screen, and the number the collapsing bar is measured against. */
-internal val BACKDROP_HEIGHT = 200.dp
+internal val BACKDROP_HEIGHT = 250.dp
 
 /** How far the poster is pulled up over the backdrop. */
 private val POSTER_OVERLAP = 48.dp

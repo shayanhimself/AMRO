@@ -36,27 +36,12 @@ import com.shayan.amro.core.ui.text.AmroText
 import com.shayan.amro.feature.detail.R
 import com.shayan.amro.feature.detail.viewmodel.HeaderBadgeUiState
 
-/** The glyph a panel draws where a source served no backdrop. */
-private val BACKDROP_GLYPH_SIZE = 36.dp
-
 /** The star beside a rating, and the clock on a status pill. */
 private val RATING_GLYPH_SIZE = 20.dp
 private val STATUS_GLYPH_SIZE = 18.dp
 
 /** The pill the status reads in. */
 private val STATUS_PILL_HEIGHT = 32.dp
-
-/** How much scrim the top of the backdrop carries, so the back action over it stays legible. */
-private const val BACKDROP_SCRIM_ALPHA = 0.58f
-
-/**
- * Where the scrim has thinned to [BACKDROP_SCRIM_MID_ALPHA] and where it has gone, as shares of the
- * backdrop's height. The knee is what leaves the art readable under an edge dark enough to carry
- * the back action.
- */
-private const val BACKDROP_SCRIM_MID = 0.34f
-private const val BACKDROP_SCRIM_MID_ALPHA = 0.08f
-private const val BACKDROP_SCRIM_END = 0.56f
 
 /**
  * The backdrop, the poster overlapping it, and the rating or the status beside them.
@@ -75,7 +60,9 @@ internal fun DetailHeader(
     badge: HeaderBadgeUiState?,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier.fillMaxWidth().height(HEADER_HEIGHT)) {
+    Box(modifier = modifier
+        .fillMaxWidth()
+        .height(HEADER_HEIGHT)) {
         Backdrop(backdropUrl = backdropUrl, modifier = Modifier.align(Alignment.TopStart))
         Row(
             modifier =
@@ -130,21 +117,30 @@ private fun Backdrop(
                 modifier = Modifier.fillMaxSize(),
             )
         }
-        // The gradient is drawn over the art, so the back action is legible.
-        Box(
-            modifier =
-                Modifier.fillMaxSize().background(
-                    Brush.verticalGradient(
-                        0f to Color.Black.copy(alpha = BACKDROP_SCRIM_ALPHA),
-                        BACKDROP_SCRIM_MID to
-                            Color.Black.copy(alpha = BACKDROP_SCRIM_MID_ALPHA),
-                        BACKDROP_SCRIM_END to Color.Transparent,
-                    ),
-                ),
-        )
+        // The gradient is drawn over the art, so the system ui is legible.
+        ScrimGradientSystemUi()
         // Backdrop fades into the page under it.
         BackdropFade()
     }
+}
+
+@Composable
+private fun ScrimGradientSystemUi() {
+    val background = MaterialTheme.colorScheme.background
+
+    Box(
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        0f to background.copy(alpha = 0.8f),
+                        0.10f to background.copy(alpha = 0.5f),
+                        0.20f to background.copy(alpha = 0.15f),
+                        0.35f to Color.Transparent,
+                    ),
+                ),
+    )
 }
 
 /**

@@ -9,8 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
-/** Where the fade into the page behind the backdrop begins, as a share of its height. */
-private const val BACKDROP_FADE_START = 0.4f
 
 /**
  * The fade carrying the bottom of the backdrop into the page under it.
@@ -22,7 +20,7 @@ internal fun BackdropFade(modifier: Modifier = Modifier) {
         modifier =
             modifier.fillMaxSize().background(
                 Brush.verticalGradient(
-                    BACKDROP_FADE_START to Color.Transparent,
+                    0.4f to Color.Transparent,
                     1f to background,
                 ),
             ),
