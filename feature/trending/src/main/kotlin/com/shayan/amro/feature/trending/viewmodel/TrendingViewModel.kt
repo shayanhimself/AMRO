@@ -109,12 +109,12 @@ internal class TrendingViewModel
             sort.value = MovieSort.DEFAULT
         }
 
-    /**
-     * Fetches the movies the first time it's called, and not again.
-     */
-    private fun refreshOnLaunch() {
-        if (hasRefreshedOnLaunch) return
-        hasRefreshedOnLaunch = true
-        onRefresh()
+        /**
+         * Fetches the movies the first time it's called, and not again.
+         */
+        private fun refreshOnLaunch() {
+            if (hasRefreshedOnLaunch) return
+            hasRefreshedOnLaunch = true
+            onRefresh()
+        }
     }
-}

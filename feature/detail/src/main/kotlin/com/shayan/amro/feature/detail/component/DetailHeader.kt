@@ -60,9 +60,12 @@ internal fun DetailHeader(
     badge: HeaderBadgeUiState?,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier = modifier
-        .fillMaxWidth()
-        .height(HEADER_HEIGHT)) {
+    Box(
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(HEADER_HEIGHT),
+    ) {
         Backdrop(backdropUrl = backdropUrl, modifier = Modifier.align(Alignment.TopStart))
         Row(
             modifier =
