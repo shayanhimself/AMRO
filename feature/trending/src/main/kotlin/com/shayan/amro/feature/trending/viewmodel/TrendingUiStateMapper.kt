@@ -16,11 +16,6 @@ import kotlinx.collections.immutable.toImmutableSet
 private const val GENRE_SEPARATOR = " · "
 
 /**
- * The two directions, in the order the sheet offers them: the one the list opens on comes first.
- */
-private val DIRECTIONS = listOf(SortDirection.DESCENDING, SortDirection.ASCENDING)
-
-/**
  * Reads the cached trending movies, the selection over it and what the last refresh did.
  *
  * @param selectedGenreNames the selected genres, as the enum's own names.
@@ -127,7 +122,8 @@ private fun sortKeyChips(selected: SortKey): ImmutableList<ChipUiState<SortKey>>
 
 /** Every direction the ordering can run. */
 private fun directionChips(selected: SortDirection): ImmutableList<ChipUiState<SortDirection>> =
-    DIRECTIONS
+    // The two directions, in the order they are rendered.
+    listOf(SortDirection.DESCENDING, SortDirection.ASCENDING)
         .map { direction ->
             ChipUiState(
                 value = direction,
