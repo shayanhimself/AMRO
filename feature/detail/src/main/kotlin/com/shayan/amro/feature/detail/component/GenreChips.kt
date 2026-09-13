@@ -1,12 +1,12 @@
 package com.shayan.amro.feature.detail.component
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -54,27 +54,20 @@ private fun GenreChip(
     name: String,
     modifier: Modifier = Modifier,
 ) {
-    Surface(
-        modifier = modifier.height(32.dp),
-        shape = ComponentShapes.chip,
-        color = MaterialTheme.colorScheme.surface,
-        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        border =
-            BorderStroke(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.outlineVariant,
-            ),
-    ) {
-        Box(
-            modifier =
-                Modifier
-                    .padding(horizontal = Spacing.s4)
-                    .fillMaxHeight(),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(text = name, style = MaterialTheme.typography.labelLarge)
-        }
-    }
+    val shape = ComponentShapes.chip
+    // Not using DsChip because it is interactive, and we want a non-interactive chip.
+    Text(
+        text = name,
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier =
+            modifier
+                .height(32.dp)
+                .background(MaterialTheme.colorScheme.surface, shape)
+                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, shape)
+                .padding(horizontal = Spacing.s4)
+                .wrapContentHeight(Alignment.CenterVertically),
+    )
 }
 
 @Preview
