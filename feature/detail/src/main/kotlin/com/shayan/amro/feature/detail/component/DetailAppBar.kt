@@ -66,19 +66,16 @@ internal fun DetailAppBar(
             },
             navigationIcon = {
                 if (onBack != null) {
-                    Box(
+                    DsIconButton(
+                        glyph = Glyphs.ARROW_BACK,
+                        contentDescription = stringResource(R.string.feature_detail_back),
+                        onClick = onBack,
                         modifier =
                             Modifier.fadingBackground(
                                 color = container,
                                 collapsedFraction = collapsedFraction,
                             ),
-                    ) {
-                        DsIconButton(
-                            glyph = Glyphs.ARROW_BACK,
-                            contentDescription = stringResource(R.string.feature_detail_back),
-                            onClick = onBack,
-                        )
-                    }
+                    )
                 }
             },
             colors =

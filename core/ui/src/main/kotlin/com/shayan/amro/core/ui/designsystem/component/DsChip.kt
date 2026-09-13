@@ -1,7 +1,6 @@
 package com.shayan.amro.core.ui.designsystem.component
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -127,7 +126,10 @@ private fun DismissButton(
     onDismiss: () -> Unit,
 ) {
     val description = stringResource(R.string.core_ui_dismiss, label)
-    Box(
+    DsIcon(
+        glyph = Glyphs.CLOSE,
+        contentDescription = null,
+        size = CHIP_ICON_SIZE,
         modifier =
             Modifier
                 .clickable(onClick = onDismiss)
@@ -135,9 +137,7 @@ private fun DismissButton(
                     this.contentDescription = description
                     this.role = Role.Button
                 },
-    ) {
-        DsIcon(Glyphs.CLOSE, contentDescription = null, size = CHIP_ICON_SIZE)
-    }
+    )
 }
 
 @Preview
