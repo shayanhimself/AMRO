@@ -40,8 +40,7 @@ private const val PAGES_FOR_WANTED = 6
 /** More than any one page holds, so a source repeating one page is stopped by the cap alone. */
 private const val MORE_THAN_ANY_PAGE_HOLDS = 500
 
-/** Rows across the two assembled pages, and how many of them are distinct. */
-private const val OVERLAP_ROWS = 40
+/** Distinct movies across the two assembled pages, fewer than the rows they hold. */
 private const val OVERLAP_DISTINCT = 37
 
 private const val EMPTY_RESULTS = """{"page":1,"results":[],"total_pages":0}"""
@@ -65,7 +64,7 @@ class TmdbRemoteDataSourceTest {
     @Test
     fun `a movie served on two pages is held once`() =
         runTest {
-            val result = overlapSource().getTrendingMovies(OVERLAP_ROWS)
+            val result = overlapSource().getTrendingMovies(OVERLAP_DISTINCT)
 
             val movies = assertIs<NetworkResult.Success<List<Movie>>>(result).value
             val ids = movies.map { it.id }
@@ -105,6 +104,18 @@ class TmdbRemoteDataSourceTest {
             val result = failingAfterFirstPageSource().getTrendingMovies(WANTED)
 
             assertEquals(DataError.NoConnectivity, assertIs<NetworkResult.Failure>(result).error)
+        }
+
+    @Test
+    fun `a source that runs out after the first page fails the walk`() =
+        runTest {
+            val result =
+                sequenceSource(
+                    listOf(TmdbFixture.Trending.PAGE_1),
+                ).getTrendingMovies(WANTED)
+
+            assertEquals(DataError.EmptyResponse, assertIs<NetworkResult.Failure>(result).error)
+            assertEquals(2, requests.size, "the walk went on past the empty page")
         }
 
     @Test

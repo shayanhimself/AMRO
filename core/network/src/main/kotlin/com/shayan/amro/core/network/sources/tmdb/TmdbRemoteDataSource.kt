@@ -37,8 +37,7 @@ internal class TmdbRemoteDataSource
          * https://www.themoviedb.org/talk/5ee3abd1590086001f50b3c1
          * https://www.themoviedb.org/talk/5bbabe890e0a2616d7005bd6
          *
-         * @return up to [count] distinct movies. Fewer means the source ran out of them or the walk
-         * reached [TMDB_PAGE_CAP], both of which are complete answers rather than failures.
+         * @return up to [count] distinct movies. Fewer means the walk reached [TMDB_PAGE_CAP].
          */
         override suspend fun getTrendingMovies(count: Int): NetworkResult<List<Movie>> {
             val held = LinkedHashMap<String, Movie>()
@@ -53,11 +52,9 @@ internal class TmdbRemoteDataSource
                     is NetworkResult.Success -> {
                         val rows = result.value.results
                         if (rows.isEmpty()) {
-                            return if (page == FIRST_PAGE) {
-                                NetworkResult.Failure(DataError.EmptyResponse)
-                            } else {
-                                held.upTo(count)
-                            }
+                            // We translate empty page to a failure, since realistically
+                            // TMDB should never return an empty page in the scale of the [count].
+                            return NetworkResult.Failure(DataError.EmptyResponse)
                         }
                         rows.forEach { row ->
                             val movie = row.toMovie()
