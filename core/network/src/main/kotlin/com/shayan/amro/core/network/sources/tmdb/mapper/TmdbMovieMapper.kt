@@ -5,12 +5,14 @@ import com.shayan.amro.core.model.MovieDetail
 import com.shayan.amro.core.model.Rating
 import com.shayan.amro.core.model.ReleaseStatus
 import com.shayan.amro.core.network.sources.MovieId
-import com.shayan.amro.core.network.sources.tmdb.TMDB_SOURCE
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbMovieDetailDto
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbMovieDto
 import kotlinx.datetime.LocalDate
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
+
+/** Stamps every id this source issues, so a second provider's ids cannot collide with these. */
+internal const val TMDB_SOURCE = "tmdb"
 
 /**
  * If TMDB has no popularity for a movie, the app treats it as the least popular movie in the list.

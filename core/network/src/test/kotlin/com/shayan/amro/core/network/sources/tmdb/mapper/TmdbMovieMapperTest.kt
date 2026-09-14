@@ -3,7 +3,6 @@ package com.shayan.amro.core.network.sources.tmdb.mapper
 import com.shayan.amro.core.model.Genre
 import com.shayan.amro.core.model.ReleaseStatus
 import com.shayan.amro.core.network.sources.MovieId
-import com.shayan.amro.core.network.sources.tmdb.TMDB_SOURCE
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbMovieDetailDto
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbMovieDto
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbTrendingPageDto

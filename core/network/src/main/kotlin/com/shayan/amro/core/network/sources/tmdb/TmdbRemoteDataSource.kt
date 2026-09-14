@@ -10,9 +10,6 @@ import com.shayan.amro.core.network.sources.tmdb.mapper.toMovie
 import com.shayan.amro.core.network.sources.tmdb.mapper.toMovieDetail
 import javax.inject.Inject
 
-/** Stamps every id this source issues, so a second provider's ids cannot collide with these. */
-internal const val TMDB_SOURCE = "tmdb"
-
 private const val FIRST_PAGE = 1
 
 /**
