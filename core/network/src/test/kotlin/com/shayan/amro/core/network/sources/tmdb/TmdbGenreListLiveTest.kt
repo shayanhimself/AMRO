@@ -3,8 +3,8 @@ package com.shayan.amro.core.network.sources.tmdb
 import com.shayan.amro.core.network.BuildConfig
 import com.shayan.amro.core.network.NetworkResult
 import com.shayan.amro.core.network.sources.tmdb.dto.TmdbGenreListDto
+import com.shayan.amro.core.network.sources.tmdb.mapper.GENRES_BY_TMDB_ID
 import com.shayan.amro.core.network.sources.tmdb.mapper.tmdbGenre
-import com.shayan.amro.core.network.sources.tmdb.mapper.tmdbGenreIds
 import io.ktor.client.engine.okhttp.OkHttp
 import kotlinx.coroutines.runBlocking
 import org.junit.Assume.assumeTrue
@@ -55,3 +55,11 @@ class TmdbGenreListLiveTest {
             }
         }
 }
+
+/**
+ * Every TMDB genre id the table carries.
+ *
+ * The live check reads it to find an entry TMDB has stopped publishing, which `tmdbGenre` cannot
+ * surface because nothing ever asks it for a genre that no longer exists.
+ */
+private val tmdbGenreIds: Set<Int> get() = GENRES_BY_TMDB_ID.keys

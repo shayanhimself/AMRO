@@ -153,7 +153,11 @@ private fun runLocalDataSourceTest(
 ): TestResult =
     runTest {
         val database = testDatabase()
-        body(RoomMovieLocalDataSource(database.movieDao(), database.movieDetailDao()))
+        try {
+            body(RoomMovieLocalDataSource(database.movieDao(), database.movieDetailDao()))
+        } finally {
+            database.close()
+        }
     }
 
 /**

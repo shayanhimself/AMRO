@@ -1,5 +1,6 @@
 package com.shayan.amro.core.network.sources.tmdb.mapper
 
+import androidx.annotation.VisibleForTesting
 import com.shayan.amro.core.model.Genre
 
 /**
@@ -7,7 +8,8 @@ import com.shayan.amro.core.model.Genre
  *
  * The id is the key rather than the name, because an id survives a rename and a name does not.
  */
-private val GENRES_BY_TMDB_ID =
+@VisibleForTesting
+internal val GENRES_BY_TMDB_ID =
     mapOf(
         28 to Genre.ACTION,
         12 to Genre.ADVENTURE,
@@ -29,14 +31,6 @@ private val GENRES_BY_TMDB_ID =
         10752 to Genre.WAR,
         37 to Genre.WESTERN,
     )
-
-/**
- * Every TMDB genre id the table carries.
- *
- * The live check reads it to find an entry TMDB has stopped publishing, which `tmdbGenre` cannot
- * surface because nothing ever asks it for a genre that no longer exists.
- */
-internal val tmdbGenreIds: Set<Int> get() = GENRES_BY_TMDB_ID.keys
 
 /**
  * The app genre one of TMDB's ids becomes.

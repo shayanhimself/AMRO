@@ -129,11 +129,12 @@ private fun ImmutableList<AmroText>.asOneStatement(): AmroText =
 private fun badgeFor(
     rating: Rating?,
     @StringRes statusRes: Int?,
-): HeaderBadgeUiState? = if (rating != null) {
-    rating.toRatingBadge()
-} else {
-    statusRes?.let { HeaderBadgeUiState.Status(label = AmroText.Resource(it)) }
-}
+): HeaderBadgeUiState? =
+    if (rating != null) {
+        rating.toRatingBadge()
+    } else {
+        statusRes?.let { HeaderBadgeUiState.Status(label = AmroText.Resource(it)) }
+    }
 
 /** A rating and its sample size. */
 private fun Rating.toRatingBadge(): HeaderBadgeUiState.Rating {
