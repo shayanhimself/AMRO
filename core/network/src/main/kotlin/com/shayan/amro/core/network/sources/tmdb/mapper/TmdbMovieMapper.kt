@@ -17,17 +17,6 @@ import kotlin.time.Duration.Companion.minutes
  */
 private const val UNPOPULAR = 0.0
 
-/** TMDB's release statuses paired with the app status each one becomes. */
-private val STATUSES_BY_TMDB_NAME =
-    mapOf(
-        "Rumored" to ReleaseStatus.RUMORED,
-        "Planned" to ReleaseStatus.PLANNED,
-        "In Production" to ReleaseStatus.IN_PRODUCTION,
-        "Post Production" to ReleaseStatus.POST_PRODUCTION,
-        "Released" to ReleaseStatus.RELEASED,
-        "Canceled" to ReleaseStatus.CANCELED,
-    )
-
 /** The movie a list row describes. */
 internal fun TmdbMovieDto.toMovie(): Movie =
     Movie(
