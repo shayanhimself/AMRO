@@ -79,13 +79,13 @@ Two tests guard that table, both in `core/network/src/test`:
 | `TmdbGenresTest` | The table has a gap against the recorded genre list or the recorded trending pages. (It reads a recorded response, so it cannot notice TMDB publishing a new genre)                                  |
 | `TmdbGenreListLiveTest` | **This is the one that breaks when we drift.** It calls the live genre endpoint and fails when TMDB publishes a new genre, or retires one. (This is the only test for which CI needs the TMDB token) |
 
-The live test needs a token and a network, so it skips itself when there is none. A failure means
+The live test needs a token, so it skips itself when there is none. A failure means
 TMDB changed its genres. In that case: add or remove the entry, then re-record with `scripts/record-fixtures.py`.
 When we drift, the app still works, but either it doesn't show the missing genre, or it shows a retired genre in the filters that no movie carries. That is the cost we pay for owning the genre list.
 
 ## Adding a second source
 
-1. Create `sources/<name>/` beside `tmdb/`: a config, a client, an api, wire shapes, mappers and a Hilt module. Everything `internal`.
+1. Create `sources/<name>/` beside `tmdb/`: a config, a client, an api, DTOs, mappers, a RemoteDataSource implementation and a Hilt module. Everything `internal`.
 2. Add its credential to `API_TOKENS` in `build-logic/convention/src/main/kotlin/ApiTokens.kt`. Every
    module applying `amro.api.tokens` then gets one `BuildConfig` field per source.
 3. Bind it in `di/RemoteSourceModule.kt`.
