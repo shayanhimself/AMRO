@@ -42,7 +42,7 @@ internal class TrendingViewModel
         savedStateHandle: SavedStateHandle,
     ) : ViewModel() {
         private val genreNames =
-            savedStateHandle.getMutableStateFlow(KEY_GENRES, ArrayList<String>())
+            savedStateHandle.getMutableStateFlow<List<String>>(KEY_GENRES, emptyList())
         private val sort = savedStateHandle.getMutableStateFlow(KEY_SORT, MovieSort.DEFAULT)
         private val refreshState = MutableStateFlow(RefreshState())
 
@@ -78,7 +78,7 @@ internal class TrendingViewModel
          */
         fun onToggleGenre(genre: String) {
             genreNames.update { genres ->
-                ArrayList(if (genre in genres) genres - genre else genres + genre)
+                if (genre in genres) genres - genre else genres + genre
             }
         }
 
@@ -100,7 +100,7 @@ internal class TrendingViewModel
          * Drops every selected genre, resolves the empty-from-filter state.
          */
         fun onClearGenres() {
-            genreNames.value = ArrayList()
+            genreNames.value = emptyList()
         }
 
         /** Drops the genre selection and returns the order to the default. */
