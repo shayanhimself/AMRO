@@ -64,7 +64,10 @@ private fun List<Movie>.uiState(
     selectedGenreNames: List<String> = emptyList(),
     sort: MovieSort = MovieSort.DEFAULT,
     refresh: RefreshState = RefreshState(),
-) = toTrendingUiState(selectedGenreNames = selectedGenreNames, sort = sort, refresh = refresh)
+) = toTrendingUiState(
+    selection = Selection(genreNames = selectedGenreNames, sort = sort),
+    refresh = refresh,
+)
 
 /**
  * The rows the state is showing.

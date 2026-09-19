@@ -18,6 +18,7 @@ import com.shayan.amro.feature.trending.viewmodel.MovieRowUiState
 import com.shayan.amro.feature.trending.viewmodel.MovieSort
 import com.shayan.amro.feature.trending.viewmodel.NoticeUiState
 import com.shayan.amro.feature.trending.viewmodel.RefreshState
+import com.shayan.amro.feature.trending.viewmodel.Selection
 import com.shayan.amro.feature.trending.viewmodel.SortDirection
 import com.shayan.amro.feature.trending.viewmodel.SortKey
 import com.shayan.amro.feature.trending.viewmodel.TrendingContent
@@ -107,7 +108,10 @@ private fun previewState(
     sort: MovieSort = MovieSort.DEFAULT,
     refresh: RefreshState = RefreshState(),
 ): TrendingUiState =
-    cache.toTrendingUiState(selectedGenreNames = genreNames, sort = sort, refresh = refresh)
+    cache.toTrendingUiState(
+        selection = Selection(genreNames = genreNames, sort = sort),
+        refresh = refresh,
+    )
 
 /**
  * Builds one movie a row renders.

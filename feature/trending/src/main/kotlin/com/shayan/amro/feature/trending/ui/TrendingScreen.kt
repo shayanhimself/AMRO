@@ -37,7 +37,6 @@ import com.shayan.amro.feature.trending.component.MovieRow
 import com.shayan.amro.feature.trending.component.TrendingAppBar
 import com.shayan.amro.feature.trending.component.TrendingNoticeBar
 import com.shayan.amro.feature.trending.component.TrendingSkeleton
-import com.shayan.amro.feature.trending.viewmodel.SelectionUiState
 import com.shayan.amro.feature.trending.viewmodel.SortDirection
 import com.shayan.amro.feature.trending.viewmodel.SortKey
 import com.shayan.amro.feature.trending.viewmodel.TrendingContent
@@ -74,7 +73,10 @@ internal fun TrendingScreen(
     var isSheetOpen by rememberSaveable { mutableStateOf(false) }
     val listState = rememberLazyListState()
 
-    ScrollToTopOnSelectionChange(selection = uiState.selection, listState = listState)
+    ScrollToTopOnListChange(
+        listRevision = uiState.listRevision,
+        listState = listState,
+    )
 
     Scaffold(
         modifier = modifier,
@@ -177,21 +179,21 @@ private fun trendingListPadding(bottomInset: Dp) =
     )
 
 /**
- * Returns [listState] to the first row whenever sort or filters change.
+ * Scrolls to the first row whenever the sort or filters change.
  *
- * @param selection what the list is narrowed and ordered by.
+ * @param listRevision a token that changes when the sort or filter are changed.
  * @param listState the list to return to the top.
  */
 @Composable
-private fun ScrollToTopOnSelectionChange(
-    selection: SelectionUiState,
+private fun ScrollToTopOnListChange(
+    listRevision: Int,
     listState: LazyListState,
 ) {
     // The first run is the screen opening, so it is skipped.
-    var isFirstSelection by remember { mutableStateOf(true) }
-    LaunchedEffect(selection) {
-        if (isFirstSelection) {
-            isFirstSelection = false
+    var isFirstRevision by remember { mutableStateOf(true) }
+    LaunchedEffect(listRevision) {
+        if (isFirstRevision) {
+            isFirstRevision = false
         } else {
             listState.scrollToItem(0)
         }

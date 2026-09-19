@@ -25,6 +25,7 @@ import com.shayan.amro.feature.trending.R
 import com.shayan.amro.feature.trending.viewmodel.MovieRowUiState
 import com.shayan.amro.feature.trending.viewmodel.MovieSort
 import com.shayan.amro.feature.trending.viewmodel.RefreshState
+import com.shayan.amro.feature.trending.viewmodel.Selection
 import com.shayan.amro.feature.trending.viewmodel.SortDirection
 import com.shayan.amro.feature.trending.viewmodel.SortKey
 import com.shayan.amro.feature.trending.viewmodel.TrendingContent
@@ -162,7 +163,12 @@ class TrendingScreenTest {
         scrollToBottom()
 
         composeRule.runOnIdle {
-            uiState.value = loaded(cache = LONG_CACHE, genreNames = listOf(SHARED_GENRE.name))
+            uiState.value =
+                loaded(
+                    cache = LONG_CACHE,
+                    genreNames = listOf(SHARED_GENRE.name),
+                    listRevision = CHANGED_REVISION,
+                )
         }
 
         composeRule.onNodeWithText(TOP_OF_LONG_CACHE).assertIsDisplayed()
@@ -179,6 +185,7 @@ class TrendingScreenTest {
                 loaded(
                     cache = LONG_CACHE,
                     sort = MovieSort(SortKey.RELEASE_DATE, SortDirection.DESCENDING),
+                    listRevision = CHANGED_REVISION,
                 )
         }
 
@@ -251,7 +258,15 @@ private fun loaded(
     genreNames: List<String> = emptyList(),
     sort: MovieSort = MovieSort.DEFAULT,
     refresh: RefreshState = RefreshState(),
-) = cache.toTrendingUiState(selectedGenreNames = genreNames, sort = sort, refresh = refresh)
+    listRevision: Int = 0,
+) = cache.toTrendingUiState(
+    selection = Selection(genreNames = genreNames, sort = sort),
+    refresh = refresh,
+    listRevision = listRevision,
+)
+
+/** A revision after the initial [loaded] state's, standing for a selection the user changed. */
+private const val CHANGED_REVISION = 1
 
 /** How many rows it takes for a list not to fit on one screen. */
 private const val PAGE_SIZE = 30
@@ -292,8 +307,7 @@ private val BOTTOM_OF_LONG_CACHE = LONG_CACHE.last().title
 /** The state a screen with nothing cached and a failed refresh renders. */
 private fun failed(cause: DataError) =
     emptyList<Movie>().toTrendingUiState(
-        selectedGenreNames = emptyList(),
-        sort = MovieSort.DEFAULT,
+        selection = Selection(),
         refresh = RefreshState(error = cause),
     )
 

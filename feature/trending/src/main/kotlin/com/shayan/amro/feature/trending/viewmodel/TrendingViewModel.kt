@@ -4,16 +4,18 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shayan.amro.core.data.TrendingMoviesRepository
-import com.shayan.amro.core.model.DataError
 import com.shayan.amro.core.ui.viewmodel.SUBSCRIPTION_TIMEOUT_MILLIS
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,17 +24,6 @@ private const val KEY_GENRES = "trending.genres"
 
 /** Where the ordering is saved. */
 private const val KEY_SORT = "trending.sort"
-
-/**
- * The state of the last refresh.
- *
- * @property isRefreshing whether one is running now.
- * @property error the cause the last one failed with, or null.
- */
-internal data class RefreshState(
-    val isRefreshing: Boolean = false,
-    val error: DataError? = null,
-)
 
 @HiltViewModel
 internal class TrendingViewModel
@@ -49,14 +40,26 @@ internal class TrendingViewModel
         /** Whether the launch refresh has run for this view model. */
         private var hasRefreshedOnLaunch = false
 
+        /**
+         * The current sort & filter selection, paired with a revision that increases on each change,
+         * so the screen can tell a new selection from more rows under the same one.
+         */
+        private val indexedSelection: Flow<IndexedValue<Selection>> =
+            combine(genreNames, sort) { names, sort -> Selection(names, sort) }
+                .distinctUntilChanged()
+                .withIndex()
+
         val uiState: StateFlow<TrendingUiState> =
             combine(
                 trendingMoviesRepository.getTrendingMoviesFlow(),
-                genreNames,
-                sort,
+                indexedSelection,
                 refreshState,
-            ) { movies, names, sort, refresh ->
-                movies.toTrendingUiState(selectedGenreNames = names, sort = sort, refresh = refresh)
+            ) { movies, indexedSelection, refresh ->
+                movies.toTrendingUiState(
+                    selection = indexedSelection.value,
+                    refresh = refresh,
+                    listRevision = indexedSelection.index,
+                )
             }.onStart { refreshOnLaunch() }
                 .stateIn(
                     scope = viewModelScope,

@@ -10,7 +10,6 @@ import com.shayan.amro.core.ui.text.AmroText
 import com.shayan.amro.feature.trending.R
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.collections.immutable.toImmutableSet
 
 /** What sits between two genre names on a row. */
 private const val GENRE_SEPARATOR = " · "
@@ -18,18 +17,19 @@ private const val GENRE_SEPARATOR = " · "
 /**
  * Reads the cached trending movies, the selection over it and what the last refresh did.
  *
- * @param selectedGenreNames the selected genres, as the enum's own names.
- * @param sort the order the list is in.
+ * @param selection the filter and sort the user has chosen.
  * @param refresh the state of the last refresh.
+ * @param listRevision a token that changes with the selection, carried onto the state so the
+ * screen scrolls to the top on a new selection but not on rows arriving under the same one.
  * @return what the screen renders.
  */
 internal fun List<Movie>.toTrendingUiState(
-    selectedGenreNames: List<String>,
-    sort: MovieSort,
+    selection: Selection,
     refresh: RefreshState,
+    listRevision: Int = 0,
 ): TrendingUiState {
-    val selectedGenres = selectedGenreNames.mapTo(mutableSetOf()) { Genre.valueOf(it) }
-    val shownMovies = applyFilter(selectedGenres).applySort(sort)
+    val selectedGenres = selection.genreNames.mapTo(mutableSetOf()) { Genre.valueOf(it) }
+    val shownMovies = applyFilter(selectedGenres).applySort(selection.sort)
 
     return TrendingUiState(
         content =
@@ -41,19 +41,16 @@ internal fun List<Movie>.toTrendingUiState(
         filter =
             FilterUiState(
                 genres = genreChips(selected = selectedGenres),
-                sortKeys = sortKeyChips(selected = sort.key),
-                directions = directionChips(selected = sort.direction),
+                sortKeys = sortKeyChips(selected = selection.sort.key),
+                directions = directionChips(selected = selection.sort.direction),
                 shownCount = shownMovies.size,
                 totalCount = size,
             ),
-        activeSelectionCount = selectedGenres.size + if (sort == MovieSort.DEFAULT) 0 else 1,
+        activeSelectionCount =
+            selectedGenres.size + if (selection.sort == MovieSort.DEFAULT) 0 else 1,
         notice = refresh.error?.takeIf { isNotEmpty() }?.toNotice(),
         isRefreshing = refresh.isRefreshing,
-        selection =
-            SelectionUiState(
-                genreNames = selectedGenreNames.toImmutableSet(),
-                sort = sort,
-            ),
+        listRevision = listRevision,
     )
 }
 

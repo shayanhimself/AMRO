@@ -12,8 +12,8 @@ import com.shayan.amro.core.testing.string
 import com.shayan.amro.core.ui.designsystem.theme.AmroTheme
 import com.shayan.amro.core.ui.label.labelRes
 import com.shayan.amro.feature.trending.R
-import com.shayan.amro.feature.trending.viewmodel.MovieSort
 import com.shayan.amro.feature.trending.viewmodel.RefreshState
+import com.shayan.amro.feature.trending.viewmodel.Selection
 import com.shayan.amro.feature.trending.viewmodel.SortDirection
 import com.shayan.amro.feature.trending.viewmodel.SortKey
 import com.shayan.amro.feature.trending.viewmodel.TrendingUiState
@@ -136,8 +136,7 @@ private val SELECTABLE_GENRE = Genre.HORROR
 /** The state the sheet reads its offers out of, built the way the screen builds it. */
 private fun filter(genreNames: List<String> = emptyList()) =
     CACHE.toTrendingUiState(
-        selectedGenreNames = genreNames,
-        sort = MovieSort.DEFAULT,
+        selection = Selection(genreNames = genreNames),
         refresh = RefreshState(),
     )
 
