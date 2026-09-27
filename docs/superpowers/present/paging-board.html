@@ -1,0 +1,1524 @@
+<title>AMRO Paging Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=Public+Sans:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    color-scheme: light;
+
+    --ground: #e9eff3;
+    --panel: #ffffff;
+    --panel-2: #f2f7f9;
+    --edge: #c8d9e1;
+    --edge-soft: #dde9ee;
+    --ink: #06202d;
+    --ink-2: #3f606f;
+    --ink-3: #6d8896;
+
+    --navy: #032541;
+    --cyan: #00819f;
+    --cyan-bright: #01b4e4;
+    --amber: #a86200;
+    --amber-bright: #f5a524;
+    --mint: #1c7752;
+    --mint-bright: #7fd1a6;
+    --alarm: #bc3427;
+
+    --wire: #a9c2ce;
+    --log-ground: #06212f;
+    --log-ink: #cfe6ef;
+
+    --r-sm: 4px;
+    --r-md: 10px;
+    --shadow: 0 1px 2px rgba(3, 37, 65, .10), 0 10px 26px -16px rgba(3, 37, 65, .38);
+
+    --step-0: .78rem;
+    --step-1: .94rem;
+    --step-2: 1.1rem;
+    --step-4: 2.05rem;
+    --step-5: clamp(2.3rem, 5.6vw, 3.5rem);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ground: #04151f;
+      --panel: #08222f;
+      --panel-2: #0b2a39;
+      --edge: #17495f;
+      --edge-soft: #103647;
+      --ink: #e8f4f9;
+      --ink-2: #a9c8d5;
+      --ink-3: #7ba3b4;
+      --navy: #01b4e4;
+      --cyan: #4ccdf1;
+      --cyan-bright: #01b4e4;
+      --amber: #f5a524;
+      --amber-bright: #ffc35c;
+      --mint: #7fd1a6;
+      --mint-bright: #a8e6c4;
+      --alarm: #ff8375;
+      --wire: #1f5872;
+      --log-ground: #021019;
+      --log-ink: #bfe0ec;
+      --shadow: 0 1px 2px rgba(0, 0, 0, .45), 0 12px 32px -20px rgba(0, 0, 0, 1);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground: #04151f;
+    --panel: #08222f;
+    --panel-2: #0b2a39;
+    --edge: #17495f;
+    --edge-soft: #103647;
+    --ink: #e8f4f9;
+    --ink-2: #a9c8d5;
+    --ink-3: #7ba3b4;
+    --navy: #01b4e4;
+    --cyan: #4ccdf1;
+    --cyan-bright: #01b4e4;
+    --amber: #f5a524;
+    --amber-bright: #ffc35c;
+    --mint: #7fd1a6;
+    --mint-bright: #a8e6c4;
+    --alarm: #ff8375;
+    --wire: #1f5872;
+    --log-ground: #021019;
+    --log-ink: #bfe0ec;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .45), 0 12px 32px -20px rgba(0, 0, 0, 1);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "Public Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: var(--step-1);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { width: min(1280px, 100% - 2.4rem); margin-inline: auto; }
+
+  h1, h2, h3 {
+    font-family: "Bricolage Grotesque", "Public Sans", sans-serif;
+    text-wrap: balance;
+    letter-spacing: -.02em;
+    margin: 0;
+  }
+
+  .mono, code, pre { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: var(--step-0);
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  :focus-visible { outline: 2px solid var(--amber-bright); outline-offset: 2px; }
+
+  .masthead {
+    padding: clamp(1.9rem, 5vw, 3.2rem) 0 1.4rem;
+    border-bottom: 1px solid var(--edge);
+    background:
+      radial-gradient(120% 130% at 86% -25%, color-mix(in oklab, var(--cyan-bright) 15%, transparent), transparent 60%),
+      linear-gradient(var(--panel), var(--ground));
+  }
+  .masthead h1 { font-size: var(--step-5); font-weight: 800; line-height: .96; margin: .45rem 0 .7rem; }
+  .masthead .lede { max-width: 60ch; color: var(--ink-2); font-size: var(--step-2); margin: 0; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: 1.2rem; padding: 0; list-style: none; }
+  .legend li {
+    display: inline-flex; align-items: center; gap: .45rem;
+    font-family: "IBM Plex Mono", monospace; font-size: var(--step-0);
+    padding: .28rem .6rem; border-radius: 999px;
+    border: 1px solid var(--edge); background: var(--panel); color: var(--ink-2);
+  }
+  .legend i { width: 9px; height: 9px; border-radius: 2px; display: block; }
+  .legend .read i { background: var(--cyan-bright); }
+  .legend .write i { background: var(--mint); }
+  .legend .net i { background: var(--alarm); }
+  .legend .sig i { background: var(--amber-bright); }
+
+  section { padding: clamp(2rem, 4.6vw, 3.2rem) 0; }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: .5rem 1.4rem; margin-bottom: 1.2rem; }
+  .section-head h2 { font-size: var(--step-4); font-weight: 700; }
+  .section-head p { margin: 0; color: var(--ink-2); max-width: 52ch; }
+
+  .panel { background: var(--panel); border: 1px solid var(--edge); border-radius: var(--r-md); box-shadow: var(--shadow); }
+  .panel > header {
+    display: flex; align-items: center; justify-content: space-between; gap: .8rem;
+    padding: .6rem .85rem; border-bottom: 1px solid var(--edge-soft);
+  }
+  .panel > header h3 { font-size: var(--step-1); font-weight: 700; letter-spacing: 0; }
+
+  /* ---- stage: board + hud ---- */
+
+  .stage { display: grid; grid-template-columns: minmax(0, 1fr) 296px; gap: 1rem; align-items: start; }
+  .board-scroll { overflow-x: auto; padding: .35rem .35rem 0; }
+  svg.board { display: block; width: 100%; min-width: 820px; height: auto; }
+
+  .n-body { fill: var(--panel-2); stroke: var(--edge); stroke-width: 1.3; }
+  .node { cursor: pointer; }
+  .node .n-body { transition: fill .18s ease, stroke .18s ease; }
+  .node:hover .n-body { stroke: var(--cyan); }
+  .node.sel .n-body { stroke: var(--cyan); stroke-width: 2; }
+  .node.hot .n-body { fill: color-mix(in oklab, var(--amber-bright) 15%, var(--panel-2)); stroke: var(--amber); stroke-width: 2; }
+  .node.hot.net .n-body { fill: color-mix(in oklab, var(--alarm) 13%, var(--panel-2)); stroke: var(--alarm); }
+  .node.hot.win .n-body { fill: color-mix(in oklab, var(--mint) 15%, var(--panel-2)); stroke: var(--mint); }
+
+  .n-cap { fill: var(--ink); font-family: "Bricolage Grotesque", sans-serif; font-size: 13.5px; font-weight: 700; }
+  .n-tag { fill: var(--ink-3); font-family: "IBM Plex Mono", monospace; font-size: 9px; letter-spacing: .16em; }
+  .n-sub { fill: var(--ink-2); font-family: "IBM Plex Mono", monospace; font-size: 10.5px; }
+  .n-val { fill: var(--cyan); font-family: "IBM Plex Mono", monospace; font-size: 11.5px; font-variant-numeric: tabular-nums; }
+
+  .row-bar { fill: var(--panel); stroke: var(--edge); stroke-width: 1; }
+  .row-bar.on { fill: color-mix(in oklab, var(--cyan-bright) 30%, var(--panel)); stroke: var(--cyan); }
+  .row-bar.here { fill: color-mix(in oklab, var(--amber-bright) 45%, var(--panel)); stroke: var(--amber); }
+
+  .lamp { fill: var(--edge); }
+  .lamp.on { fill: var(--amber-bright); }
+  .lamp.net { fill: var(--alarm); }
+  .lamp.done { fill: var(--mint); }
+
+  .pill { fill: var(--panel); stroke: var(--edge); stroke-width: 1; }
+  .pill.busy { fill: color-mix(in oklab, var(--amber-bright) 30%, var(--panel)); stroke: var(--amber); }
+
+  .strip-stored { fill: var(--panel); stroke: var(--edge); }
+  .strip-window { fill: color-mix(in oklab, var(--cyan-bright) 32%, transparent); stroke: var(--cyan); stroke-width: 1; transition: y .3s ease, height .3s ease; }
+  .strip-reader { fill: var(--amber-bright); transition: y .3s ease; }
+
+  .wire { stroke: var(--wire); stroke-width: 1.5; fill: none; marker-end: url(#ar); transition: stroke .15s ease, stroke-width .15s ease; }
+  .wire.dash { stroke-dasharray: 5 4; }
+  .wire.live { stroke: var(--amber); stroke-width: 2.8; marker-end: url(#ar-live); }
+  .wire.live.net { stroke: var(--alarm); marker-end: url(#ar-net); }
+  .w-label { fill: var(--ink-3); font-family: "IBM Plex Mono", monospace; font-size: 9.5px; }
+
+  .ticker {
+    display: grid; grid-template-columns: 14px 1fr; gap: .55rem;
+    padding: .6rem .85rem; border-top: 1px solid var(--edge-soft);
+    font-family: "IBM Plex Mono", monospace; font-size: var(--step-0); color: var(--ink);
+    min-height: 2.6rem; align-items: center;
+  }
+  .ticker .caret { color: var(--amber); }
+  .ticker.bad { color: var(--alarm); }
+
+  .controls { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; padding: .7rem .85rem; border-top: 1px solid var(--edge-soft); }
+  button {
+    font: inherit; font-size: var(--step-0); font-weight: 600;
+    color: var(--ink); background: var(--panel-2);
+    border: 1px solid var(--edge); border-radius: var(--r-sm);
+    padding: .44rem .7rem; cursor: pointer;
+    transition: border-color .12s ease, transform .12s ease;
+  }
+  button:hover { border-color: var(--cyan); }
+  button:active { transform: translateY(1px); }
+  button[disabled] { opacity: .45; cursor: not-allowed; }
+  button.primary { background: var(--navy); border-color: var(--navy); color: var(--panel); }
+
+  .meters { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--edge-soft); }
+  .meter { padding: .5rem .85rem; border-right: 1px solid var(--edge-soft); }
+  .meter:last-child { border-right: 0; }
+  .meter .k { display: block; font-family: "IBM Plex Mono", monospace; font-size: .64rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+  .meter .v { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; font-size: 1.2rem; font-weight: 600; }
+  .meter .v.hot { color: var(--amber); }
+  .meter .v.bad { color: var(--alarm); }
+
+  /* hud */
+
+  .hud { display: grid; gap: 1rem; }
+  .hud .pad { padding: .85rem; }
+  .score { display: flex; align-items: baseline; gap: .5rem; margin-top: .3rem; }
+  .score .n { font-family: "IBM Plex Mono", monospace; font-size: 2.1rem; font-weight: 600; line-height: 1; }
+  .score .of { font-family: "IBM Plex Mono", monospace; font-size: var(--step-0); color: var(--ink-3); }
+  .track { height: 6px; border-radius: 3px; background: var(--panel-2); border: 1px solid var(--edge-soft); overflow: hidden; margin: .55rem 0 .7rem; }
+  .track i { display: block; height: 100%; background: var(--mint); width: 0; transition: width .4s ease; }
+
+  ul.missions { list-style: none; margin: 0; padding: 0; display: grid; gap: .35rem; }
+  ul.missions li {
+    display: grid; grid-template-columns: 16px 1fr; gap: .55rem; align-items: start;
+    font-size: var(--step-0); color: var(--ink-2);
+    padding: .32rem .4rem; border-radius: var(--r-sm); border: 1px solid transparent;
+  }
+  ul.missions li .box { width: 14px; height: 14px; border-radius: 3px; border: 1px solid var(--edge); margin-top: .18rem; display: grid; place-items: center; font-size: 10px; color: var(--panel); }
+  ul.missions li.done { color: var(--ink); border-color: color-mix(in oklab, var(--mint) 45%, transparent); background: color-mix(in oklab, var(--mint) 12%, transparent); }
+  ul.missions li.done .box { background: var(--mint); border-color: var(--mint); }
+
+  .codeline {
+    font-family: "IBM Plex Mono", monospace; font-size: .74rem; line-height: 1.6;
+    background: var(--log-ground); color: var(--log-ink);
+    border-left: 3px solid var(--amber); border-radius: 0 var(--r-sm) var(--r-sm) 0;
+    padding: .55rem .7rem; white-space: pre-wrap; word-break: break-word; margin-top: .5rem;
+  }
+
+  .under { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 1rem; margin-top: 1rem; align-items: start; }
+
+  .log {
+    background: var(--log-ground); color: var(--log-ink);
+    font-family: "IBM Plex Mono", monospace; font-size: .73rem; line-height: 1.6;
+    padding: .65rem .85rem; height: 208px; overflow-y: auto;
+    border-radius: 0 0 var(--r-md) var(--r-md);
+  }
+  .log p { margin: 0; display: grid; grid-template-columns: 62px 1fr; gap: .6rem; }
+  .log .who { color: #6ec6e8; }
+  .log .net .who { color: var(--amber-bright); }
+  .log .win .who { color: var(--mint-bright); }
+  .log .bad span:last-child { color: #ff9d92; }
+
+  .detail .body { padding: .85rem; display: grid; gap: .6rem; }
+  .detail p { margin: 0; color: var(--ink-2); }
+  .detail .file { font-family: "IBM Plex Mono", monospace; font-size: var(--step-0); color: var(--cyan); word-break: break-all; }
+
+  pre {
+    margin: 0; padding: .75rem .85rem;
+    background: var(--log-ground); color: var(--log-ink);
+    border-radius: var(--r-sm); overflow-x: auto;
+    font-size: .74rem; line-height: 1.6;
+  }
+  pre .kw { color: var(--amber-bright); }
+  pre .st { color: var(--mint-bright); }
+  pre .cm { color: #6f93a4; font-style: italic; }
+
+  .game-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 300px); gap: 1rem; align-items: start; }
+  .scenario { padding: .85rem; display: grid; gap: .75rem; }
+  .setup { display: grid; gap: .3rem; font-size: var(--step-0); }
+  .setup div { display: flex; justify-content: space-between; gap: 1rem; border-bottom: 1px dashed var(--edge-soft); padding-bottom: .22rem; }
+  .setup span:last-child { font-family: "IBM Plex Mono", monospace; }
+  .choices { display: grid; gap: .45rem; }
+  .choice { display: grid; grid-template-columns: auto 1fr; gap: .65rem; align-items: baseline; text-align: left; font-weight: 400; }
+  .choice b { font-family: "IBM Plex Mono", monospace; font-size: var(--step-2); font-weight: 600; }
+  .choice small { color: var(--ink-2); }
+  .choice.right { border-color: var(--mint); background: color-mix(in oklab, var(--mint) 13%, var(--panel)); }
+  .choice.wrong { border-color: var(--alarm); background: color-mix(in oklab, var(--alarm) 11%, var(--panel)); }
+  .outcome { padding: .75rem .85rem; border-top: 1px solid var(--edge-soft); font-size: var(--step-0); color: var(--ink-2); }
+  .outcome b { color: var(--ink); }
+  .score-card { padding: .85rem; display: grid; gap: .55rem; }
+  .score-card .big { font-family: "IBM Plex Mono", monospace; font-size: 2.2rem; font-weight: 600; line-height: 1; }
+  .filmstrip { display: grid; grid-auto-flow: column; gap: 4px; justify-content: start; }
+  .filmstrip i { width: 22px; height: 8px; border-radius: 1px; background: var(--edge); }
+  .filmstrip i.ok { background: var(--mint); }
+  .filmstrip i.no { background: var(--alarm); }
+
+  .lab-grid { display: grid; grid-template-columns: minmax(0, 290px) minmax(0, 1fr); gap: 1rem; align-items: start; }
+  .knobs { padding: .85rem; display: grid; gap: .95rem; }
+  .knob label { display: flex; justify-content: space-between; align-items: baseline; font-size: var(--step-0); color: var(--ink-2); margin-bottom: .25rem; }
+  .knob output { font-family: "IBM Plex Mono", monospace; color: var(--ink); font-weight: 600; }
+  input[type="range"] { width: 100%; accent-color: var(--cyan-bright); }
+  .bars { padding: .95rem .85rem; display: grid; gap: .75rem; }
+  .bar-row { display: grid; grid-template-columns: 130px minmax(0, 1fr) 92px; align-items: center; gap: .75rem; font-size: var(--step-0); }
+  .bar-track { height: 20px; background: var(--panel-2); border: 1px solid var(--edge-soft); border-radius: 3px; overflow: hidden; }
+  .bar-fill { height: 100%; background: var(--cyan); transition: width .3s ease; }
+  .bar-row.you .bar-fill { background: var(--amber); }
+  .bar-row.shipped .bar-fill { background: var(--mint); }
+  .bar-row .n { font-family: "IBM Plex Mono", monospace; text-align: right; color: var(--ink-2); }
+  .lab-note { padding: 0 .85rem .85rem; font-size: var(--step-0); color: var(--ink-2); }
+
+  .quiz { display: grid; gap: .75rem; }
+  .q { padding: .85rem; display: grid; gap: .55rem; }
+  .q h3 { font-size: var(--step-2); font-weight: 600; }
+  .q .opts { display: grid; gap: .35rem; }
+  .q .verdict-line { font-size: var(--step-0); color: var(--ink-2); min-height: 1.4em; margin: 0; }
+  .q .verdict-line.ok { color: var(--mint); }
+  .q .verdict-line.no { color: var(--alarm); }
+
+  .notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+  .note { padding: .85rem; display: grid; gap: .45rem; align-content: start; }
+  .note .tag {
+    justify-self: start; font-family: "IBM Plex Mono", monospace; font-size: .64rem;
+    letter-spacing: .1em; text-transform: uppercase; padding: .14rem .45rem; border-radius: 3px;
+    background: color-mix(in oklab, var(--alarm) 15%, transparent); color: var(--alarm);
+  }
+  .note h3 { font-size: var(--step-2); font-weight: 700; }
+  .note p { margin: 0; color: var(--ink-2); font-size: var(--step-0); }
+  .note .num { color: var(--ink); font-weight: 600; font-family: "IBM Plex Mono", monospace; }
+
+  footer.foot { border-top: 1px solid var(--edge); padding: 1.5rem 0 3rem; color: var(--ink-3); font-size: var(--step-0); }
+
+  @media (max-width: 1040px) {
+    .stage { grid-template-columns: minmax(0, 1fr); }
+    .under, .game-grid, .lab-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  @media (prefers-reduced-motion: reduce) { * { transition-duration: .01ms !important; } }
+</style>
+
+<header class="masthead">
+  <div class="wrap">
+    <p class="eyebrow">AMRO &#183; Discover &#183; Paging 3.4.2</p>
+    <h1>Paging Board</h1>
+    <p class="lede">
+      Twelve parts, seventeen wires, one row of movies. Run a gesture and watch which wire carries it.
+    </p>
+    <ul class="legend">
+      <li class="read"><i></i>reads</li>
+      <li class="write"><i></i>writes</li>
+      <li class="net"><i></i>network</li>
+      <li class="sig"><i></i>signals, dashed</li>
+    </ul>
+  </div>
+</header>
+
+<section id="board-section">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>The board</h2>
+      <p>
+        Requests travel right and down, movies travel back left, and the dashed wires carry the one
+        signal a snapshot can send. Click any part to read its job.
+      </p>
+    </div>
+
+    <div class="stage">
+      <div class="panel">
+        <div class="board-scroll">
+          <svg class="board" id="board" viewBox="0 0 1040 660" role="img"
+               aria-label="Diagram: the Discover screen, LazyPagingItems, the ViewModel, the Pager, the refresh key, the Room PagingSource, the RemoteMediator, the TMDB source and the three tables, wired together.">
+            <defs>
+              <marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto">
+                <path d="M0 0 L8 4 L0 8 Z" fill="var(--wire)"></path>
+              </marker>
+              <marker id="ar-live" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto">
+                <path d="M0 0 L8 4 L0 8 Z" fill="var(--amber)"></path>
+              </marker>
+              <marker id="ar-net" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5.5" markerHeight="5.5" orient="auto">
+                <path d="M0 0 L8 4 L0 8 Z" fill="var(--alarm)"></path>
+              </marker>
+            </defs>
+
+            <text class="n-tag" x="24" y="26">UI LAYER</text>
+            <text class="n-tag" x="300" y="26">DATA &#183; DATABASE</text>
+            <text class="n-tag" x="596" y="26">FETCH POLICY</text>
+            <text class="n-tag" x="852" y="26">STORAGE</text>
+
+            <g id="wires">
+              <path id="w-ask" class="wire" d="M150 164 V186"></path>
+              <path id="w-give" class="wire" d="M98 190 V168"></path>
+              <text class="w-label" x="158" y="182">row N</text>
+              <text class="w-label" x="24" y="182">rows</text>
+
+              <path id="w-hint" class="wire" d="M224 222 H262 V120 H296"></path>
+              <text class="w-label" x="228" y="216">viewport hint</text>
+              <path id="w-data" class="wire" d="M300 152 H180 V186"></path>
+              <text class="w-label" x="188" y="146">PagingData</text>
+
+              <path id="w-sel" class="wire" d="M224 368 H272 V92 H296"></path>
+              <text class="w-label" x="228" y="362">query key</text>
+
+              <path id="w-load" class="wire" d="M404 170 V336"></path>
+              <text class="w-label" x="410" y="212">load(key, limit)</text>
+              <path id="w-page" class="wire" d="M352 340 V174"></path>
+              <text class="w-label" x="290" y="212" text-anchor="end">Page(prev, next)</text>
+
+              <path id="w-med" class="wire" d="M520 84 H592"></path>
+              <text class="w-label" x="524" y="76">LoadType</text>
+              <path id="w-medres" class="wire dash" d="M596 132 H560 V140 H522"></path>
+              <text class="w-label" x="526" y="154">MediatorResult</text>
+
+              <path id="w-fetch" class="wire" d="M686 170 V204"></path>
+              <text class="w-label" x="692" y="192">selection, 50, cursor</text>
+              <path id="w-http" class="wire net" d="M686 304 V336"></path>
+              <text class="w-label" x="692" y="326">3 &#215; GET</text>
+
+              <path id="w-write" class="wire" d="M776 88 H848"></path>
+              <text class="w-label" x="780" y="80">appendQuery</text>
+
+              <path id="w-sql" class="wire" d="M460 464 V520 H820 V150 H848"></path>
+              <text class="w-label" x="466" y="514">SELECT &#8230; LIMIT :limit OFFSET :key</text>
+
+              <path id="w-rows" class="wire" d="M852 232 H800 V560 H420 V468"></path>
+              <text class="w-label" x="426" y="554">rows, ordered by position</text>
+
+              <path id="w-inval" class="wire dash" d="M852 262 H786 V596 H480 V468"></path>
+              <text class="w-label" x="486" y="590">invalidate()</text>
+
+              <path id="w-key" class="wire dash" d="M330 340 V308"></path>
+              <path id="w-keyout" class="wire dash" d="M310 208 V174"></path>
+              <text class="w-label" x="228" y="270">rebuild</text>
+            </g>
+
+            <!-- UI -->
+            <g class="node" id="n-screen" data-node="list">
+              <rect class="n-body" x="24" y="40" width="200" height="124" rx="9"></rect>
+              <text class="n-cap" x="40" y="64">LazyColumn</text>
+              <text class="n-sub" x="40" y="80">keyed by movie id</text>
+              <rect class="row-bar" id="sc-r0" x="40" y="88" width="168" height="9" rx="2"></rect>
+              <rect class="row-bar" id="sc-r1" x="40" y="101" width="168" height="9" rx="2"></rect>
+              <rect class="row-bar" id="sc-r2" x="40" y="114" width="168" height="9" rx="2"></rect>
+              <rect class="row-bar" id="sc-r3" x="40" y="127" width="168" height="9" rx="2"></rect>
+              <text class="n-val" id="t-screen" x="40" y="153">showing rows 0&#8211;119</text>
+            </g>
+
+            <g class="node" id="n-items" data-node="items">
+              <rect class="n-body" x="24" y="190" width="200" height="100" rx="9"></rect>
+              <text class="n-cap" x="40" y="214">LazyPagingItems</text>
+              <text class="n-val" id="t-items-count" x="40" y="236">itemCount 0</text>
+              <rect class="pill" id="p-state" x="40" y="246" width="150" height="17" rx="8"></rect>
+              <text class="n-sub" id="t-items-state" x="48" y="258">refresh &#183; NotLoading</text>
+              <text class="n-sub" x="40" y="280">DiscoverRoute.kt</text>
+            </g>
+
+            <g class="node" id="n-vm" data-node="vm">
+              <rect class="n-body" x="24" y="326" width="200" height="100" rx="9"></rect>
+              <text class="n-cap" x="40" y="350">DiscoverViewModel</text>
+              <text class="n-sub" x="40" y="368">flatMapLatest &#183; cachedIn</text>
+              <text class="n-val" id="t-vm-key" x="40" y="392">:POPULARITY:DESC</text>
+              <text class="n-sub" x="40" y="410">the query key</text>
+            </g>
+
+            <!-- paging -->
+            <g class="node" id="n-pager" data-node="pager">
+              <rect class="n-body" x="300" y="40" width="220" height="130" rx="9"></rect>
+              <text class="n-cap" x="316" y="64">Pager + PagingConfig</text>
+              <text class="n-sub" x="316" y="86">pageSize 50</text>
+              <text class="n-sub" x="316" y="104">first read 120</text>
+              <text class="n-sub" x="316" y="122">prefetch 50 &#183; no placeholders</text>
+              <text class="n-val" id="t-pager-gen" x="316" y="150">generation 0</text>
+            </g>
+
+            <g class="node" id="n-key" data-node="key">
+              <rect class="n-body" x="300" y="208" width="220" height="96" rx="9"></rect>
+              <text class="n-cap" x="316" y="232">getRefreshKey</text>
+              <text class="n-sub" x="316" y="252">anchor &#8722; half a first read</text>
+              <text class="n-val" id="t-key" x="316" y="282">row &#8212;</text>
+            </g>
+
+            <g class="node" id="n-source" data-node="source">
+              <rect class="n-body" x="300" y="340" width="220" height="124" rx="9"></rect>
+              <text class="n-cap" x="316" y="364">PagingSource &#183; Room</text>
+              <text class="n-sub" x="316" y="382">one join, ordered by position</text>
+              <text class="n-val" id="t-source-win" x="316" y="408">window rows 0&#8211;119</text>
+              <text class="n-sub" id="t-source-state" x="316" y="428">snapshot valid</text>
+              <text class="n-sub" x="316" y="452">MoviePagingSource.kt</text>
+            </g>
+
+            <!-- policy -->
+            <g class="node" id="n-med" data-node="mediator">
+              <rect class="n-body" x="596" y="40" width="180" height="130" rx="9"></rect>
+              <circle class="lamp" id="med-lamp" cx="758" cy="58" r="6"></circle>
+              <text class="n-cap" x="612" y="64">RemoteMediator</text>
+              <text class="n-sub" x="612" y="84">REFRESH &#183; APPEND &#183; PREPEND</text>
+              <text class="n-val" id="t-med-type" x="612" y="110">idle</text>
+              <text class="n-sub" id="t-med-end" x="612" y="130">end of list: no</text>
+              <text class="n-sub" x="612" y="152">MoviesRemoteMediator.kt</text>
+            </g>
+
+            <g class="node" id="n-remote" data-node="remote">
+              <rect class="n-body" x="596" y="208" width="180" height="96" rx="9"></rect>
+              <text class="n-cap" x="612" y="232">TmdbRemoteDataSource</text>
+              <text class="n-sub" x="612" y="250">walks until it holds 50</text>
+              <circle class="lamp" id="rd0" cx="618" cy="274" r="5"></circle>
+              <circle class="lamp" id="rd1" cx="634" cy="274" r="5"></circle>
+              <circle class="lamp" id="rd2" cx="650" cy="274" r="5"></circle>
+              <text class="n-val" id="t-remote" x="666" y="278">idle</text>
+            </g>
+
+            <g class="node net" id="n-tmdb" data-node="tmdb">
+              <rect class="n-body" x="596" y="340" width="180" height="124" rx="9"></rect>
+              <text class="n-cap" x="612" y="364">/discover/movie</text>
+              <text class="n-sub" x="612" y="382">20 a page &#183; cap 500</text>
+              <text class="n-val" id="t-tmdb" x="612" y="412">0 requests</text>
+              <text class="n-sub" id="t-tmdb-page" x="612" y="432">next page 1</text>
+              <text class="n-sub" x="612" y="452">10,000 per query</text>
+            </g>
+
+            <!-- storage -->
+            <g class="node" id="n-db" data-node="db">
+              <rect class="n-body" x="852" y="40" width="164" height="240" rx="9"></rect>
+              <text class="n-cap" x="868" y="64">query_results</text>
+              <text class="n-sub" x="868" y="82">queryKey &#183; position &#183; movieId</text>
+              <rect class="strip-stored" x="868" y="94" width="132" height="152" rx="3"></rect>
+              <rect class="strip-window" id="s-window" x="868" y="94" width="132" height="0"></rect>
+              <rect class="strip-reader" id="s-reader" x="866" y="94" width="136" height="3"></rect>
+              <text class="n-val" id="t-db" x="868" y="266">0 rows</text>
+            </g>
+
+            <g class="node" id="n-movies" data-node="movies">
+              <rect class="n-body" x="852" y="300" width="164" height="70" rx="9"></rect>
+              <text class="n-cap" x="868" y="324">movies</text>
+              <text class="n-sub" x="868" y="342">upserted, never deleted</text>
+              <text class="n-sub" x="868" y="358">the detail screen reads it</text>
+            </g>
+
+            <g class="node" id="n-keys" data-node="keys">
+              <rect class="n-body" x="852" y="390" width="164" height="74" rx="9"></rect>
+              <text class="n-cap" x="868" y="414">query_keys</text>
+              <text class="n-sub" x="868" y="432">where this query resumes</text>
+              <text class="n-val" id="t-cursor" x="868" y="454">nextCursor &#8212;</text>
+            </g>
+          </svg>
+        </div>
+
+        <div class="ticker" id="ticker"><span class="caret">&#9656;</span><span id="tickerText">Press Cold start.</span></div>
+
+        <div class="controls">
+          <button class="primary" data-act="cold">Cold start</button>
+          <button data-act="scroll">Scroll a screenful</button>
+          <button data-act="scrollhard">Scroll hard &#215;10</button>
+          <button data-act="refresh">Pull to refresh</button>
+          <button data-act="filter">Pick a genre</button>
+        </div>
+
+        <div class="meters">
+          <div class="meter"><span class="k">TMDB requests</span><span class="v" id="mReq">0</span></div>
+          <div class="meter"><span class="k">rows stored</span><span class="v" id="mDb">0</span></div>
+          <div class="meter"><span class="k">reader on row</span><span class="v" id="mAnchor">0</span></div>
+          <div class="meter"><span class="k">list jumps</span><span class="v" id="mJump">0</span></div>
+        </div>
+      </div>
+
+      <aside class="hud">
+        <div class="panel pad">
+          <span class="eyebrow">Missions</span>
+          <div class="score"><span class="n" id="score">0</span><span class="of">/ 6 cleared</span></div>
+          <div class="track"><i id="scoreBar"></i></div>
+          <ul class="missions" id="missions"></ul>
+        </div>
+
+        <div class="panel pad">
+          <span class="eyebrow">Line that just ran</span>
+          <div class="codeline mono" id="codeline">local.moviesPagingSource(selection.queryKey())</div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="under">
+      <div class="panel">
+        <header><h3>logcat</h3><span class="eyebrow">Ktor Client &#183; Room &#183; Paging</span></header>
+        <div class="log" id="log" aria-live="polite"></div>
+      </div>
+
+      <div class="panel detail">
+        <header><h3 id="dTitle">Pick a part</h3><span class="eyebrow" id="dLayer"></span></header>
+        <div class="body">
+          <p id="dRole">Every box on the board is a real file. Click one to see what it owns and the code that does it.</p>
+          <p class="file" id="dFile"></p>
+          <pre id="dCode" hidden></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="keygame">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Name that row</h2>
+      <p>
+        Every write throws the snapshot away, and the rebuild asks one question: which row does the
+        new list start at? Answer wrong and the reader gets moved.
+      </p>
+    </div>
+
+    <div class="game-grid">
+      <div class="panel">
+        <header><h3 id="scTitle">Round 1 of 3</h3><span class="eyebrow">getRefreshKey</span></header>
+        <div class="scenario">
+          <div class="setup" id="scSetup"></div>
+          <div class="choices" id="scChoices"></div>
+        </div>
+        <div class="outcome" id="scOutcome">Pick the row the reload should start at.</div>
+      </div>
+
+      <div class="panel score-card">
+        <span class="eyebrow">Rounds</span>
+        <div class="filmstrip" id="scStrip"><i></i><i></i><i></i></div>
+        <div class="big" id="scScore">0/3</div>
+        <p style="margin:0; color: var(--ink-2); font-size: var(--step-0)">
+          The rule that survives every case: take the row the reader is on, counted from the head of
+          the query, then start half a first read above it.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="lab">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Config bench</h2>
+      <p>Three numbers decide how much of TMDB the app pulls before anyone touches the screen.</p>
+    </div>
+
+    <div class="lab-grid">
+      <div class="panel knobs">
+        <div class="knob">
+          <label for="kPage">pageSize <output id="oPage">50</output></label>
+          <input type="range" id="kPage" min="20" max="100" step="10" value="50">
+        </div>
+        <div class="knob">
+          <label for="kFactor">first read <output id="oFactor">2 &#215; pageSize</output></label>
+          <input type="range" id="kFactor" min="1" max="4" step="1" value="2">
+        </div>
+        <div class="knob">
+          <label for="kPrefetch">prefetchDistance <output id="oPrefetch">50</output></label>
+          <input type="range" id="kPrefetch" min="0" max="100" step="10" value="50">
+        </div>
+        <p style="margin:0; font-size: var(--step-0); color: var(--ink-2)">
+          One fetch is <span class="mono">pageSize</span> movies and TMDB serves 20 at a time, so a
+          fetch costs <span class="mono">pageSize / 20</span> requests.
+        </p>
+      </div>
+
+      <div class="panel">
+        <header><h3>Requests before the first swipe</h3><span class="eyebrow" id="labRows">120 rows stored</span></header>
+        <div class="bars">
+          <div class="bar-row you">
+            <span>your settings</span>
+            <span class="bar-track"><span class="bar-fill" id="barYou"></span></span>
+            <span class="n" id="nYou">6 requests</span>
+          </div>
+          <div class="bar-row shipped">
+            <span>what AMRO ships</span>
+            <span class="bar-track"><span class="bar-fill" id="barShipped"></span></span>
+            <span class="n">6 requests</span>
+          </div>
+          <div class="bar-row">
+            <span>Paging defaults</span>
+            <span class="bar-track"><span class="bar-fill" id="barDefault"></span></span>
+            <span class="n">9 requests</span>
+          </div>
+        </div>
+        <p class="lab-note" id="labNote"></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="quiz">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Ship check</h2>
+      <p>Five questions. Each one is a thing that bit this codebase for real.</p>
+    </div>
+    <div class="quiz" id="quizList"></div>
+  </div>
+</section>
+
+<section id="notes">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Three guarantees</h2>
+      <p>Properties the board holds, and the mechanism that holds each one.</p>
+    </div>
+    <div class="notes">
+      <article class="panel note">
+        <span class="tag">every write lands</span>
+        <h3>The reader always hears it</h3>
+        <p>
+          Room begins watching a table while the first read of it is still running, and a fetch
+          landing in that window would reach nobody. That window is every cold start.
+        </p>
+        <p>
+          So the local source holds the paged reads it handed out under each key and invalidates
+          them itself after writing. That is the dashed wire on the board.
+        </p>
+      </article>
+      <article class="panel note">
+        <span class="tag">one place per movie</span>
+        <h3>A repeat keeps its first place</h3>
+        <p>
+          The provider re-ranks between calls, so a movie stored near the end of one fetch arrives
+          again at the start of the next. Two rows under one id is a duplicate key, and the list
+          refuses it.
+        </p>
+        <p>
+          A unique index on <span class="num">(queryKey, movieId)</span> drops the repeat, and the
+          append reads its start position inside the writing transaction, because a repeat takes no
+          place.
+        </p>
+      </article>
+      <article class="panel note">
+        <span class="tag">the reader stays put</span>
+        <h3>A rebuild lands where they are</h3>
+        <p>
+          Room keys by row offset, and with placeholders off an anchor counts from the first loaded
+          row, so a refresh key is the reader's row plus the window start, minus half a first read.
+        </p>
+        <p>
+          That is what keeps an append from moving anyone: a cold start and <span class="num">40</span>
+          swipes cost <span class="num">15</span> requests in all, in order, and the list stops when
+          the scrolling does.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap">
+    Numbers measured on a Pixel 10 emulator against live TMDB, data cleared between runs. The board
+    runs the app's own rules: a fetch asks for 50 movies and whole pages of twenty come back, a source
+    with nothing below the window wakes the mediator, and every write rebuilds the snapshot.
+  </div>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  var PROVIDER_PAGE = 20;
+  var SCREENFUL = 7;
+  var RUNAWAY = 60;
+  var STRIP_TOP = 94;
+  var STRIP_H = 152;
+
+  /* ---------------- parts ---------------- */
+
+  var nodes = {
+    list: {
+      title: "LazyColumn",
+      layer: "UI \u00b7 :feature:discover",
+      role: "Draws what is on screen and nothing else. It asks for row N as the reader arrives at it, and keys every row by movie id, so a rebuilt list re-anchors on the same movie rather than the same index.",
+      file: "feature/discover/src/main/kotlin/com/shayan/amro/feature/discover/component/MovieList.kt",
+      code: "<span class='kw'>LazyColumn</span>(state = listState) {\n    items(count = rows.count, key = rows::keyAt) { index -&gt;\n        <span class='kw'>val</span> row = rows[index]\n        <span class='cm'>// a null row is a place the list knows of and has not loaded</span>\n        <span class='kw'>if</span> (row != <span class='kw'>null</span>) MovieRow(row) <span class='kw'>else</span> MovieRowPlaceholder()\n    }\n}"
+    },
+    items: {
+      title: "LazyPagingItems",
+      layer: "UI \u00b7 :feature:discover",
+      role: "The screen's handle on the stream. It reports how many rows are loaded and what the loads are doing, and it is the only thing that can start a refresh. Pull to refresh and both Retry buttons call the same method.",
+      file: "feature/discover/src/main/kotlin/com/shayan/amro/feature/discover/ui/DiscoverRoute.kt",
+      code: "<span class='kw'>val</span> rows = viewModel.movieRows.collectAsLazyPagingItems()\n\nDiscoverScreen(\n    body = discoverBody(loadState = rows.loadState, itemCount = rows.itemCount),\n    rows = movieRows(rows),\n    onRefresh = rows::refresh,\n)"
+    },
+    vm: {
+      title: "DiscoverViewModel",
+      layer: "UI \u00b7 :feature:discover",
+      role: "Holds the selection: which genres, which order. A new selection is a different query key, so the flow swaps to a new Pager. cachedIn sits after the swap, so returning to a selection already loaded reads the database instead of the network.",
+      file: "feature/discover/src/main/kotlin/com/shayan/amro/feature/discover/viewmodel/DiscoverViewModel.kt",
+      code: "<span class='kw'>val</span> movieRows: Flow&lt;PagingData&lt;MovieRowUiState&gt;&gt; =\n    selection\n        .flatMapLatest { moviesRepository.moviesPagingFlow(it) }\n        .map { rows -&gt; rows.map { it.toRow() } }\n        .cachedIn(viewModelScope)"
+    },
+    pager: {
+      title: "Pager + PagingConfig",
+      layer: "DATA \u00b7 :core:data",
+      role: "The policy, and the thing that rebuilds. It sets how many rows a first read asks for and how close to the edge the reader must get before more is loaded. When a snapshot is invalidated, the Pager asks for a refresh key and builds the next generation around it.",
+      file: "core/data/src/main/kotlin/com/shayan/amro/core/data/DefaultMoviesRepository.kt",
+      code: "Pager(\n    config = PagingConfig(\n        pageSize = PAGE_SIZE,\n        initialLoadSize = PAGE_SIZE * FETCHES_ON_FIRST_LOAD,\n        prefetchDistance = PAGE_SIZE,\n        enablePlaceholders = <span class='kw'>false</span>,\n    ),\n    remoteMediator = MoviesRemoteMediator(selection, local, remote),\n) {\n    local.moviesPagingSource(selection.queryKey())\n}.flow"
+    },
+    key: {
+      title: "getRefreshKey",
+      layer: "DATABASE \u00b7 :core:database",
+      role: "Answers where the rebuilt list starts. Room keys by row offset, so the answer is a row number: the reader's row counted from the head of the query, minus half a first read, so they land in the middle of what comes back.",
+      file: "core/database/src/main/kotlin/com/shayan/amro/core/database/MoviePagingSource.kt",
+      code: "<span class='kw'>override fun</span> getRefreshKey(state: PagingState&lt;Int, Movie&gt;): Int? =\n    state.anchorPosition?.let { anchor -&gt;\n        <span class='kw'>val</span> row = anchor + firstLoadedRow(state)\n        maxOf(0, row - state.config.initialLoadSize / SIDES_OF_THE_ANCHOR)\n    }\n\n<span class='cm'>// with placeholders off an anchor counts from the first loaded row</span>\n<span class='kw'>private fun</span> firstLoadedRow(state: PagingState&lt;Int, Movie&gt;): Int =\n    state.pages.firstOrNull()?.itemsBefore?.coerceAtLeast(0) ?: 0"
+    },
+    source: {
+      title: "PagingSource over Room",
+      layer: "DATABASE \u00b7 :core:database",
+      role: "A snapshot of the table, addressed by row offset. It cannot describe a change, only invalidate: what I gave you is stale. One SQL query serves every selection, because the selection was resolved into a query key before anything reached the database.",
+      file: "core/database/src/main/kotlin/com/shayan/amro/core/database/dao/MovieQueryDao.kt",
+      code: "<span class='st'>SELECT</span> movies.* <span class='st'>FROM</span> query_results\n<span class='st'>JOIN</span> movies <span class='st'>ON</span> movies.movieId = query_results.movieId\n<span class='st'>WHERE</span> query_results.queryKey = :queryKey\n<span class='st'>ORDER BY</span> query_results.position"
+    },
+    mediator: {
+      title: "MoviesRemoteMediator",
+      layer: "DATA \u00b7 :core:data",
+      role: "Runs when the table cannot answer. REFRESH wipes this query and writes its head, APPEND resumes from the stored cursor, and a null cursor is the one end-of-list signal. The list only grows downward, so PREPEND ends immediately.",
+      file: "core/data/src/main/kotlin/com/shayan/amro/core/data/MoviesRemoteMediator.kt",
+      code: "<span class='kw'>when</span> (loadType) {\n    LoadType.PREPEND -&gt; MediatorResult.Success(endOfPaginationReached = <span class='kw'>true</span>)\n    LoadType.REFRESH -&gt; replace()\n    LoadType.APPEND  -&gt; append()\n}\n\n<span class='cm'>// a stretch shorter than asked for is not the end; a null cursor is</span>\nMediatorResult.Success(endOfPaginationReached = page.next == <span class='kw'>null</span>)"
+    },
+    remote: {
+      title: "TmdbRemoteDataSource",
+      layer: "NETWORK \u00b7 :core:network",
+      role: "Takes a selection and a count and walks /discover/movie until it holds that many. It never trims, so the count is a floor: 50 movies takes three pages of twenty, so sixty come back, and the page it stopped before becomes the cursor.",
+      file: "core/network/src/main/kotlin/com/shayan/amro/core/network/sources/tmdb/TmdbRemoteDataSource.kt",
+      code: "<span class='kw'>while</span> (<span class='kw'>true</span>) {\n    <span class='kw'>val</span> rows = api.discoverPage(page = page, query = query)\n    movies += rows.map { it.toMovie() }\n    <span class='kw'>if</span> (page == TMDB_LAST_PAGE) <span class='kw'>break</span>\n    page++\n    <span class='kw'>if</span> (movies.size &gt;= count) {\n        <span class='kw'>return</span> NetworkResult.Success(MoviePage(movies, Cursor(page.toString())))\n    }\n}"
+    },
+    tmdb: {
+      title: "/discover/movie",
+      layer: "NETWORK \u00b7 the provider",
+      role: "Twenty movies a page, five hundred pages, so ten thousand per query and no more. It applies the genre union and the ordering itself, which is why this screen stopped being a trending list. It re-ranks between calls, which is why a repeat has to be dropped.",
+      file: "core/network/src/main/kotlin/com/shayan/amro/core/network/sources/tmdb/TmdbApi.kt",
+      code: "GET /3/discover/movie?page=13&amp;sort_by=popularity.desc&amp;with_genres=27|35\n\n<span class='cm'># the pipe is a union, the comma an intersection</span>\n<span class='cm'># page=501 answers 400, and total_pages claims 58,827</span>"
+    },
+    db: {
+      title: "query_results",
+      layer: "DATABASE \u00b7 :core:database",
+      role: "One row per movie per query: the key, the position the provider put it in, and the id. The position is the ordering made durable, because the app cannot recompute the provider's ranking. A unique index on key and id means a repeat keeps the place it first took.",
+      file: "core/database/src/main/kotlin/com/shayan/amro/core/database/entity/QueryResultEntity.kt",
+      code: "@Entity(\n    tableName = <span class='st'>\"query_results\"</span>,\n    primaryKeys = [<span class='st'>\"queryKey\"</span>, <span class='st'>\"position\"</span>],\n    indices = [Index(value = [<span class='st'>\"queryKey\"</span>, <span class='st'>\"movieId\"</span>], unique = <span class='kw'>true</span>)],\n)\n<span class='kw'>internal data class</span> QueryResultEntity(\n    <span class='kw'>val</span> queryKey: String,\n    <span class='kw'>val</span> position: Int,\n    <span class='kw'>val</span> movieId: String,\n)"
+    },
+    movies: {
+      title: "movies",
+      layer: "DATABASE \u00b7 :core:database",
+      role: "The movie facts, held once however many queries reference them. Rows are upserted and never pruned: a movie held under one query is the same movie under another, and the detail screen reads this table by key, offline included.",
+      file: "core/database/src/main/kotlin/com/shayan/amro/core/database/dao/MovieQueryDao.kt",
+      code: "@Transaction\n<span class='kw'>suspend fun</span> appendQuery(queryKey: String, movies: List&lt;MovieEntity&gt;, nextCursor: String?) {\n    <span class='cm'>// the start is read inside the transaction, because a repeat takes no place</span>\n    writeResults(queryKey, movies, from = nextPosition(queryKey), nextCursor = nextCursor)\n}"
+    },
+    keys: {
+      title: "query_keys",
+      layer: "DATABASE \u00b7 :core:database",
+      role: "One row per query, holding where it resumes. The mediator reads it before an append and writes it after, in the same transaction as the rows, so what is stored and where it continues cannot disagree. Null means the source has served everything it will.",
+      file: "core/database/src/main/kotlin/com/shayan/amro/core/database/entity/QueryKeyEntity.kt",
+      code: "@Entity(tableName = <span class='st'>\"query_keys\"</span>)\n<span class='kw'>internal data class</span> QueryKeyEntity(\n    @PrimaryKey <span class='kw'>val</span> queryKey: String,\n    <span class='kw'>val</span> nextCursor: String?,\n)"
+    }
+  };
+
+  /* ---------------- simulation ---------------- */
+
+  function newSim(cfg, record) {
+    return {
+      cfg: cfg, record: record !== false,
+      db: 0, nextPage: 1, requests: 0, generation: 0,
+      win: { start: 0, len: 0 }, anchor: 0, jumps: 0, runaway: false,
+      cursor: null, lastType: "idle", lastKey: null, endOfList: false,
+      queryKey: ":POPULARITY:DESC", walking: 0,
+      events: []
+    };
+  }
+
+  function initialLoad(sim) { return sim.cfg.pageSize * sim.cfg.factor; }
+
+  function emit(sim, who, node, wire, text, kind, line) {
+    if (!sim.record) return;
+    sim.events.push({
+      who: who, node: node, wire: wire, text: text, kind: kind || "", line: line || null,
+      requests: sim.requests, db: sim.db, anchor: sim.anchor, jumps: sim.jumps,
+      win: { start: sim.win.start, len: sim.win.len },
+      generation: sim.generation, cursor: sim.cursor, walking: sim.walking,
+      lastType: sim.lastType, lastKey: sim.lastKey, nextPage: sim.nextPage,
+      queryKey: sim.queryKey, endOfList: sim.endOfList
+    });
+  }
+
+  function fetchFromSource(sim, type) {
+    if (sim.requests >= RUNAWAY) { sim.runaway = true; return; }
+
+    var pages = Math.ceil(sim.cfg.pageSize / PROVIDER_PAGE);
+    // the walk stops on a whole page, so what lands is the count rounded up
+    var written = pages * PROVIDER_PAGE;
+    sim.lastType = type;
+    emit(sim, "mediator", "n-med", "w-med", "LoadType." + type + " \u00b7 asks for " + sim.cfg.pageSize + " movies", "net",
+      "when (loadType) { LoadType.APPEND -> append() }");
+
+    var first = type === "REFRESH" ? 1 : sim.nextPage;
+    emit(sim, "network", "n-remote", "w-fetch",
+      "getMovies(selection, " + sim.cfg.pageSize + ", " + (type === "REFRESH" ? "after = null" : "after = Cursor(\"" + first + "\")") + ")", "net",
+      "remote.getMovies(selection, PAGE_SIZE, after)");
+
+    sim.walking = pages;
+    sim.requests += pages;
+    sim.nextPage = first + pages;
+    sim.cursor = sim.nextPage;
+    emit(sim, "tmdb", "n-tmdb", "w-http", pages + " \u00d7 GET /discover/movie page=" + first + "\u2026" + (first + pages - 1), "net",
+      "api.discoverPage(page = page, query = query)");
+    sim.walking = 0;
+
+    if (type === "REFRESH") {
+      sim.db = written;
+      emit(sim, "room", "n-db", "w-write", "replaceQuery \u00b7 wipes this query, writes " + written + " rows from position 0", "win",
+        "queriesDao.replaceQuery(queryKey, movies, nextCursor)");
+    } else {
+      emit(sim, "room", "n-db", "w-write", "appendQuery \u00b7 " + written + " rows from position " + sim.db, "win",
+        "writeResults(queryKey, movies, from = nextPosition(queryKey), nextCursor)");
+      sim.db += written;
+    }
+    invalidate(sim);
+  }
+
+  function refreshKey(sim) {
+    if (sim.win.len === 0) return null;
+    return Math.max(0, sim.anchor - Math.floor(initialLoad(sim) / 2));
+  }
+
+  function invalidate(sim) {
+    emit(sim, "source", "n-source", "w-inval", "invalidate() \u00b7 the snapshot on screen is stale", "",
+      "openReads.filter { it.first == queryKey }.forEach { it.second.invalidate() }");
+    var key = refreshKey(sim);
+    sim.lastKey = key;
+    sim.generation += 1;
+    emit(sim, "pager", "n-key", "w-key", "getRefreshKey \u2192 " + (key === null ? "null, the head of the list" : "row " + key), "",
+      "maxOf(0, anchor + firstLoadedRow(state) - initialLoadSize / SIDES_OF_THE_ANCHOR)");
+    emit(sim, "pager", "n-pager", "w-keyout", "generation " + sim.generation + " \u00b7 a new PagingSource is built", "",
+      "local.moviesPagingSource(selection.queryKey())");
+    reload(sim, key === null ? 0 : key);
+  }
+
+  function reload(sim, key) {
+    var limit = initialLoad(sim);
+    var len = Math.max(0, Math.min(limit, sim.db - key));
+    sim.win = { start: key, len: len };
+    emit(sim, "room", "n-source", "w-sql", "SELECT \u2026 ORDER BY position LIMIT " + limit + " OFFSET " + key + " \u2192 " + len + " rows", "",
+      "SELECT movies.* FROM query_results JOIN movies \u2026 ORDER BY query_results.position");
+
+    if (len > 0 && (sim.anchor < sim.win.start || sim.anchor >= sim.win.start + sim.win.len)) {
+      sim.jumps += 1;
+      sim.anchor = Math.min(Math.max(sim.anchor, sim.win.start), sim.win.start + sim.win.len - 1);
+      emit(sim, "screen", "n-screen", "w-give", "the row the reader was on is not loaded \u00b7 the list jumps", "bad",
+        "the reader is carried to row " + sim.anchor);
+    }
+    emit(sim, "list", "n-items", "w-data", "itemCount = " + len + " \u00b7 rows " + key + "\u2013" + (key + Math.max(len - 1, 0)), "",
+      "rows.itemCount, rows.loadState.refresh");
+    settle(sim);
+  }
+
+  function settle(sim) {
+    for (var guard = 0; guard < 16; guard++) {
+      if (sim.requests >= RUNAWAY) { sim.runaway = true; return; }
+      var end = sim.win.start + sim.win.len;
+      if (end >= sim.db) {
+        emit(sim, "source", "n-source", "w-med", "no rows below the window \u00b7 endOfPaginationReached", "",
+          "LoadResult.Page(nextKey = null)");
+        fetchFromSource(sim, "APPEND");
+        return;
+      }
+      if (sim.anchor + sim.cfg.prefetch >= end) {
+        var grown = Math.min(sim.cfg.pageSize, sim.db - end);
+        sim.win.len += grown;
+        emit(sim, "source", "n-source", "w-rows", "APPEND from the table \u00b7 rows " + end + "\u2013" + (end + grown - 1) + ", no network", "",
+          "LIMIT " + sim.cfg.pageSize + " OFFSET " + end);
+        continue;
+      }
+      return;
+    }
+  }
+
+  function coldStart(sim) {
+    emit(sim, "vm", "n-vm", "w-sel", "selection \u2192 query key " + sim.queryKey, "",
+      "selection.flatMapLatest { moviesRepository.moviesPagingFlow(it) }");
+    emit(sim, "pager", "n-pager", "w-load", "Pager built \u00b7 initial refresh launched", "",
+      "Pager(config = PagingConfig(pageSize = 50, initialLoadSize = 100, prefetchDistance = 50))");
+    fetchFromSource(sim, "REFRESH");
+  }
+
+  function scroll(sim, rows) {
+    sim.anchor += rows;
+    emit(sim, "screen", "n-screen", "w-ask", "the reader reaches row " + sim.anchor, "",
+      "items(count = rows.count, key = rows::keyAt)");
+    emit(sim, "list", "n-items", "w-hint", "viewport hint \u00b7 index " + sim.anchor, "",
+      "rows[" + sim.anchor + "]");
+    settle(sim);
+  }
+
+  /* ---------------- board ---------------- */
+
+  var cfg = { pageSize: 50, factor: 2, prefetch: 50 };
+  var sim = newSim(cfg);
+  var timer = null;
+
+  var flags = { cold: false, scrolled: false, quiet: false, cached: false, switched: false, refreshed: false };
+
+  var missions = [
+    { id: "cold", label: "Fill an empty table from a cold start" },
+    { id: "scrolled", label: "Scroll past the rows the first read loaded" },
+    { id: "quiet", label: "Append twice without moving the reader" },
+    { id: "cached", label: "Scroll into rows already stored, without a request" },
+    { id: "switched", label: "Pick a genre and start a second query" },
+    { id: "refreshed", label: "Refresh a query the reader is deep inside" }
+  ];
+
+  var T = {
+    screen: document.getElementById("t-screen"),
+    itemsCount: document.getElementById("t-items-count"),
+    itemsState: document.getElementById("t-items-state"),
+    statePill: document.getElementById("p-state"),
+    vmKey: document.getElementById("t-vm-key"),
+    gen: document.getElementById("t-pager-gen"),
+    key: document.getElementById("t-key"),
+    win: document.getElementById("t-source-win"),
+    state: document.getElementById("t-source-state"),
+    medType: document.getElementById("t-med-type"),
+    medEnd: document.getElementById("t-med-end"),
+    medLamp: document.getElementById("med-lamp"),
+    remote: document.getElementById("t-remote"),
+    tmdb: document.getElementById("t-tmdb"),
+    tmdbPage: document.getElementById("t-tmdb-page"),
+    db: document.getElementById("t-db"),
+    cursor: document.getElementById("t-cursor"),
+    sWin: document.getElementById("s-window"),
+    sReader: document.getElementById("s-reader"),
+    mReq: document.getElementById("mReq"),
+    mDb: document.getElementById("mDb"),
+    mAnchor: document.getElementById("mAnchor"),
+    mJump: document.getElementById("mJump"),
+    ticker: document.getElementById("ticker"),
+    tickerText: document.getElementById("tickerText"),
+    codeline: document.getElementById("codeline"),
+    log: document.getElementById("log"),
+    rows: [
+      document.getElementById("sc-r0"),
+      document.getElementById("sc-r1"),
+      document.getElementById("sc-r2"),
+      document.getElementById("sc-r3")
+    ],
+    dots: [
+      document.getElementById("rd0"),
+      document.getElementById("rd1"),
+      document.getElementById("rd2")
+    ]
+  };
+
+  function rowsLabel(st) {
+    return st.win.len ? "rows " + st.win.start + "\u2013" + (st.win.start + st.win.len - 1) : "nothing loaded";
+  }
+
+  function paint(st) {
+    var span = Math.max(st.db, 60);
+
+    T.screen.textContent = "showing " + rowsLabel(st);
+    T.itemsCount.textContent = "itemCount " + st.win.len;
+    T.itemsState.textContent = st.win.len ? "refresh \u00b7 NotLoading" : "refresh \u00b7 Loading";
+    T.statePill.classList.toggle("busy", st.win.len === 0);
+    T.vmKey.textContent = st.queryKey;
+    T.gen.textContent = "generation " + st.generation;
+    T.key.textContent = (st.lastKey === null || st.lastKey === undefined) ? "row \u2014" : "row " + st.lastKey;
+    T.win.textContent = "window " + rowsLabel(st);
+    T.state.textContent = "snapshot valid";
+    T.medType.textContent = st.lastType;
+    T.medEnd.textContent = "end of list: " + (st.endOfList ? "yes" : "no");
+    T.medLamp.setAttribute("class", "lamp" + (st.lastType === "idle" ? "" : " on"));
+    T.remote.textContent = st.nextPage > 1 ? "stopped before " + st.nextPage : "idle";
+    T.tmdb.textContent = st.requests + " requests";
+    T.tmdbPage.textContent = "next page " + st.nextPage;
+    T.db.textContent = st.db + " rows";
+    T.cursor.textContent = "nextCursor " + (st.cursor === null ? "\u2014" : st.cursor);
+
+    for (var d = 0; d < T.dots.length; d++) {
+      T.dots[d].setAttribute("class", "lamp" + (st.walking > d ? " net" : ""));
+    }
+
+    // four bars stand for the screenful the reader is looking at
+    var here = st.win.len ? Math.floor(((st.anchor - st.win.start) / Math.max(st.win.len, 1)) * 4) : -1;
+    for (var i = 0; i < T.rows.length; i++) {
+      var cls = "row-bar";
+      if (st.win.len) cls += i === here ? " here" : " on";
+      T.rows[i].setAttribute("class", cls);
+    }
+
+    T.sWin.setAttribute("y", STRIP_TOP + (st.win.start / span) * STRIP_H);
+    T.sWin.setAttribute("height", Math.max((st.win.len / span) * STRIP_H, st.win.len ? 2 : 0));
+    T.sReader.setAttribute("y", STRIP_TOP + (st.anchor / span) * STRIP_H);
+
+    T.mReq.textContent = st.requests;
+    T.mReq.className = "v" + (st.requests > 24 ? " bad" : st.requests > 12 ? " hot" : "");
+    T.mDb.textContent = st.db;
+    T.mAnchor.textContent = st.anchor;
+    T.mJump.textContent = st.jumps;
+    T.mJump.className = "v" + (st.jumps ? " bad" : "");
+  }
+
+  function clearHot() {
+    var hotNodes = document.querySelectorAll(".node.hot");
+    for (var i = 0; i < hotNodes.length; i++) hotNodes[i].classList.remove("hot", "win");
+    var live = document.querySelectorAll(".wire.live");
+    for (var j = 0; j < live.length; j++) live[j].classList.remove("live");
+  }
+
+  function light(ev) {
+    clearHot();
+    var node = document.getElementById(ev.node);
+    if (node) {
+      node.classList.add("hot");
+      if (ev.kind === "win") node.classList.add("win");
+    }
+    var wire = document.getElementById(ev.wire);
+    if (wire) wire.classList.add("live");
+    T.tickerText.textContent = ev.text;
+    T.ticker.className = "ticker" + (ev.kind === "bad" ? " bad" : "");
+    if (ev.line) T.codeline.textContent = ev.line;
+  }
+
+  function logLine(ev) {
+    var p = document.createElement("p");
+    p.className = ev.kind;
+    var who = document.createElement("span");
+    who.className = "who";
+    who.textContent = ev.who;
+    var what = document.createElement("span");
+    what.textContent = ev.text;
+    p.appendChild(who);
+    p.appendChild(what);
+    T.log.appendChild(p);
+    T.log.scrollTop = T.log.scrollHeight;
+  }
+
+  function renderMissions() {
+    var list = document.getElementById("missions");
+    list.innerHTML = "";
+    var done = 0;
+    missions.forEach(function (m) {
+      var li = document.createElement("li");
+      if (flags[m.id]) { li.className = "done"; done += 1; }
+      var box = document.createElement("span");
+      box.className = "box";
+      box.textContent = flags[m.id] ? "\u2713" : "";
+      var label = document.createElement("span");
+      label.textContent = m.label;
+      li.appendChild(box);
+      li.appendChild(label);
+      list.appendChild(li);
+    });
+    document.getElementById("score").textContent = done;
+    document.getElementById("scoreBar").style.width = (done / missions.length * 100) + "%";
+  }
+
+  function scoreRun(events) {
+    var appends = 0;
+    var fromTable = false;
+    var jumpedHere = false;
+    events.forEach(function (ev) {
+      if (ev.text.indexOf("LoadType.APPEND") === 0) appends += 1;
+      if (ev.text.indexOf("APPEND from the table") === 0) fromTable = true;
+      if (ev.kind === "bad") jumpedHere = true;
+    });
+    if (sim.requests > 0) flags.cold = true;
+    if (sim.anchor >= initialLoad(sim)) flags.scrolled = true;
+    if (appends >= 2 && !jumpedHere) flags.quiet = true;
+    if (fromTable) flags.cached = true;
+    renderMissions();
+  }
+
+  function setButtons(on) {
+    var b = document.querySelectorAll(".controls button");
+    for (var i = 0; i < b.length; i++) b[i].disabled = !on;
+  }
+
+  function play(events) {
+    if (timer) { clearInterval(timer); timer = null; }
+    var i = 0;
+    setButtons(false);
+    timer = setInterval(function () {
+      if (i >= events.length) {
+        clearInterval(timer);
+        timer = null;
+        clearHot();
+        setButtons(true);
+        verdict();
+        scoreRun(events);
+        return;
+      }
+      var ev = events[i++];
+      logLine(ev);
+      light(ev);
+      paint(ev);
+    }, 260);
+  }
+
+  function verdict() {
+    var line;
+    if (sim.jumps) {
+      line = sim.jumps + " jump" + (sim.jumps > 1 ? "s" : "") + ": a refresh replaced the query, so a reader below what it rewrote is carried to the end of what is left.";
+    } else if (sim.requests === 0) {
+      line = "Press Cold start.";
+    } else {
+      line = sim.requests + " requests \u00b7 " + sim.db + " rows stored \u00b7 reader on row " + sim.anchor + " \u00b7 nothing fetched twice.";
+    }
+    T.tickerText.textContent = line;
+    T.ticker.className = "ticker" + (sim.jumps ? " bad" : "");
+  }
+
+  function run(fn) {
+    sim.events = [];
+    sim.runaway = false;
+    fn(sim);
+    play(sim.events);
+  }
+
+  document.querySelector(".controls").addEventListener("click", function (e) {
+    var btn = e.target.closest("button[data-act]");
+    if (!btn) return;
+    var act = btn.getAttribute("data-act");
+
+    if (act === "cold") {
+      T.log.innerHTML = "";
+      sim = newSim(cfg);
+      run(coldStart);
+    } else if (act === "scroll") {
+      run(function (s) { scroll(s, SCREENFUL); });
+    } else if (act === "scrollhard") {
+      run(function (s) { scroll(s, SCREENFUL * 10); });
+    } else if (act === "refresh") {
+      if (sim.anchor >= initialLoad(sim)) flags.refreshed = true;
+      run(function (s) {
+        emit(s, "list", "n-items", "w-hint", "pull to refresh \u00b7 rows.refresh()", "", "onRefresh = rows::refresh");
+        fetchFromSource(s, "REFRESH");
+      });
+    } else if (act === "filter") {
+      T.log.innerHTML = "";
+      var carried = sim.requests;
+      sim = newSim(cfg);
+      sim.requests = carried;
+      sim.queryKey = "HORROR:POPULARITY:DESC";
+      flags.switched = true;
+      run(function (s) {
+        emit(s, "vm", "n-vm", "w-sel", "a genre is picked \u00b7 new query key \u00b7 flatMapLatest builds a new Pager", "",
+          "selection.flatMapLatest { moviesRepository.moviesPagingFlow(it) }.cachedIn(viewModelScope)");
+        coldStart(s);
+      });
+    }
+  });
+
+  var dTitle = document.getElementById("dTitle");
+  var dLayer = document.getElementById("dLayer");
+  var dRole = document.getElementById("dRole");
+  var dFile = document.getElementById("dFile");
+  var dCode = document.getElementById("dCode");
+
+  document.getElementById("board").addEventListener("click", function (e) {
+    var g = e.target.closest(".node");
+    if (!g) return;
+    var n = nodes[g.getAttribute("data-node")];
+    if (!n) return;
+    var all = document.querySelectorAll(".node");
+    for (var i = 0; i < all.length; i++) all[i].classList.toggle("sel", all[i] === g);
+    dTitle.textContent = n.title;
+    dLayer.textContent = n.layer;
+    dRole.textContent = n.role;
+    dFile.textContent = n.file;
+    dCode.innerHTML = n.code;
+    dCode.hidden = false;
+  });
+
+  /* ---------------- refresh key game ---------------- */
+
+  var rounds = [
+    {
+      setup: [["rows in the table", "300"], ["window on screen", "rows 0\u201399"], ["reader is on", "row 30"], ["first read", "100 rows"]],
+      choices: [
+        { key: 0, label: "the head of the list", right: true, why: "Half a first read above row 30 is below zero, so the reload clamps to the top. The reader keeps their rows and everything above them." },
+        { key: 30, label: "the reader's own row", right: false, why: "The reader ends up on the top edge of what is loaded. Scroll up one row and there is nothing there." },
+        { key: 50, label: "window start + pageSize", right: false, why: "Page-number arithmetic on a source that keys by row offset. The window slides past the reader." }
+      ]
+    },
+    {
+      setup: [["rows in the table", "480"], ["window on screen", "rows 100\u2013199"], ["reader is on", "row 180"], ["first read", "100 rows"]],
+      choices: [
+        { key: 130, label: "reader \u2212 half a first read", right: true, why: "Rows 130\u2013229 come back. The reader sits in the middle, with rows above to scroll back through and 49 below before anything else is asked for." },
+        { key: 150, label: "window start + pageSize", right: false, why: "Page-number arithmetic, and it never looks at the reader, so where they are makes no difference to where the list reloads." },
+        { key: 200, label: "the row after the window", right: false, why: "The reload starts below the reader. Everything they were looking at is gone, and the new window's end is close enough to trigger another fetch." }
+      ]
+    },
+    {
+      setup: [["placeholders", "off"], ["window on screen", "rows 240\u2013339"], ["reader is at screen index", "20"], ["first read", "100 rows"]],
+      choices: [
+        { key: 210, label: "260 \u2212 50", right: true, why: "With placeholders off, index 20 is the 20th loaded row, which is row 260 of the query. Add the window start back before doing anything else." },
+        { key: 0, label: "20 \u2212 50, clamped", right: false, why: "Treating a screen index as a row number. The list throws away 260 rows and jumps to the top." },
+        { key: 240, label: "the window start", right: false, why: "Close, but it ignores how far into the window the reader has gone. They land on the top edge again." }
+      ]
+    }
+  ];
+
+  var roundIndex = 0;
+  var results = [];
+
+  function renderRound() {
+    var r = rounds[roundIndex];
+    document.getElementById("scTitle").textContent = "Round " + (roundIndex + 1) + " of " + rounds.length;
+    var setup = document.getElementById("scSetup");
+    setup.innerHTML = "";
+    r.setup.forEach(function (pair) {
+      var row = document.createElement("div");
+      var k = document.createElement("span");
+      k.textContent = pair[0];
+      var v = document.createElement("span");
+      v.textContent = pair[1];
+      row.appendChild(k);
+      row.appendChild(v);
+      setup.appendChild(row);
+    });
+
+    var box = document.getElementById("scChoices");
+    box.innerHTML = "";
+    r.choices.forEach(function (c) {
+      var b = document.createElement("button");
+      b.className = "choice";
+      var strong = document.createElement("b");
+      strong.textContent = "row " + c.key;
+      var small = document.createElement("small");
+      small.textContent = c.label;
+      b.appendChild(strong);
+      b.appendChild(small);
+      b.addEventListener("click", function () { answer(c, b); });
+      box.appendChild(b);
+    });
+    document.getElementById("scOutcome").textContent = "Pick the row the reload should start at.";
+  }
+
+  function answer(choice, button) {
+    var box = document.getElementById("scChoices");
+    var buttons = box.querySelectorAll("button");
+    for (var i = 0; i < buttons.length; i++) buttons[i].disabled = true;
+    button.classList.add(choice.right ? "right" : "wrong");
+    document.getElementById("scOutcome").innerHTML =
+      "<b>" + (choice.right ? "Right." : "Not this one.") + "</b> " + choice.why;
+
+    results[roundIndex] = choice.right;
+    document.getElementById("scStrip").children[roundIndex].className = choice.right ? "ok" : "no";
+    var got = results.filter(Boolean).length;
+    document.getElementById("scScore").textContent = got + "/" + rounds.length;
+
+    roundIndex += 1;
+    if (roundIndex < rounds.length) {
+      setTimeout(renderRound, 2600);
+    } else {
+      setTimeout(function () {
+        document.getElementById("scTitle").textContent = "Done";
+        document.getElementById("scChoices").innerHTML = "";
+        document.getElementById("scOutcome").innerHTML =
+          "<b>" + got + " of " + rounds.length + ".</b> The rule the app runs: " +
+          "<span class='mono'>maxOf(0, anchor + firstLoadedRow(state) - initialLoadSize / 2)</span>.";
+      }, 2600);
+    }
+  }
+
+  renderRound();
+
+  /* ---------------- config bench ---------------- */
+
+  function coldRequests(c) {
+    var s = newSim(c, false);
+    coldStart(s);
+    return { requests: s.requests, rows: s.db };
+  }
+
+  var kPage = document.getElementById("kPage");
+  var kFactor = document.getElementById("kFactor");
+  var kPrefetch = document.getElementById("kPrefetch");
+
+  function bench() {
+    var c = {
+      pageSize: parseInt(kPage.value, 10),
+      factor: parseInt(kFactor.value, 10),
+      prefetch: parseInt(kPrefetch.value, 10)
+    };
+    document.getElementById("oPage").textContent = c.pageSize;
+    document.getElementById("oFactor").textContent = c.factor + " \u00d7 pageSize";
+    document.getElementById("oPrefetch").textContent = c.prefetch;
+
+    var you = coldRequests(c);
+    var shipped = coldRequests({ pageSize: 50, factor: 2, prefetch: 50 });
+    var deflt = coldRequests({ pageSize: 50, factor: 3, prefetch: 50 });
+    var max = Math.max(you.requests, shipped.requests, deflt.requests, 1);
+
+    document.getElementById("barYou").style.width = (you.requests / max * 100) + "%";
+    document.getElementById("barShipped").style.width = (shipped.requests / max * 100) + "%";
+    document.getElementById("barDefault").style.width = (deflt.requests / max * 100) + "%";
+    document.getElementById("nYou").textContent = you.requests + " requests";
+    document.getElementById("labRows").textContent = you.rows + " rows stored";
+
+    var note;
+    if (you.requests <= 3) {
+      note = "One fetch and the list opens. The reader reaches the end of it almost at once, so the next fetch happens while they watch.";
+    } else if (you.requests >= 15) {
+      note = "Heavy. The screen shows about seven rows, so this pulls dozens of screens of movies nobody has scrolled to.";
+    } else {
+      note = "The first read is satisfied, then one more fetch lands: a table with nothing below the window reports end of pagination and wakes the mediator.";
+    }
+    document.getElementById("labNote").textContent = note;
+  }
+
+  kPage.addEventListener("input", bench);
+  kFactor.addEventListener("input", bench);
+  kPrefetch.addEventListener("input", bench);
+  bench();
+
+  /* ---------------- ship check ---------------- */
+
+  var questions = [
+    {
+      q: "A fetch writes 60 rows. Why does the list rebuild instead of adding them?",
+      opts: [
+        { t: "A PagingSource is a snapshot with no way to describe a change, so it is thrown away and rebuilt", ok: true },
+        { t: "Compose cannot animate an insert into a LazyColumn", ok: false },
+        { t: "Room hands back a new cursor object each time", ok: false }
+      ],
+      why: "Its only signal is invalidate(). Room pages by LIMIT and OFFSET, so any insert shifts every row address after it and the pages already handed out stop describing the table."
+    },
+    {
+      q: "The mediator asks for 50 movies and TMDB has re-ranked. What stops one movie holding two places?",
+      opts: [
+        { t: "A unique index on (queryKey, movieId), and the repeat is ignored", ok: true },
+        { t: "The walk compares each page against the last one", ok: false },
+        { t: "Nothing: stable paging means it cannot happen", ok: false }
+      ],
+      why: "The provider re-ranks between calls, so a movie stored near the end of one fetch arrives again at the start of the next. The index drops the repeat, and the movie keeps the position it first took, which is where the reader already sees it."
+    },
+    {
+      q: "What tells the app it has reached the end of a query?",
+      opts: [
+        { t: "The cursor the source returns is null", ok: true },
+        { t: "A fetch comes back with fewer movies than asked for", ok: false },
+        { t: "total_pages from TMDB", ok: false }
+      ],
+      why: "A short stretch is not an end: the walk returns whole provider pages, so the count is a floor. And total_pages reports 58,827 while page 501 answers 400."
+    },
+    {
+      q: "Why does the writer invalidate the reads it handed out, when Room already does that?",
+      opts: [
+        { t: "Room registers its table observer while the first read is running, so the first write can land in the gap", ok: true },
+        { t: "Room only invalidates on the main thread", ok: false },
+        { t: "A join across two tables is not observed", ok: false }
+      ],
+      why: "That gap is every cold start, and a fetch landing inside it would leave the screen on an empty list against a full table. The writer holds the reads it handed out and invalidates them itself."
+    },
+    {
+      q: "Placeholders are off. A window holds rows 240\u2013339 and the reader is at screen index 20. Which row are they on?",
+      opts: [
+        { t: "Row 260", ok: true },
+        { t: "Row 20", ok: false },
+        { t: "Row 240", ok: false }
+      ],
+      why: "With placeholders off an index counts from the first loaded row, not from the head of the query, so the window start has to be added back before the key is worked out."
+    }
+  ];
+
+  var quizList = document.getElementById("quizList");
+  questions.forEach(function (item, qi) {
+    var card = document.createElement("article");
+    card.className = "panel q";
+
+    var h = document.createElement("h3");
+    h.textContent = (qi + 1) + ". " + item.q;
+    card.appendChild(h);
+
+    var opts = document.createElement("div");
+    opts.className = "opts";
+    var verdictLine = document.createElement("p");
+    verdictLine.className = "verdict-line";
+
+    item.opts.forEach(function (o) {
+      var b = document.createElement("button");
+      b.className = "choice";
+      var mark = document.createElement("b");
+      mark.textContent = "\u25b8";
+      var small = document.createElement("small");
+      small.textContent = o.t;
+      b.appendChild(mark);
+      b.appendChild(small);
+      b.addEventListener("click", function () {
+        var all = opts.querySelectorAll("button");
+        for (var i = 0; i < all.length; i++) all[i].disabled = true;
+        b.classList.add(o.ok ? "right" : "wrong");
+        mark.textContent = o.ok ? "\u2713" : "\u2715";
+        verdictLine.textContent = item.why;
+        verdictLine.className = "verdict-line " + (o.ok ? "ok" : "no");
+      });
+      opts.appendChild(b);
+    });
+
+    card.appendChild(opts);
+    card.appendChild(verdictLine);
+    quizList.appendChild(card);
+  });
+
+  /* ---------------- open on a loaded board ---------------- */
+
+  renderMissions();
+
+  (function openLoaded() {
+    var boot = newSim(cfg);
+    coldStart(boot);
+    boot.events.forEach(logLine);
+    var last = boot.events[boot.events.length - 1];
+    paint(last);
+    if (last.line) T.codeline.textContent = last.line;
+    sim = boot;
+    flags.cold = true;
+    renderMissions();
+    verdict();
+  })();
+})();
+</script>

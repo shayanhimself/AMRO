@@ -1,0 +1,1095 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{color-scheme:light dark}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Posters, Scores and tt-numbers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#F4F6F6;--panel:#FFFFFF;--panel-2:#EAEEEF;
+  --ink:#161C1E;--ink-2:#454F52;--ink-3:#6D797C;
+  --rule:#D2DADB;--rule-2:#B9C4C6;
+  --accent:#0B6E75;--accent-soft:#D6E9EA;
+  --live:#1D7A4C;--live-soft:#D5E9DD;
+  --spec:#2F5E9E;--spec-soft:#D8E2F1;
+  --doc:#7A6A3F;--doc-soft:#EAE3D0;
+  --warn:#A33B14;--warn-soft:#F2DED4;
+  --shadow:0 1px 2px rgba(22,28,30,.06),0 8px 24px -18px rgba(22,28,30,.35);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1315;--panel:#151B1E;--panel-2:#1D2529;
+    --ink:#E6EBEB;--ink-2:#AAB6B8;--ink-3:#7E8B8E;
+    --rule:#283236;--rule-2:#3A474C;
+    --accent:#4FC3C9;--accent-soft:#123336;
+    --live:#5BC98C;--live-soft:#13301F;
+    --spec:#7FAEEA;--spec-soft:#152539;
+    --doc:#C9B47C;--doc-soft:#2A2415;
+    --warn:#E8865E;--warn-soft:#331B10;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -20px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1315;--panel:#151B1E;--panel-2:#1D2529;
+  --ink:#E6EBEB;--ink-2:#AAB6B8;--ink-3:#7E8B8E;
+  --rule:#283236;--rule-2:#3A474C;
+  --accent:#4FC3C9;--accent-soft:#123336;
+  --live:#5BC98C;--live-soft:#13301F;
+  --spec:#7FAEEA;--spec-soft:#152539;
+  --doc:#C9B47C;--doc-soft:#2A2415;
+  --warn:#E8865E;--warn-soft:#331B10;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -20px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:"Source Serif 4",Georgia,"Times New Roman",serif;
+  font-size:16.5px;line-height:1.62;-webkit-font-smoothing:antialiased}
+::selection{background:var(--accent-soft);color:var(--ink)}
+a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:2px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px 96px}
+.shell{display:grid;grid-template-columns:minmax(0,1fr)}
+@media(min-width:1040px){.shell{grid-template-columns:194px minmax(0,1fr);gap:52px;align-items:start}}
+
+.masthead{border-bottom:2px solid var(--ink);padding:38px 0 18px;margin-bottom:26px}
+.kicker{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:14px;align-items:baseline}
+.kicker b{color:var(--accent);font-weight:600}
+h1{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-weight:700;
+  font-size:clamp(34px,6vw,60px);line-height:1.02;letter-spacing:-.025em;margin:14px 0 10px;text-wrap:balance}
+.dek{font-size:19px;color:var(--ink-2);max-width:64ch;margin:0 0 22px}
+.dek strong{color:var(--ink);font-weight:600}
+
+.tag{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10.5px;font-weight:600;
+  letter-spacing:.09em;text-transform:uppercase;padding:2px 7px;border-radius:3px;
+  white-space:nowrap;display:inline-block;vertical-align:2px}
+.t-live{background:var(--live-soft);color:var(--live)}
+.t-spec{background:var(--spec-soft);color:var(--spec)}
+.t-doc{background:var(--doc-soft);color:var(--doc)}
+.legend{display:flex;flex-wrap:wrap;gap:10px 26px;padding:14px 0 0;border-top:1px solid var(--rule)}
+.legend div{font-size:14.5px;color:var(--ink-2);display:flex;gap:9px;align-items:baseline}
+
+.rail{display:none}
+@media(min-width:1040px){
+  .rail{display:block;position:sticky;top:26px;
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;line-height:1.9}
+  .rail h4{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);
+    margin:0 0 8px;font-weight:600}
+  .rail a{display:block;color:var(--ink-2);text-decoration:none;
+    border-left:2px solid var(--rule);padding-left:10px}
+  .rail a:hover{color:var(--accent);border-left-color:var(--accent)}
+  .rail .grp{margin-bottom:20px}
+}
+
+section{margin:0 0 54px;scroll-margin-top:20px}
+h2{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:13px;font-weight:600;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin:0 0 4px}
+h2 + .h2sub{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;
+  font-size:clamp(23px,3vw,31px);font-weight:600;letter-spacing:-.018em;line-height:1.15;
+  margin:0 0 18px;color:var(--ink);text-wrap:balance}
+h3{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:19px;font-weight:600;
+  letter-spacing:-.01em;margin:32px 0 8px}
+p{margin:0 0 15px;max-width:66ch}
+.lede{max-width:66ch}
+code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.86em}
+p code,td code,li code{background:var(--panel-2);padding:1px 5px;border-radius:3px;color:var(--ink)}
+
+.scroller{overflow-x:auto;border:1px solid var(--rule);border-radius:5px;
+  background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:9px 13px;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:10.5px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);background:var(--panel-2);
+  white-space:nowrap;position:sticky;top:0}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--panel-2)}
+td.num,th.num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.src{font-family:Archivo,sans-serif;font-weight:600;white-space:nowrap}
+
+/* shape strip */
+.shapes{display:grid;gap:12px}
+@media(min-width:760px){.shapes{grid-template-columns:1fr 1fr}}
+.shape{background:var(--panel);border:1px solid var(--rule);border-radius:5px;
+  padding:13px 15px 14px;display:flex;flex-direction:column;gap:8px}
+.shape .hd{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.shape h4{font-family:Archivo,sans-serif;font-size:15.5px;font-weight:600;margin:0;letter-spacing:-.01em}
+.shape pre{margin:0;border:0;padding:0;background:none;box-shadow:none;
+  font-size:12px;line-height:1.55;overflow-x:auto;color:var(--ink-2)}
+.shape .why{font-size:13.5px;color:var(--ink-3);margin:0;max-width:none}
+
+pre{background:var(--panel);border:1px solid var(--rule);border-radius:5px;
+  padding:15px 17px;overflow-x:auto;margin:16px 0;
+  font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12.5px;line-height:1.62;color:var(--ink-2)}
+pre b{color:var(--ink);font-weight:500}
+pre i{color:var(--ink-3);font-style:normal}
+pre em{color:var(--accent);font-style:normal;font-weight:500}
+
+/* AND/OR chart */
+.chart{background:var(--panel);border:1px solid var(--rule);border-radius:5px;
+  padding:22px 24px 18px;box-shadow:var(--shadow)}
+.bar-row{display:grid;grid-template-columns:172px minmax(0,1fr) 64px;gap:12px;align-items:center;margin-bottom:8px}
+.bar-row .lbl{font-family:"IBM Plex Mono",monospace;font-size:12px;text-align:right;color:var(--ink-2)}
+.track{height:17px;background:var(--panel-2);border-radius:2px;overflow:hidden}
+.fill{height:100%;background:var(--accent);border-radius:2px}
+.fill.and{background:var(--warn)}
+.bar-row .val{font-family:"IBM Plex Mono",monospace;font-size:12.5px;
+  font-variant-numeric:tabular-nums;color:var(--ink)}
+.axis{display:grid;grid-template-columns:172px minmax(0,1fr) 64px;gap:12px;margin-top:10px;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+.axis .ticks{display:flex;justify-content:space-between;border-top:1px solid var(--rule);padding-top:4px}
+.chart-note{font-size:13.5px;color:var(--ink-3);margin:14px 0 0;max-width:62ch}
+
+/* venn-ish id split */
+.split{display:grid;gap:12px;margin:18px 0}
+@media(min-width:720px){.split{grid-template-columns:repeat(3,1fr)}}
+.split .col{background:var(--panel);border:1px solid var(--rule);border-radius:5px;padding:14px 16px}
+.split .col.mid{border-color:var(--accent);background:var(--accent-soft)}
+.split h5{font-family:Archivo,sans-serif;font-size:11px;font-weight:600;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--ink-3);margin:0 0 4px}
+.split .col.mid h5{color:var(--accent)}
+.split .n{font-family:Archivo,sans-serif;font-size:30px;font-weight:700;line-height:1;
+  letter-spacing:-.02em;margin:0 0 8px;font-variant-numeric:tabular-nums}
+.split ul{margin:0;padding-left:0;list-style:none;
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;line-height:1.75;color:var(--ink-2)}
+
+.callout{border-left:3px solid var(--warn);background:var(--warn-soft);
+  padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0}
+.callout p{margin:0;max-width:64ch}
+.callout .hd{font-family:Archivo,sans-serif;font-size:11px;font-weight:600;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--warn);margin-bottom:5px}
+.note{border-left-color:var(--accent);background:var(--accent-soft)}
+.note .hd{color:var(--accent)}
+
+ul.tight{margin:0 0 16px;padding-left:20px;max-width:68ch}
+ul.tight li{margin-bottom:8px}
+
+footer{border-top:1px solid var(--rule);margin-top:20px;padding-top:18px;
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);
+  display:flex;flex-wrap:wrap;gap:8px 22px}
+
+/* URL assembly ladder: one chip per piece a client must supply */
+.ladder{display:flex;flex-direction:column;gap:0;background:var(--panel);
+  border:1px solid var(--rule);border-radius:5px;box-shadow:var(--shadow);overflow:hidden}
+.rung{display:grid;grid-template-columns:150px minmax(0,1fr) 34px;gap:14px;align-items:center;
+  padding:10px 16px;border-bottom:1px solid var(--rule)}
+.ladder .rung:last-child{border-bottom:0}
+.rung:hover{background:var(--panel-2)}
+.rung .who{font-family:Archivo,sans-serif;font-weight:600;font-size:14px;white-space:nowrap}
+.pieces{display:flex;flex-wrap:wrap;gap:5px;align-items:center}
+.pc{font-family:"IBM Plex Mono",monospace;font-size:11px;padding:3px 7px;border-radius:3px;
+  background:var(--panel-2);color:var(--ink-2);border:1px solid var(--rule);white-space:nowrap}
+.pc.given{background:var(--live-soft);color:var(--live);border-color:transparent}
+.pc.you{background:var(--warn-soft);color:var(--warn);border-color:transparent}
+.rung .cost{font-family:Archivo,sans-serif;font-weight:700;font-size:17px;
+  font-variant-numeric:tabular-nums;text-align:right;color:var(--ink-3)}
+.rung.easy .cost{color:var(--live)}
+.rung.hard .cost{color:var(--warn)}
+
+/* one film, one axis, every number the field returns for it */
+.axischart{background:var(--panel);border:1px solid var(--rule);border-radius:5px;
+  padding:24px 26px 18px;box-shadow:var(--shadow)}
+.arow{display:grid;grid-template-columns:196px minmax(0,1fr) 92px;gap:14px;align-items:center;margin-bottom:9px}
+.arow .lbl{font-family:"IBM Plex Mono",monospace;font-size:11.5px;text-align:right;color:var(--ink-2);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.arow .native{font-family:"IBM Plex Mono",monospace;font-size:12px;
+  font-variant-numeric:tabular-nums;color:var(--ink)}
+.abar{position:relative;height:19px;background:var(--panel-2);border-radius:2px}
+.abar span{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:2px}
+.abar.s100 span{background:var(--spec)}
+.abar.s01 span{background:var(--warn)}
+.aaxis{display:grid;grid-template-columns:196px minmax(0,1fr) 92px;gap:14px;margin-top:12px;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+.aaxis .ticks{display:flex;justify-content:space-between;border-top:1px solid var(--rule);padding-top:4px}
+.akey{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:14px;font-size:13px;color:var(--ink-3)}
+.akey i{width:11px;height:11px;border-radius:2px;display:inline-block;margin-right:6px;vertical-align:-1px}
+
+/* presence matrix */
+.u{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10.5px;line-height:1.5;
+  word-break:break-all;color:var(--ink-2)}
+td.u em{color:var(--accent);font-style:normal;font-weight:600}
+td.u b{color:var(--ink);font-weight:600}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--live)}
+.dot.no{background:var(--warn)}
+.dot.na{background:var(--rule-2)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="kicker">
+    <span>AMRO / Research</span><span>2026-09-03</span>
+    <span><b>Three fields</b>, thirteen APIs</span><span>Third of the API comparison series</span>
+  </div>
+  <h1>Posters, Scores and tt-numbers</h1>
+  <p class="dek">What it takes to turn an image reference into a URL that loads, what a number called <code>rating</code> actually measures, and whether the detail endpoint hands you an IMDb id. <strong>Every source in the survey carries one. No two agree on what a rating is.</strong></p>
+  <div class="legend">
+    <div><span class="tag t-live">Live</span> Request issued here; response quoted.</div>
+    <div><span class="tag t-spec">Spec</span> OpenAPI, Blueprint or published client model read.</div>
+    <div><span class="tag t-doc">Doc</span> Vendor prose; endpoint needs a key.</div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Contents">
+    <div class="grp">
+      <h4>Sections</h4>
+      <a href="#answer">Short answer</a>
+      <a href="#assembly">URL assembly</a>
+      <a href="#images">Image shapes &amp; URLs</a>
+      <a href="#scales">One film, seven numbers</a>
+      <a href="#ratings">Rating shapes</a>
+      <a href="#imdb">The IMDb id</a>
+      <a href="#gotchas">Gotchas</a>
+      <a href="#amro">For AMRO</a>
+      <a href="#repro">Reproduce it</a>
+    </div>
+    <div class="grp">
+      <h4>Measured</h4>
+      <a href="#assembly">5 pieces on Simkl</a>
+      <a href="#images">20 signed URLs</a>
+      <a href="#scales">86 vs 87%</a>
+      <a href="#imdb">20 / 20</a>
+    </div>
+  </nav>
+
+  <main>
+
+  <section id="answer">
+    <h2>Section 1</h2>
+    <div class="h2sub">The short answer</div>
+    <p class="lede">Two results fall out of the table immediately. The IMDb id is on the detail record of every source surveyed, which makes <code>tt&hellip;</code> the only join key that always exists. And the word <em>rating</em> covers a user average, a critic aggregate, a percentile, a like count, and a string with its own denominator inside it.</p>
+    <div class="scroller">
+      <table>
+        <thead><tr><th>Source</th><th>Image reference</th><th>URL is</th><th>Rating field</th><th>Scale</th><th>IMDb id on detail</th><th>Evidence</th></tr></thead>
+        <tbody>
+          <tr><td class="src">TMDB</td><td><code>poster_path</code>, <code>backdrop_path</code></td><td>path fragment, needs base + size</td><td><code>vote_average</code> + <code>vote_count</code></td><td>0&ndash;10 float</td><td><code>imdb_id</code>, 20/20 present</td><td><span class="tag t-live">Live</span></td></tr>
+          <tr><td class="src">OMDb</td><td><code>Poster</code></td><td>absolute URL</td><td><code>imdbRating</code>, <code>imdbVotes</code>, <code>Metascore</code></td><td>every value is a <strong>string</strong></td><td><code>imdbID</code></td><td><span class="tag t-spec">Spec</span></td></tr>
+          <tr><td class="src">IMDb datasets</td><td>none, no image column in 7 files</td><td>&mdash;</td><td><code>averageRating</code> + <code>numVotes</code></td><td>0&ndash;10, one decimal</td><td><code>tconst</code> is the id</td><td><span class="tag t-live">Live</span></td></tr>
+          <tr><td class="src">Trakt</td><td><code>images.poster[]</code>, opt-in</td><td><strong>scheme-less</strong> host+path, WebP</td><td><code>rating</code>, <code>votes</code>, <code>distribution</code></td><td>0&ndash;10 float + histogram</td><td><code>ids.imdb</code></td><td><span class="tag t-spec">Spec</span></td></tr>
+          <tr><td class="src">TheTVDB</td><td><code>image</code>, <code>artworks[].image</code></td><td>string, spec names no base</td><td><code>score</code> on record <em>and</em> artwork</td><td>undocumented</td><td><code>remoteIds[]</code>, typed by int</td><td><span class="tag t-spec">Spec</span></td></tr>
+          <tr><td class="src">Watchmode</td><td><code>poster</code>, <code>posterMedium</code>, <code>posterLarge</code>, <code>backdrop</code></td><td>absolute, <strong>third-party host, unlicensed</strong></td><td><code>user_rating</code> <em>and</em> <code>critic_score</code></td><td>0&ndash;10 <em>and</em> 0&ndash;100</td><td><code>imdb_id</code>, nullable</td><td><span class="tag t-spec">Spec</span></td></tr>
+          <tr><td class="src">Streaming Avail.</td><td><code>imageSet</code>, 2 orientations &times; 5 widths</td><td>absolute, pre-built</td><td><code>rating</code></td><td>0&ndash;100, provenance opaque</td><td><code>imdbId</code>, <strong>non-optional</strong></td><td><span class="tag t-spec">Spec</span></td></tr>
+          <tr><td class="src">Simkl</td><td><code>poster</code></td><td>fragment + domain + prefix + <strong>suffix</strong> + ext</td><td><code>simkl.rating</code>, per-provider objects</td><td>0&ndash;10 float</td><td>key casing is inconsistent</td><td><span class="tag t-spec">Spec</span></td></tr>
+          <tr><td class="src">MDBList</td><td><code>poster</code>, behind <code>append_to_response</code></td><td>absolute URL</td><td><code>ratings[]</code>, declared untyped</td><td>mixed, 6 providers</td><td><code>imdb_id</code></td><td><span class="tag t-spec">Spec</span></td></tr>
+          <tr><td class="src">JustWatch</td><td><code>posterUrl</code>, <code>backdrops[]</code></td><td><strong>template</strong>, <code>{profile}</code> and <code>{format}</code></td><td><code>scoring{}</code>, 8 fields, 4 providers</td><td>0&ndash;10, 0&ndash;100 <em>and</em> 0&ndash;1</td><td><code>externalIds.imdbId</code></td><td><span class="tag t-live">Live</span></td></tr>
+          <tr><td class="src">Cinemeta</td><td><code>poster</code>, <code>background</code>, <code>logo</code></td><td>absolute, size in path</td><td><code>imdbRating</code></td><td><strong>string</strong>, no vote count</td><td><code>imdb_id</code> <em>and</em> <code>id</code></td><td><span class="tag t-live">Live</span></td></tr>
+          <tr><td class="src">Wikidata</td><td><code>P18</code></td><td>Commons filename via redirect</td><td><code>P444</code> statements</td><td><strong>denominator inside the string</strong></td><td><code>P345</code></td><td><span class="tag t-live">Live</span></td></tr>
+          <tr><td class="src">Fanart.tv</td><td><code>movieposter[].url</code></td><td>absolute, <strong><code>http://</code></strong></td><td>none</td><td>&mdash;</td><td><code>imdb_id</code>, top level</td><td><span class="tag t-spec">Spec</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="assembly">
+    <h2>Section 2</h2>
+    <div class="h2sub">What it costs to build one image URL</div>
+    <p class="lede">Green is what the movie object already gives you. Amber is what your client has to know, hold, or fetch before the URL will load. The number on the right is how many amber pieces stand between a movie object and an image on screen.</p>
+    <div class="ladder">
+      <div class="rung easy">
+        <div class="who">Streaming Avail.</div>
+        <div class="pieces"><span class="pc given">imageSet.verticalPoster.w480</span><span class="pc you">before Expires</span></div>
+        <div class="cost">0*</div>
+      </div>
+      <div class="rung easy">
+        <div class="who">Cinemeta</div>
+        <div class="pieces"><span class="pc given">poster</span></div>
+        <div class="cost">0</div>
+      </div>
+      <div class="rung easy">
+        <div class="who">Watchmode</div>
+        <div class="pieces"><span class="pc given">posterLarge</span></div>
+        <div class="cost">0</div>
+      </div>
+      <div class="rung easy">
+        <div class="who">Fanart.tv</div>
+        <div class="pieces"><span class="pc given">movieposter[].url</span></div>
+        <div class="cost">0</div>
+      </div>
+      <div class="rung">
+        <div class="who">MDBList</div>
+        <div class="pieces"><span class="pc you">append_to_response=poster</span><span class="pc given">poster</span></div>
+        <div class="cost">1</div>
+      </div>
+      <div class="rung">
+        <div class="who">Trakt</div>
+        <div class="pieces"><span class="pc you">?extended=images</span><span class="pc you">https://</span><span class="pc given">images.poster[0]</span></div>
+        <div class="cost">2</div>
+      </div>
+      <div class="rung">
+        <div class="who">TMDB</div>
+        <div class="pieces"><span class="pc you">secure_base_url</span><span class="pc you">size from /configuration</span><span class="pc given">poster_path</span></div>
+        <div class="cost">2</div>
+      </div>
+      <div class="rung">
+        <div class="who">JustWatch</div>
+        <div class="pieces"><span class="pc you">images.justwatch.com</span><span class="pc given">posterUrl</span><span class="pc you">{profile}</span><span class="pc you">{format}</span></div>
+        <div class="cost">3</div>
+      </div>
+      <div class="rung">
+        <div class="who">Wikidata</div>
+        <div class="pieces"><span class="pc you">Special:FilePath</span><span class="pc given">P18 filename</span><span class="pc you">follow redirect</span><span class="pc you">accept a cast photo</span></div>
+        <div class="cost">3</div>
+      </div>
+      <div class="rung hard">
+        <div class="who">Simkl</div>
+        <div class="pieces"><span class="pc you">simkl.in</span><span class="pc you">/posters/</span><span class="pc given">poster</span><span class="pc you">_ca</span><span class="pc you">.webp</span><span class="pc you">wsrv.nl proxy</span></div>
+        <div class="cost">5</div>
+      </div>
+      <div class="rung hard">
+        <div class="who">TheTVDB</div>
+        <div class="pieces"><span class="pc given">image</span><span class="pc you">a base the spec never names</span></div>
+        <div class="cost">?</div>
+      </div>
+      <div class="rung hard">
+        <div class="who">IMDb datasets</div>
+        <div class="pieces"><span class="pc you">no image column exists in any of the seven files</span></div>
+        <div class="cost">&infin;</div>
+      </div>
+    </div>
+    <div class="callout">
+      <div class="hd">The zero column is not the whole story</div>
+      <p><strong>0*</strong> is Streaming Availability: the URL is finished, but signed and expiring, so it is free to build and not free to keep. Three of the four sources that hand over a finished URL attach a condition to using it. Watchmode disclaims any licence to the image and any guarantee it stays up. Fanart.tv serves <code>http://</code>. Simkl asks that you route every request through <code>wsrv.nl</code> rather than its own origin. Trakt goes furthest: hotlinking is blocked outright and images are <em>required</em> to be cached server-side, which a client-only app cannot do.</p>
+    </div>
+  </section>
+
+  <section id="images">
+    <h2>Section 3</h2>
+    <div class="h2sub">Image shapes, and every built URL</div>
+    <p class="lede">Each source below shows the value the API returns, then the full URL assembled from it, one row per variant the source offers. Every URL was requested from this machine on 2026-09-03; the byte count is what came back. Where a variant fails, the failure is the row.</p>
+
+    <h3>TMDB &mdash; three kinds, eighteen variants <span class="tag t-live">Live</span></h3>
+<pre><i>// GET /3/movie/27205</i>
+{ "poster_path":   <b>"/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg"</b>,
+  "backdrop_path": <b>"/8ZTVqvKDQ8emSGUEMjsS4yHAwrp.jpg"</b> }
+
+<i>// GET /3/configuration -> images.secure_base_url</i>
+<em>https://image.tmdb.org/t/p/</em>  +  <em>{size}</em>  +  <b>{path}</b></pre>
+    <div class="scroller"><table>
+      <thead><tr><th>Kind</th><th>Size</th><th>Built URL</th><th class="num">Result</th></tr></thead>
+      <tbody>
+        <tr><td class="src">poster</td><td><code>w92</code></td><td class="u">https://image.tmdb.org/t/p/w92/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg</td><td class="num">200 &middot; 5,212 B</td></tr>
+        <tr><td class="src">poster</td><td><code>w154</code></td><td class="u">https://image.tmdb.org/t/p/w154/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg</td><td class="num">200 &middot; 12,276 B</td></tr>
+        <tr><td class="src">poster</td><td><code>w185</code></td><td class="u">https://image.tmdb.org/t/p/w185/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg</td><td class="num">200 &middot; 17,062 B</td></tr>
+        <tr><td class="src">poster</td><td><code>w342</code></td><td class="u">https://image.tmdb.org/t/p/w342/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg</td><td class="num">200 &middot; 53,908 B</td></tr>
+        <tr><td class="src">poster</td><td><code>w500</code></td><td class="u">https://image.tmdb.org/t/p/w500/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg</td><td class="num">200 &middot; 107,732 B</td></tr>
+        <tr><td class="src">poster</td><td><code>w780</code></td><td class="u">https://image.tmdb.org/t/p/w780/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg</td><td class="num">200 &middot; 235,590 B</td></tr>
+        <tr><td class="src">poster</td><td><code>original</code></td><td class="u">https://image.tmdb.org/t/p/original/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg</td><td class="num">200 &middot; 984,791 B</td></tr>
+        <tr><td class="src">poster</td><td><code>w999</code></td><td class="u">https://image.tmdb.org/t/p/w999/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg</td><td class="num" style="color:var(--warn);font-weight:600">400</td></tr>
+        <tr><td class="src">backdrop</td><td><code>w300</code></td><td class="u">https://image.tmdb.org/t/p/w300/8ZTVqvKDQ8emSGUEMjsS4yHAwrp.jpg</td><td class="num">200 &middot; 18,449 B</td></tr>
+        <tr><td class="src">backdrop</td><td><code>w780</code></td><td class="u">https://image.tmdb.org/t/p/w780/8ZTVqvKDQ8emSGUEMjsS4yHAwrp.jpg</td><td class="num">200 &middot; 107,287 B</td></tr>
+        <tr><td class="src">backdrop</td><td><code>w1280</code></td><td class="u">https://image.tmdb.org/t/p/w1280/8ZTVqvKDQ8emSGUEMjsS4yHAwrp.jpg</td><td class="num">200 &middot; 211,450 B</td></tr>
+        <tr><td class="src">backdrop</td><td><code>original</code></td><td class="u">https://image.tmdb.org/t/p/original/8ZTVqvKDQ8emSGUEMjsS4yHAwrp.jpg</td><td class="num">200 &middot; 1,356,334 B</td></tr>
+        <tr><td class="src">logo</td><td><code>w45</code></td><td class="u">https://image.tmdb.org/t/p/w45/iXYh7y0vI1DZR0taTuvrr8PSnOd.png</td><td class="num">200 &middot; 735 B</td></tr>
+        <tr><td class="src">logo</td><td><code>w92</code></td><td class="u">https://image.tmdb.org/t/p/w92/iXYh7y0vI1DZR0taTuvrr8PSnOd.png</td><td class="num">200 &middot; 1,851 B</td></tr>
+        <tr><td class="src">logo</td><td><code>w154</code></td><td class="u">https://image.tmdb.org/t/p/w154/iXYh7y0vI1DZR0taTuvrr8PSnOd.png</td><td class="num">200 &middot; 3,341 B</td></tr>
+        <tr><td class="src">logo</td><td><code>w185</code></td><td class="u">https://image.tmdb.org/t/p/w185/iXYh7y0vI1DZR0taTuvrr8PSnOd.png</td><td class="num">200 &middot; 4,274 B</td></tr>
+        <tr><td class="src">logo</td><td><code>w300</code></td><td class="u">https://image.tmdb.org/t/p/w300/iXYh7y0vI1DZR0taTuvrr8PSnOd.png</td><td class="num">200 &middot; 6,685 B</td></tr>
+        <tr><td class="src">logo</td><td><code>w500</code></td><td class="u">https://image.tmdb.org/t/p/w500/iXYh7y0vI1DZR0taTuvrr8PSnOd.png</td><td class="num">200 &middot; 11,396 B</td></tr>
+        <tr><td class="src">logo</td><td><code>original</code></td><td class="u">https://image.tmdb.org/t/p/original/iXYh7y0vI1DZR0taTuvrr8PSnOd.png</td><td class="num">200 &middot; 28,512 B</td></tr>
+      </tbody>
+    </table></div>
+    <p>The size list is a closed set fetched from <code>/configuration</code>, and an unlisted width is a hard <code>400</code> rather than a fallback. The CDN takes no <code>Authorization</code> header &mdash; every row above ran unauthenticated. Note the jump from <code>w780</code> to <code>original</code>: 236 KB to 985 KB for a poster, and 211 KB to 1.36 MB for a backdrop. <code>original</code> is never the right default.</p>
+    <p><code>GET /3/movie/27205/images</code> returns the full set as objects rather than paths, and carries more than a filename:</p>
+<pre>{ "file_path": <b>"/tXQvtRWfkUUnWJAn2tN3jERIUG.jpg"</b>,
+  "aspect_ratio": <em>0.667</em>, "width": 2000, "height": 3000,
+  "iso_639_1": "es", "iso_3166_1": "ES",
+  "vote_average": 8.362, "vote_count": 6 }</pre>
+    <div class="shapes">
+      <div class="shape">
+        <div class="hd"><h4>Posters are not 2:3</h4><span class="tag t-live">Live</span></div>
+        <pre>aspect_ratio   <em>0.657 &rarr; 0.750</em>   (227 posters)</pre>
+        <p class="why">A grid that assumes 0.667 crops or letterboxes a real fraction of the catalogue.</p>
+      </div>
+      <div class="shape">
+        <div class="hd"><h4>Logos have no fixed box</h4><span class="tag t-live">Live</span></div>
+        <pre>aspect_ratio   <em>2.386 &rarr; 9.364</em>   (50 logos)</pre>
+        <p class="why">Nearly a 4&times; spread. A logo overlay has to size from the returned ratio.</p>
+      </div>
+      <div class="shape">
+        <div class="hd"><h4>Backdrops are uniform</h4><span class="tag t-live">Live</span></div>
+        <pre>aspect_ratio   1.777 &rarr; 1.784   (99 backdrops)</pre>
+        <p class="why">The one case where a fixed 16:9 container is safe.</p>
+      </div>
+      <div class="shape">
+        <div class="hd"><h4><code>iso_639_1: null</code> is the value you want</h4><span class="tag t-live">Live</span></div>
+        <pre>backdrops with null language   <em>74 / 99</em>
+posters   with null language   12 / 227</pre>
+        <p class="why">Null marks textless art. It cannot be discarded as missing data.</p>
+      </div>
+    </div>
+    <p>The <code>vote_average</code> and <code>vote_count</code> inside the image object rate the <em>artwork</em>, not the film, and share their names exactly with the fields that rate the film. 85 of the 227 posters have zero votes.</p>
+
+    <h3>OMDb &mdash; an Amazon URL with a transform slot <span class="tag t-live">Live</span> <span class="tag t-doc">Doc</span></h3>
+    <p>OMDb's <code>Poster</code> is an absolute URL on Amazon's media host, and the segment between <code>._V1_</code> and <code>.jpg</code> is a transform slot rather than part of the filename. The base URL below came from IMDb's public suggestion endpoint, which needs no key; the transforms were then built and requested.</p>
+<pre><i># the public suggestion endpoint, no key</i>
+$ curl -s <b>https://v3.sg.media-imdb.com/suggestion/x/inception.json</b>
+{ "id": "tt1375666", "l": "Inception",
+  "i": { "imageUrl": <b>"https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg"</b>,
+         "width": 700, "height": 1037 } }
+
+<i># the slot</i>
+https://m.media-amazon.com/images/M/MV5B…Mw@@.<em>_V1_{transform}</em>.jpg</pre>
+    <div class="scroller"><table>
+      <thead><tr><th>Transform</th><th>Built URL</th><th class="num">Result</th></tr></thead>
+      <tbody>
+        <tr><td><code>(none)</code></td><td class="u">https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_.jpg</td><td class="num">200 &middot; 419,890 B</td></tr>
+        <tr><td><code>SX300</code></td><td class="u">https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg</td><td class="num">200 &middot; 36,590 B</td></tr>
+        <tr><td><code>SX600</code></td><td class="u">https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX600.jpg</td><td class="num">200 &middot; 114,135 B</td></tr>
+        <tr><td><code>UX128</code></td><td class="u">https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_UX128.jpg</td><td class="num">200 &middot; 9,030 B</td></tr>
+        <tr><td>crop <code>UY268_CR3,0,182,268_</code></td><td class="u">https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_UY268_CR3,0,182,268_.jpg</td><td class="num">200 &middot; 16,549 B</td></tr>
+        <tr><td>quality <code>QL75_UX380_</code></td><td class="u">https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_QL75_UX380_.jpg</td><td class="num">200 &middot; 44,723 B</td></tr>
+      </tbody>
+    </table></div>
+    <p>Unlike TMDB, the slot is open: width (<code>SX</code>/<code>UX</code>), height (<code>UY</code>), crop (<code>CR</code>) and JPEG quality (<code>QL</code>) all compose, and nothing here was published as an allowed value. OMDb itself documents no size parameter at all, and its resizing service is a separate host, <code>http://img.omdbapi.com/?apikey=[yourkey]&amp;</code>, which the docs say <em>"is only available to patrons"</em>. All OMDb content is CC BY-NC 4.0.</p>
+
+    <h3>Trakt &mdash; the scheme is missing, and the size set is undocumented <span class="tag t-spec">Spec</span> <span class="tag t-live">Live</span></h3>
+<pre><i>// GET /movies/{id}?extended=images</i>
+"images": {
+  "poster": [<b>"walter-r2.trakt.tv/images/movies/000/012/601/posters/thumb/e0d9dd35c5.jpg.webp"</b>],
+  "fanart": [<i>"…/fanarts/medium/5aab754f58.jpg.webp"</i>],
+  "logo":   [<i>"…/logos/medium/dbce70b4aa.png.webp"</i>]
+}
+<i>// the blueprint: "You'll also need to prepend the https:// prefix to all image URLs."</i></pre>
+    <div class="scroller"><table>
+      <thead><tr><th>Kind &middot; size</th><th>Built URL</th><th class="num">Result</th></tr></thead>
+      <tbody>
+        <tr><td class="src">poster &middot; thumb</td><td class="u">https://walter-r2.trakt.tv/images/movies/000/012/601/posters/thumb/e0d9dd35c5.jpg.webp</td><td class="num">200 &middot; 12,792 B</td></tr>
+        <tr><td class="src">poster &middot; medium</td><td class="u">https://walter-r2.trakt.tv/images/movies/000/012/601/posters/medium/e0d9dd35c5.jpg.webp</td><td class="num">200 &middot; 34,206 B</td></tr>
+        <tr><td class="src">poster &middot; full</td><td class="u">https://walter-r2.trakt.tv/images/movies/000/012/601/posters/full/e0d9dd35c5.jpg.webp</td><td class="num">200 &middot; 74,388 B</td></tr>
+        <tr><td class="src">poster &middot; original</td><td class="u">https://walter-r2.trakt.tv/images/movies/000/012/601/posters/original/e0d9dd35c5.jpg.webp</td><td class="num" style="color:var(--warn);font-weight:600">404</td></tr>
+        <tr><td class="src">fanart &middot; medium</td><td class="u">https://walter-r2.trakt.tv/images/movies/000/012/601/fanarts/medium/5aab754f58.jpg.webp</td><td class="num">200 &middot; 67,676 B</td></tr>
+        <tr><td class="src">logo &middot; medium</td><td class="u">https://walter-r2.trakt.tv/images/movies/000/012/601/logos/medium/dbce70b4aa.png.webp</td><td class="num">200 &middot; 24,690 B</td></tr>
+        <tr><td class="src">clearart &middot; medium</td><td class="u">https://walter-r2.trakt.tv/images/movies/000/012/601/cleararts/medium/513a3688d1.png.webp</td><td class="num">200 &middot; 46,802 B</td></tr>
+        <tr><td class="src">banner &middot; medium</td><td class="u">https://walter-r2.trakt.tv/images/movies/000/012/601/banners/medium/71dc0c3258.jpg.webp</td><td class="num">200 &middot; 6,754 B</td></tr>
+        <tr><td class="src">thumb &middot; medium</td><td class="u">https://walter-r2.trakt.tv/images/movies/000/012/601/thumbs/medium/fcd7d7968c.jpg.webp</td><td class="num">200 &middot; 21,240 B</td></tr>
+      </tbody>
+    </table></div>
+    <p>The size sits inside the returned path, and the API hands you exactly one of them. Substituting the token works &mdash; <code>thumb</code>, <code>medium</code> and <code>full</code> all resolve, <code>original</code> is a <code>404</code> &mdash; but that set is documented nowhere, so a client that wants a bigger poster than the one it was given is guessing. Everything is served as WebP regardless of the <code>.jpg</code> or <code>.png</code> in the path.</p>
+    <div class="callout">
+      <div class="hd">The missing scheme is a real failure, not a curiosity</div>
+      <p><code>curl</code> accepts <code>walter-r2.trakt.tv/…</code> and silently assumes a scheme, which is why the value looks usable from a shell. An Android image loader does not: <code>HttpUrl.parse</code> and <code>Uri.parse</code> treat a scheme-less string as a relative reference, so the load fails or resolves against the wrong base. The prepend is mandatory. Trakt also blocks hotlinking outright and <em>requires</em> images be cached server-side, which a client-only app cannot satisfy.</p>
+    </div>
+
+    <h3>TheTVDB &mdash; the spec names no base; the site does <span class="tag t-spec">Spec</span> <span class="tag t-live">Live</span></h3>
+    <p><code>MovieBaseRecord.image</code>, <code>ArtworkBaseRecord.image</code> and <code>ArtworkBaseRecord.thumbnail</code> are all typed <code>string</code>, and the OpenAPI document never says whether they are absolute or names a host. The base is <code>https://artworks.thetvdb.com/banners/</code>, recovered from TheTVDB's own public movie pages, and the thumbnail is the same path with a <code>_t</code> suffix.</p>
+    <div class="scroller"><table>
+      <thead><tr><th>Kind</th><th>Built URL</th><th class="num">Result</th></tr></thead>
+      <tbody>
+        <tr><td class="src">poster</td><td class="u">https://artworks.thetvdb.com/banners/movies/113/posters/601c4ea1292a8.jpg</td><td class="num">200 &middot; 212,662 B</td></tr>
+        <tr><td class="src">poster thumb</td><td class="u">https://artworks.thetvdb.com/banners/movies/113/posters/601c4ea1292a8<em>_t</em>.jpg</td><td class="num">200 &middot; 62,136 B</td></tr>
+        <tr><td class="src">background</td><td class="u">https://artworks.thetvdb.com/banners/movies/113/backgrounds/113.jpg</td><td class="num">200 &middot; 476,831 B</td></tr>
+        <tr><td class="src">bucket root</td><td class="u">https://artworks.thetvdb.com/</td><td class="num" style="color:var(--warn);font-weight:600">403 &middot; XML</td></tr>
+      </tbody>
+    </table></div>
+    <p>Two sizes only, full and <code>_t</code>. The host is an object store that refuses a listing, so the path vocabulary is not discoverable &mdash; you get whatever string the API hands you. Dimensions for a given artwork type are one indirection away, on <code>/artwork/types</code>, which carries <code>width</code>, <code>height</code>, <code>thumbWidth</code> and <code>thumbHeight</code> per type.</p>
+
+    <h3>Watchmode &mdash; four fields, no published sample <span class="tag t-spec">Spec</span></h3>
+    <p>Four image fields on <code>TitleDetails</code>, all <code>format: uri</code>, all nullable: <code>poster</code>, <code>posterMedium</code>, <code>posterLarge</code>, <code>backdrop</code>. Note the casing &mdash; two lowercase, two camelCase, in an object whose every other key is snake_case.</p>
+<pre><i>// the example value in the OpenAPI document, for all four fields</i>
+"poster":       <em>"http://www.some-poster-site.com/image.jpg"</em>
+"posterMedium": <em>"http://www.some-poster-site.com/image.jpg"</em>
+"posterLarge":  <em>"http://www.some-poster-site.com/image.jpg"</em>
+"backdrop":     <em>"http://www.some-poster-site.com/image.jpg"</em></pre>
+    <p>That placeholder is the vendor's own published example for every image field, including <code>AutocompleteResult.image_url</code>. There is no real sample to build from and no host to name, because there is no single host: each field's description says the URL <em>"May point to a third-party host. Watchmode does not grant any license to the underlying image."</em> The API description adds that it <em>"does not guarantee ownership, copyright status, availability, or permitted use"</em>. The list endpoint carries no images at all &mdash; <code>TitleListItem</code> is ids and text only.</p>
+
+    <h3>Streaming Availability &mdash; twenty finished URLs, every one signed and expiring <span class="tag t-live">Live</span></h3>
+    <p>The richest image model in the survey: poster and backdrop, each in both orientations, each at five widths. The vendor publishes a keyless example response, so all twenty were requested.</p>
+<pre><i># public example, no key</i>
+$ curl -s <b>https://www.movieofthenight.com/v4/examples/shows/the-dark-knight</b>
+{ "id": "68", "imdbId": "tt0468569", "tmdbId": <em>"movie/155"</em>, "rating": <em>89</em>,
+  "imageSet": { "verticalPoster": {...}, "horizontalPoster": {...},
+                "verticalBackdrop": {...}, "horizontalBackdrop": {...} } }
+
+<i># the path, before signing</i>
+https://cdn.movieofthenight.com/show/68/<em>poster</em>/<em>vertical</em>/<em>en</em>/<em>240</em>.jpg
+https://cdn.movieofthenight.com/show/68/<em>backdrop</em>/<em>horizontal</em>/<em>360</em>.jpg   <i># no language segment</i></pre>
+    <div class="scroller"><table>
+      <thead><tr><th>Field</th><th>Widths requested</th><th class="num">Bytes returned</th></tr></thead>
+      <tbody>
+        <tr><td class="src">verticalPoster</td><td><code>w240 w360 w480 w600 w720</code></td><td class="num">16,430 &middot; 32,575 &middot; 52,029 &middot; 78,383 &middot; 108,593</td></tr>
+        <tr><td class="src">horizontalPoster</td><td><code>w360 w480 w720 w1080 w1440</code></td><td class="num">11,542 &middot; 17,459 &middot; 34,667 &middot; 71,863 &middot; 128,867</td></tr>
+        <tr><td class="src">verticalBackdrop</td><td><code>w240 w360 w480 w600 w720</code></td><td class="num">13,978 &middot; 28,428 &middot; 46,691 &middot; 71,586 &middot; 98,106</td></tr>
+        <tr><td class="src">horizontalBackdrop</td><td><code>w360 w480 w720 w1080 w1440</code></td><td class="num">14,387 &middot; 23,071 &middot; 47,022 &middot; 99,238 &middot; 171,451</td></tr>
+      </tbody>
+    </table></div>
+    <p>Twenty out of twenty returned <code>200</code>. But the URL is not an address you can keep:</p>
+<pre>https://cdn.movieofthenight.com/show/68/poster/vertical/en/240.jpg
+  ?<em>Expires</em>=1816054628          <i># 2027-07-20T03:37:08Z</i>
+  &amp;<em>Signature</em>=QFnfKAkupj3KS02QVXRgHFeP4uBpXr7w9~WnCqSVaAkbGTU78BWZ3n…
+  &amp;<em>Key-Pair-Id</em>=KK4HN3OO4AT5R
+
+<i># 466 characters. strip the query and it stops working:</i>
+https://cdn.movieofthenight.com/show/68/poster/vertical/en/240.jpg   <b>403</b></pre>
+    <div class="callout">
+      <div class="hd">A signed URL is a lease, not an address</div>
+      <p>Every one of these is a CloudFront signed URL carrying an expiry, a signature and a key id, and removing the query returns <code>403</code>. Two consequences for a client that persists API responses: a stored URL goes dead on its own schedule regardless of your cache policy, and the URL is roughly 466 characters, so twenty of them is about 9 KB of signature per title in the database. Cache the bytes, not the link.</p>
+    </div>
+    <p>Two more shape details visible in that response. <code>tmdbId</code> is <code>"movie/155"</code> &mdash; a type-prefixed string, not the bare integer every other source uses &mdash; and <code>id</code> is the string <code>"68"</code>. And <code>rating</code> is <code>89</code> for a film IMDb rates 9.0, so the scale is 0&ndash;100 even though the field's own documentation states no scale at all.</p>
+
+    <h3>Simkl &mdash; five pieces, and the sizes are not ordered <span class="tag t-live">Live</span></h3>
+<pre>{ "title": "King Arthur: Legend of the Sword",
+  "poster": <b>"74/74415673dcdc9cdd"</b> }
+
+<i># {domain}{prefix}{image_url}{suffix}{extension}</i>
+https://simkl.in <em>/posters/</em> <b>74/74415673dcdc9cdd</b> <em>_ca</em> <em>.webp</em></pre>
+    <div class="scroller"><table>
+      <thead><tr><th>Prefix &middot; suffix</th><th>Documented size</th><th>Built URL</th><th class="num">Result</th></tr></thead>
+      <tbody>
+        <tr><td class="src">posters &middot; <code>_w</code></td><td>600&times;338, cropped landscape</td><td class="u">https://simkl.in/posters/74/74415673dcdc9cdd_w.webp</td><td class="num">200 &middot; 33,436 B</td></tr>
+        <tr><td class="src">posters &middot; <code>_m</code></td><td>340&times;*</td><td class="u">https://simkl.in/posters/74/74415673dcdc9cdd_m.webp</td><td class="num">200 &middot; 39,994 B</td></tr>
+        <tr><td class="src">posters &middot; <code>_ca</code></td><td>190&times;279(285)</td><td class="u">https://simkl.in/posters/74/74415673dcdc9cdd_ca.webp</td><td class="num">200 &middot; 17,182 B</td></tr>
+        <tr><td class="src">posters &middot; <code>_c</code></td><td>170&times;250(256)</td><td class="u">https://simkl.in/posters/74/74415673dcdc9cdd_c.webp</td><td class="num">200 &middot; 14,712 B</td></tr>
+        <tr><td class="src">posters &middot; <code>_cm</code></td><td>84&times;124</td><td class="u">https://simkl.in/posters/74/74415673dcdc9cdd_cm.webp</td><td class="num">200 &middot; 4,748 B</td></tr>
+        <tr><td class="src">posters &middot; <code>_s</code></td><td>40&times;57</td><td class="u">https://simkl.in/posters/74/74415673dcdc9cdd_s.webp</td><td class="num">200 &middot; 1,390 B</td></tr>
+        <tr><td class="src">fanart &middot; <code>_d</code></td><td>original, darker</td><td class="u">https://simkl.in/fanart/71/710408ec0a1bd207_d.jpg</td><td class="num">200 &middot; 103,192 B</td></tr>
+        <tr><td class="src">fanart &middot; <code>_medium</code></td><td>1920&times;1080</td><td class="u">https://simkl.in/fanart/71/710408ec0a1bd207_medium.jpg</td><td class="num">200 &middot; 469,144 B</td></tr>
+        <tr><td class="src">fanart &middot; <code>_mobile</code></td><td>960&times;540</td><td class="u">https://simkl.in/fanart/71/710408ec0a1bd207_mobile.jpg</td><td class="num">200 &middot; 135,668 B</td></tr>
+        <tr><td class="src">fanart &middot; <code>_w</code></td><td>600&times;338</td><td class="u">https://simkl.in/fanart/71/710408ec0a1bd207_w.jpg</td><td class="num">200 &middot; 64,365 B</td></tr>
+        <tr><td class="src">fanart &middot; <code>_s48</code></td><td>48&times;27</td><td class="u">https://simkl.in/fanart/71/710408ec0a1bd207_s48.jpg</td><td class="num">200 &middot; 4,415 B</td></tr>
+        <tr><td class="src">via <code>wsrv.nl</code></td><td>190&times;279, re-encoded</td><td class="u">https://wsrv.nl/?url=https://simkl.in/posters/74/74415673dcdc9cdd_ca.webp</td><td class="num">200 &middot; 17,770 B</td></tr>
+      </tbody>
+    </table></div>
+    <p>The suffix is a token, not a width, and the tokens are not ordered by size: <code>_m</code> comes back <em>larger</em> than <code>_w</code>, because <code>_w</code> is a cropped landscape crop of a poster. Two of the documented heights are written <code>279(285)</code> and <code>250(256)</code>, so even the fixed-looking sizes vary. Both <code>.jpg</code> and <code>.webp</code> resolve on every path. Simkl asks that traffic go through a third-party proxy &mdash; <em>"Use <code>https://wsrv.nl/?url=https://simkl.in</code> domain for images&hellip; to minimise traffic to our servers"</em> &mdash; and the proxied bytes come back slightly larger than the origin's, because it re-encodes.</p>
+
+    <h3>MDBList <span class="tag t-spec">Spec</span></h3>
+    <p><code>poster</code> is an absolute URL, returned only when you ask for it with <code>append_to_response=poster</code>. The endpoint requires a key this project does not hold, so no URL was built. On the lists endpoint the same parameter means something else: <em>"up to 5 cached list posters"</em>.</p>
+
+    <h3>JustWatch &mdash; a template, and a size set you discover by probing <span class="tag t-live">Live</span></h3>
+<pre><i>// urlV2(fullPath:"/us/movie/inception") -> node.content</i>
+{ "posterUrl":   <b>"/poster/302449148/<em>{profile}</em>/inception.<em>{format}</em>"</b>,
+  "backdrops": [{ "backdropUrl": <b>"/backdrop/275196554/<em>{profile}</em>/inception.<em>{format}</em>"</b> }] }
+
+<i># prefix, then substitute</i>
+<em>https://images.justwatch.com</em> + posterUrl, {profile} &rarr; s332, {format} &rarr; webp</pre>
+    <div class="scroller"><table>
+      <thead><tr><th>Profile</th><th>Built URL</th><th class="num">.jpg</th><th class="num">.webp</th></tr></thead>
+      <tbody>
+        <tr><td><code>s66</code></td><td class="u">https://images.justwatch.com/poster/302449148/s66/inception.{jpg|webp}</td><td class="num" style="color:var(--warn)">400</td><td class="num" style="color:var(--warn)">400</td></tr>
+        <tr><td><code>s166</code></td><td class="u">https://images.justwatch.com/poster/302449148/s166/inception.{jpg|webp}</td><td class="num">18,677 B</td><td class="num">11,306 B</td></tr>
+        <tr><td><code>s276</code></td><td class="u">https://images.justwatch.com/poster/302449148/s276/inception.{jpg|webp}</td><td class="num">47,584 B</td><td class="num">28,144 B</td></tr>
+        <tr><td><code>s332</code></td><td class="u">https://images.justwatch.com/poster/302449148/s332/inception.{jpg|webp}</td><td class="num">66,514 B</td><td class="num">39,740 B</td></tr>
+        <tr><td><code>s592</code></td><td class="u">https://images.justwatch.com/poster/302449148/s592/inception.{jpg|webp}</td><td class="num">186,358 B</td><td class="num">108,104 B</td></tr>
+        <tr><td><code>s718</code></td><td class="u">https://images.justwatch.com/poster/302449148/s718/inception.{jpg|webp}</td><td class="num">258,739 B</td><td class="num">147,280 B</td></tr>
+        <tr><td><code>s999</code></td><td class="u">https://images.justwatch.com/poster/302449148/s999/inception.{jpg|webp}</td><td class="num" style="color:var(--warn)">400</td><td class="num" style="color:var(--warn)">400</td></tr>
+      </tbody>
+    </table></div>
+    <p>Closed at both ends, and published nowhere &mdash; you learn the set by probing it. WebP runs about 60% of the JPEG bytes at every size. The poster and the backdrop carry different asset ids (<code>302449148</code> and <code>275196554</code>) under the same template. Schema introspection is disabled, so field names leak only through validation errors: <code>Cannot query field "tomatoUserMeter" on type "Scoring". Did you mean "tomatoMeter" or "tomatoScore"?</code></p>
+
+    <h3>Cinemeta &mdash; addressed straight from an IMDb id <span class="tag t-live">Live</span></h3>
+<pre><i>// GET https://v3-cinemeta.strem.io/meta/movie/tt1375666.json -> meta</i>
+{ "poster":     <b>"https://images.metahub.space/poster/small/tt1375666/img"</b>,
+  "background": <b>"https://images.metahub.space/background/medium/tt1375666/img"</b>,
+  "logo":       <b>"https://images.metahub.space/logo/medium/tt1375666/img"</b> }
+
+<i># the whole scheme</i>
+https://images.metahub.space/<em>{kind}</em>/<em>{size}</em>/<b>{imdb_id}</b>/img</pre>
+    <div class="scroller"><table>
+      <thead><tr><th>Kind</th><th>Size</th><th>Built URL</th><th class="num">Result</th></tr></thead>
+      <tbody>
+        <tr><td class="src">poster</td><td><code>small</code></td><td class="u">https://images.metahub.space/poster/small/tt1375666/img</td><td class="num">200 &middot; 41,941 B jpeg</td></tr>
+        <tr><td class="src">poster</td><td><code>medium</code></td><td class="u">https://images.metahub.space/poster/medium/tt1375666/img</td><td class="num">200 &middot; 107,732 B jpeg</td></tr>
+        <tr><td class="src">poster</td><td><code>large</code></td><td class="u">https://images.metahub.space/poster/large/tt1375666/img</td><td class="num" style="color:var(--warn)">200 &middot; 175,224 B <b>webp</b></td></tr>
+        <tr><td class="src">poster</td><td><code>original</code></td><td class="u">https://images.metahub.space/poster/original/tt1375666/img</td><td class="num">200 &middot; 885,559 B jpeg</td></tr>
+        <tr><td class="src">background</td><td><code>small</code></td><td class="u">https://images.metahub.space/background/small/tt1375666/img</td><td class="num">200 &middot; 22,525 B jpeg</td></tr>
+        <tr><td class="src">background</td><td><code>medium</code></td><td class="u">https://images.metahub.space/background/medium/tt1375666/img</td><td class="num">200 &middot; 695,668 B jpeg</td></tr>
+        <tr><td class="src">background</td><td><code>large</code></td><td class="u">https://images.metahub.space/background/large/tt1375666/img</td><td class="num">200 &middot; 695,668 B jpeg</td></tr>
+        <tr><td class="src">background</td><td><code>original</code></td><td class="u">https://images.metahub.space/background/original/tt1375666/img</td><td class="num">200 &middot; 695,668 B jpeg</td></tr>
+        <tr><td class="src">logo</td><td><code>small</code></td><td class="u">https://images.metahub.space/logo/small/tt1375666/img</td><td class="num">200 &middot; 22,433 B png</td></tr>
+        <tr><td class="src">logo</td><td><code>medium</code></td><td class="u">https://images.metahub.space/logo/medium/tt1375666/img</td><td class="num">200 &middot; 22,433 B png</td></tr>
+        <tr><td class="src">logo</td><td><code>large</code></td><td class="u">https://images.metahub.space/logo/large/tt1375666/img</td><td class="num">200 &middot; 22,433 B png</td></tr>
+        <tr><td class="src">logo</td><td><code>original</code></td><td class="u">https://images.metahub.space/logo/original/tt1375666/img</td><td class="num">200 &middot; 22,433 B png</td></tr>
+      </tbody>
+    </table></div>
+    <p>Twelve URLs, twelve <code>200</code>s, and only four distinct images. <code>background</code> is byte-identical from <code>medium</code> up and <code>logo</code> is one asset under every token, so nine of the twelve size choices change nothing. The <code>large</code> poster comes back WebP while its neighbours are JPEG, so content type is not predictable from the URL. The payoff is that no lookup is needed at all: an IMDb id is a complete address.</p>
+
+    <h3>Wikidata &mdash; a redirect, a thumbnailer, and the wrong picture <span class="tag t-live">Live</span></h3>
+<pre><i># SELECT ?img WHERE { wd:Q25188 wdt:P18 ?img }</i>
+<b>http://commons.wikimedia.org/wiki/Special:FilePath/InceptionCast2July10.jpg</b></pre>
+    <div class="scroller"><table>
+      <thead><tr><th>Variant</th><th>Built URL</th><th class="num">Result</th></tr></thead>
+      <tbody>
+        <tr><td class="src">as returned</td><td class="u">http://commons.wikimedia.org/wiki/Special:FilePath/InceptionCast2July10.jpg</td><td class="num">200 &middot; 239,593 B</td></tr>
+        <tr><td class="src">width 400</td><td class="u">https://commons.wikimedia.org/wiki/Special:FilePath/InceptionCast2July10.jpg?width=400</td><td class="num">200 &middot; 36,022 B</td></tr>
+        <tr><td class="src">width 1200</td><td class="u">https://commons.wikimedia.org/wiki/Special:FilePath/InceptionCast2July10.jpg?width=1200</td><td class="num">200 &middot; 239,593 B</td></tr>
+      </tbody>
+    </table></div>
+    <p>The value is <code>http://</code>, and it is a redirect rather than the file. <code>?width=</code> gives arbitrary resizing, the one open size parameter in the survey, but it caps at the original and never upscales &mdash; <code>1200</code> returned the original bytes exactly. The real problem is upstream of all that: <code>P18</code> means "an image of the subject", and for Inception the subject's image is a photograph of the cast at a press event. Film posters are copyrighted, so they are usually absent.</p>
+
+    <h3>Fanart.tv &mdash; absolute, insecure by default, one thumbnail <span class="tag t-live">Live</span></h3>
+<pre>"movieposter": [
+  { "id": <em>"57317"</em>,
+    "url": <b>"http://assets.fanart.tv/fanart/movies/120/movieposter/…-528aa45a8633a.jpg"</b>,
+    "lang": "en", "likes": <em>"4"</em> } ]
+
+<i># thumbnails are a path swap, not a parameter</i>
+assets.fanart.tv<em>/fanart/</em>movies/…  &rarr;  assets.fanart.tv<em>/preview/</em>movies/…</pre>
+    <div class="scroller"><table>
+      <thead><tr><th>Variant</th><th>Built URL</th><th class="num">Result</th></tr></thead>
+      <tbody>
+        <tr><td class="src">poster, as returned</td><td class="u">http://assets.fanart.tv/fanart/movies/120/movieposter/the-lord-of-the-rings-the-fellowship-of-the-ring-528aa45a8633a.jpg</td><td class="num">200 &middot; 1,007,246 B</td></tr>
+        <tr><td class="src">poster, preview</td><td class="u">http://assets.fanart.tv/<em>preview</em>/movies/120/movieposter/the-lord-of-the-rings-the-fellowship-of-the-ring-528aa45a8633a.jpg</td><td class="num">200 &middot; 15,694 B</td></tr>
+        <tr><td class="src">hdmovielogo, over TLS</td><td class="u"><em>https</em>://assets.fanart.tv/fanart/movies/120/hdmovielogo/the-lord-of-the-rings-the-fellowship-of-the-ring-4f78564165f48.png</td><td class="num">200 &middot; 57,802 B</td></tr>
+      </tbody>
+    </table></div>
+    <p>Two sizes, full and preview, and the preview is 64&times; smaller &mdash; 15 KB against 1 MB, which makes the full URL unusable as a list thumbnail. The host serves TLS correctly even though every URL in the response is <code>http://</code>, so rewriting the scheme is safe and necessary. <code>id</code> and <code>likes</code> are strings, so <code>"7"</code> sorts after <code>"51"</code> unless parsed.</p>
+
+    <h3>Where no URL exists at all <span class="tag t-live">Live</span></h3>
+    <p>IMDb's bulk export publishes seven files and none carries an image column. Header rows read from the live archives:</p>
+<pre>title.basics   tconst  titleType  primaryTitle  originalTitle  isAdult  startYear  endYear  runtimeMinutes  genres
+title.ratings  tconst  <em>averageRating</em>  <em>numVotes</em>
+title.akas     titleId  ordering  title  region  language  types  attributes  isOriginalTitle
+title.crew     tconst  directors  writers</pre>
+    <p>The other four &mdash; <code>name.basics</code>, <code>title.episode</code>, <code>title.principals</code>, <code>title.crew</code> &mdash; are people, episode and credit tables. Artwork for an IMDb-derived catalogue has to come from somewhere else, which is exactly what Cinemeta's <code>tt</code>-addressed CDN provides for free.</p>
+  </section>
+
+  <section id="scales">
+    <h2>Section 4</h2>
+    <div class="h2sub">One film, seven numbers</div>
+    <p class="lede">Every value below describes <em>Inception</em>, and every one was read from a live response on 2026-09-03. They are plotted on a single 0&ndash;100 axis so they can be compared at all; the column on the right is the notation each source actually returns. Nothing here is wrong. They are simply seven different measurements wearing one word.</p>
+    <div class="axischart">
+      <div class="arow">
+        <div class="lbl">JustWatch <code>jwRating</code></div>
+        <div class="abar s01"><span style="width:97.1%"></span></div>
+        <div class="native">0.97085</div>
+      </div>
+      <div class="arow">
+        <div class="lbl">IMDb weighted average</div>
+        <div class="abar"><span style="width:88.0%"></span></div>
+        <div class="native">8.8/10</div>
+      </div>
+      <div class="arow">
+        <div class="lbl">Tomatometer, via Wikidata</div>
+        <div class="abar s100"><span style="width:87.0%"></span></div>
+        <div class="native">87%</div>
+      </div>
+      <div class="arow">
+        <div class="lbl">Tomatometer, via JustWatch</div>
+        <div class="abar s100"><span style="width:86.0%"></span></div>
+        <div class="native">86</div>
+      </div>
+      <div class="arow">
+        <div class="lbl">TMDB <code>vote_average</code></div>
+        <div class="abar"><span style="width:83.7%"></span></div>
+        <div class="native">8.373</div>
+      </div>
+      <div class="arow">
+        <div class="lbl">RT average of rated reviews</div>
+        <div class="abar"><span style="width:81.0%"></span></div>
+        <div class="native">8.1/10</div>
+      </div>
+      <div class="arow">
+        <div class="lbl">Metascore, via Wikidata</div>
+        <div class="abar s100"><span style="width:74.0%"></span></div>
+        <div class="native">74/100</div>
+      </div>
+      <div class="aaxis">
+        <div></div>
+        <div class="ticks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+        <div></div>
+      </div>
+      <div class="akey">
+        <div><i style="background:var(--accent)"></i>native 0&ndash;10</div>
+        <div><i style="background:var(--spec)"></i>native 0&ndash;100</div>
+        <div><i style="background:var(--warn)"></i>native 0&ndash;1</div>
+      </div>
+    </div>
+    <div class="callout">
+      <div class="hd">Two sources, one metric, different numbers</div>
+      <p>The Tomatometer appears twice. Wikidata's <code>P444</code> statement says <code>"87%"</code>; JustWatch's <code>scoring.tomatoMeter</code> says <code>86</code>. Same metric, same film, read minutes apart. A pipeline that merges rating sources has to decide which one wins, and neither carries a timestamp to decide with.</p>
+    </div>
+    <p>The spread from 74 to 97 is not disagreement about the film. <code>jwRating</code> is a normalised internal score, <code>Metascore</code> is a critic aggregate, <code>imdbScore</code> is a weighted user average, and the Tomatometer is the <em>percentage of reviews that were positive</em> rather than an average of anything. Rendering any two of them in the same UI element without their scale attached is a bug that never throws.</p>
+  </section>
+
+  <section id="ratings">
+    <h2>Section 5</h2>
+    <div class="h2sub">Rating shapes, source by source</div>
+
+    <div class="shapes">
+      <div class="shape">
+        <div class="hd"><h4>TMDB: <code>0.0</code> means unrated</h4><span class="tag t-live">Live</span></div>
+        <pre>trending page 1, all 20 detail records
+vote_average range   <em>0.0 &rarr; 8.9</em>
+vote_count == 0      <em>1 title</em>
+  <b>1423191</b> "Resident Evil"  0.0 / 0  tt35538033</pre>
+        <p class="why">Sorted by rating, an unrated film lands at the bottom as if it were the worst on the page. Branch on <code>vote_count</code>, never on the value.</p>
+      </div>
+      <div class="shape">
+        <div class="hd"><h4>OMDb: every field is a string</h4><span class="tag t-spec">Spec</span></div>
+        <pre>Poster:      string      imdbRating: string
+imdbVotes:   string      Metascore:  string
+imdbID:      string      Response:   string</pre>
+        <p class="why">Not just the ratings &mdash; every field in the response definition. <code>imdbVotes</code> arrives with thousands separators; an absent value is the literal <code>"N/A"</code>, so <code>parseFloat</code> yields <code>NaN</code> rather than failing loudly.</p>
+      </div>
+      <div class="shape">
+        <div class="hd"><h4>Watchmode: two scales, adjacent</h4><span class="tag t-spec">Spec</span></div>
+        <pre>"user_rating":  <em>9.2</em>    <i>// number,  0-10</i>
+"critic_score": <em>85</em>     <i>// integer, 0-100</i>
+"relevance_percentile":  98.92
+"popularity_percentile": 99.99</pre>
+        <p class="why">Two ratings on two scales, beside two percentiles that are ranks rather than scores and share the 0&ndash;100 range with one of them.</p>
+      </div>
+      <div class="shape">
+        <div class="hd"><h4>Streaming Avail.: a blend you cannot decompose</h4><span class="tag t-spec">Spec</span></div>
+        <pre><i>/**
+ * Rating of the show. This is calculated by taking
+ * the average of ratings found online from
+ * multiple sources.
+ */</i>
+rating: number;</pre>
+        <p class="why">No scale, no vote count, no source list, no weighting. The vendor's published example returns <code>89</code> for a film IMDb rates 9.0, so the axis is 0&ndash;100. Required, so there is no null to mean "unrated" either.</p>
+      </div>
+      <div class="shape">
+        <div class="hd"><h4>Cinemeta: a string, and no denominator</h4><span class="tag t-live">Live</span></div>
+        <pre>"imdbRating": <b>"8.8"</b>
+"popularities": { "moviedb": 55.6277,
+                  "stremio": 1.8542,
+                  "trakt": 85, "stremio_lib": 0 }</pre>
+        <p class="why">No vote count anywhere in the response. The same value appears a second time as the <code>name</code> of an IMDb link. The three popularity numbers are on three unrelated scales.</p>
+      </div>
+      <div class="shape">
+        <div class="hd"><h4>TheTVDB: two <code>score</code> fields, no range</h4><span class="tag t-spec">Spec</span></div>
+        <pre>MovieBaseRecord.score    format: double   <i>// no description</i>
+ArtworkBaseRecord.score  type: number     <i>// no description</i></pre>
+        <p class="why">Same name, different subjects &mdash; one rates the film, one rates a piece of art &mdash; and no documented scale or vote count for either.</p>
+      </div>
+    </div>
+
+    <h3>Trakt publishes the histogram <span class="tag t-spec">Spec</span></h3>
+<pre>GET /movies/{id}/ratings
+{ "rating": 7.33778, "votes": 7866,
+  "distribution": { "1": 298,  "2": 46,   "3": 87,   "4": 178,  "5": 446,
+                    "6": 1167, "7": <em>1855</em>, "8": <em>1543</em>, "9": 662, "10": <em>1583</em> } }</pre>
+    <p>The only source in the survey that hands over the shape rather than the summary. That <code>"10": 1583</code> spike sitting next to <code>"9": 662</code> makes the distribution bimodal &mdash; exactly the information an average erases.</p>
+
+    <h3>Simkl nests by provider, and the keys change case <span class="tag t-spec">Spec</span></h3>
+<pre><i>// one documented response</i>
+{ "simkl": { "rating": 7.1, "votes": 151, "droprate": "1%" },
+  <b>"imdb"</b>:  { "rating": 6.6, "votes": 15119 },
+  "rank": <em>10628</em> }
+
+<i>// another documented response, same API</i>
+{ "simkl": { "rating": 7.9, "votes": 3378 },
+  <b>"IMDB"</b>:  { "rating": 8.1, "votes": 895026 },
+  "rank": <em>{ "type": "show", "value": "1071" }</em>,
+  "droprate": "3.2%" }</pre>
+    <p>Three shifts in one pair of examples from the vendor's own documentation. The provider key is <code>imdb</code> in one and <code>IMDB</code> in the other, so a parser keyed on either silently drops half the ratings. <code>rank</code> is a bare integer in one and a <code>{type, value}</code> object in the other. And <code>droprate</code> &mdash; a percentage <em>string</em> &mdash; moves between the top level and inside <code>simkl</code>.</p>
+
+    <h3>MDBList declares the field and nothing about it <span class="tag t-spec">Spec</span></h3>
+<pre>ratings:
+  type: <em>array</em>
+  items:
+    type: <em>object</em></pre>
+    <p>An untyped array of untyped objects, so the shape has to be learned from live responses that need a key. The vocabulary is recoverable from the <code>sort</code> enum, which <em>is</em> fully typed: <code>imdbrating</code>, <code>imdbvotes</code>, <code>imdbpopular</code>, <code>letterrating</code>, <code>metacritic</code>, <code>rtaudience</code>, <code>rtomatoes</code>, <code>tmdbpopular</code>, <code>score</code>, <code>score_average</code>. Six rating providers, two popularity signals, two aggregates.</p>
+
+    <h3>JustWatch: eight fields, four providers, three scales <span class="tag t-live">Live</span></h3>
+<pre>{ "imdbScore": <em>8.8</em>,        "imdbVotes": <b>2863692.0</b>,
+  "tmdbScore": <em>8.373</em>,      "tmdbPopularity": 52.4763,
+  "tomatoMeter": <em>86</em>,       "tomatoScore": null,
+  "certifiedFresh": true,   "jwRating": <em>0.97085428887</em> }</pre>
+    <p>A <strong>float for a vote count</strong>. And the pairs are not co-located: <code>imdbScore</code> has <code>imdbVotes</code>, <code>tmdbScore</code> has no count at all, so one can be weighted and the other cannot. Query a smaller title and <code>tomatoMeter</code>, <code>certifiedFresh</code> and <code>jwRating</code> all come back null with the IMDb and TMDB fields populated: partial nulls across providers are the normal case, not the edge.</p>
+
+    <h3>Wikidata puts the denominator inside the value <span class="tag t-live">Live</span></h3>
+<pre>?scoreVal   ?by                 ?method
+<b>"74/100"</b>    Q150248             Metascore
+<b>"8.1/10"</b>    Rotten Tomatoes     average of rated reviews
+<b>"87%"</b>       Rotten Tomatoes     Tomatometer score
+<b>"8.8/10"</b>    IMDb                weighted average</pre>
+    <p>Four statements on one film in three notations: a fraction over 100, a fraction over 10, and a percentage. There is no numeric field and no vote count. The qualifiers do the disambiguating &mdash; <code>P447</code> names the source, <code>P459</code> names the metric &mdash; which is the only way to tell the two Rotten Tomatoes statements apart. And the labels are not uniformly resolvable: one <code>P447</code> value came back as the bare Q-id <code>Q150248</code> while the others resolved to names.</p>
+
+    <div class="callout note">
+      <div class="hd">Popularity is not a rating</div>
+      <p>TMDB's <code>popularity</code> ranged <strong>8.27 to 901.11</strong> across the twenty titles on trending page 1 &mdash; unbounded, undocumented, and a trend signal rather than a quality one. Cinemeta's <code>popularities</code>, MDBList's <code>imdbpopular</code> and <code>tmdbpopular</code>, and Watchmode's two percentiles are all the same kind of number. None of them belongs on the same axis as a score.</p>
+    </div>
+  </section>
+
+  <section id="imdb">
+    <h2>Section 6</h2>
+    <div class="h2sub">The IMDb id is the only universal key</div>
+    <p class="lede">Thirteen sources, thirteen detail records, thirteen IMDb ids. Nothing else in the survey is present everywhere &mdash; not a title, not a release date, not a poster.</p>
+    <div class="scroller">
+      <table>
+        <thead><tr><th>Source</th><th>Field</th><th>Type</th><th>On detail</th><th>On list responses</th></tr></thead>
+        <tbody>
+          <tr><td class="src">TMDB</td><td><code>imdb_id</code></td><td>string, nullable per docs</td><td><span class="dot"></span></td><td><span class="dot no"></span> absent entirely</td></tr>
+          <tr><td class="src">OMDb</td><td><code>imdbID</code></td><td>string</td><td><span class="dot"></span></td><td><span class="dot"></span> in <code>Search[]</code></td></tr>
+          <tr><td class="src">IMDb datasets</td><td><code>tconst</code></td><td>string, the primary key</td><td><span class="dot"></span></td><td><span class="dot na"></span> n/a</td></tr>
+          <tr><td class="src">Trakt</td><td><code>ids.imdb</code></td><td>string</td><td><span class="dot"></span></td><td><span class="dot"></span> <code>ids</code> on every media object</td></tr>
+          <tr><td class="src">TheTVDB</td><td><code>remoteIds[]</code></td><td><code>{id, type, sourceName}</code></td><td><span class="dot"></span></td><td><span class="dot no"></span></td></tr>
+          <tr><td class="src">Watchmode</td><td><code>imdb_id</code></td><td>string, nullable</td><td><span class="dot"></span></td><td><span class="dot"></span> on <code>TitleListItem</code></td></tr>
+          <tr><td class="src">Streaming Avail.</td><td><code>imdbId</code></td><td>string, <strong>non-optional</strong></td><td><span class="dot"></span></td><td><span class="dot"></span></td></tr>
+          <tr><td class="src">Simkl</td><td><code>ids.imdb</code></td><td>string</td><td><span class="dot"></span></td><td>varies by endpoint</td></tr>
+          <tr><td class="src">MDBList</td><td><code>imdb_id</code>, <code>ids.imdb</code></td><td>string</td><td><span class="dot"></span></td><td><span class="dot"></span></td></tr>
+          <tr><td class="src">JustWatch</td><td><code>externalIds.imdbId</code></td><td>string, nullable</td><td><span class="dot"></span></td><td><span class="dot"></span></td></tr>
+          <tr><td class="src">Cinemeta</td><td><code>imdb_id</code>, and <code>id</code></td><td>string, the addressing scheme</td><td><span class="dot"></span></td><td><span class="dot"></span></td></tr>
+          <tr><td class="src">Wikidata</td><td><code>P345</code></td><td>string</td><td><span class="dot"></span></td><td><span class="dot na"></span> n/a</td></tr>
+          <tr><td class="src">Fanart.tv</td><td><code>imdb_id</code></td><td>string, top level</td><td><span class="dot"></span></td><td><span class="dot na"></span> n/a</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="split">
+      <div class="col mid">
+        <h5>Measured on TMDB</h5>
+        <p class="n">20 / 20</p>
+        <ul>
+          <li>imdb_id present&nbsp;&nbsp;20</li>
+          <li>imdb_id missing&nbsp;&nbsp;0</li>
+          <li>poster_path&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;20</li>
+          <li>backdrop_path&nbsp;&nbsp;&nbsp;&nbsp;20</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h5>The gap</h5>
+        <p class="n">0 / 16</p>
+        <ul>
+          <li>no imdb_id on any of</li>
+          <li>the 16 keys a TMDB</li>
+          <li>trending item carries.</li>
+          <li>One detail call each.</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h5>Free bridges</h5>
+        <p class="n">2</p>
+        <ul>
+          <li>Cinemeta: per title,</li>
+          <li>no key, returns</li>
+          <li>moviedb_id too.</li>
+          <li>Watchmode: bulk CSV.</li>
+        </ul>
+      </div>
+    </div>
+
+    <p>TMDB is the one source where the list response drops the id. Its trending items carry sixteen keys and <code>imdb_id</code> is not among them, so the id costs either a detail call or a call to <code>external_ids</code> &mdash; which returns Wikidata as a bonus, and two different flavours of absent in one object:</p>
+<pre>{ "id": 27205, "imdb_id": <b>"tt1375666"</b>, "wikidata_id": <b>"Q25188"</b>,
+  "facebook_id": <em>""</em>, "instagram_id": <em>null</em>, "twitter_id": <em>null</em> }</pre>
+    <p>Watchmode goes the other way: <code>TitleListItem</code> has no images at all but does carry <code>imdb_id</code>, <code>tmdb_id</code> and <code>tmdb_type</code>, so its list responses join without a detail call. It also publishes the mapping as a file, fetchable with no key:</p>
+<pre>$ curl -s -r 0-500 https://api.watchmode.com/datasets/title_id_map.csv
+Watchmode ID,IMDB ID,TMDB ID,TMDB Type,Title,Year
+"11","tt1699720","55245","movie","!Women Art Revolution","2010"
+"111","tt1442481","282634","movie","#73, Shaanthi Nivaasa","2007"</pre>
+    <p>Same pattern as the genre cross-walk in the companion report: Watchmode is the only source in the survey that ships its identity mappings as downloadable data rather than as per-title lookups.</p>
+    <p>Cinemeta goes furthest and makes the IMDb id the primary key outright. <code>id</code> and <code>imdb_id</code> hold the same <code>"tt1375666"</code>, the meta endpoint is <code>/meta/movie/tt1375666.json</code>, the artwork is <code>images.metahub.space/&hellip;/tt1375666/img</code>, and <code>behaviorHints.defaultVideoId</code> is the string again. It returns <code>moviedb_id: 27205</code> as well, so it is a free IMDb-to-TMDB bridge that needs no key.</p>
+    <p>TheTVDB is the one source that identifies the service by integer rather than by key name: <code>remoteIds</code> is <code>{id: string, type: integer, sourceName: string}</code>, so which service an id belongs to is a number you have to know the meaning of, with <code>sourceName</code> as the human-readable companion.</p>
+  </section>
+
+  <section id="gotchas">
+    <h2>Section 7</h2>
+    <div class="h2sub">Gotchas, collected</div>
+
+    <h3>Images</h3>
+    <ul class="tight">
+      <li>TMDB rejects an unlisted size with <code>400</code>, and the legal set comes from <code>/configuration</code>, not a constant.</li>
+      <li>TMDB poster ratios span 0.657&ndash;0.75 and logo ratios span 2.386&ndash;9.364. Fixed boxes crop real art.</li>
+      <li>Trakt image URLs have no scheme. Prepend <code>https://</code> or the load fails, and its size tokens (<code>thumb</code>, <code>medium</code>, <code>full</code>; <code>original</code> is a 404) are documented nowhere.</li>
+      <li>Trakt forbids hotlinking and requires server-side caching, which a client-only app cannot satisfy.</li>
+      <li>Watchmode image URLs point at third-party hosts under no licence, with availability explicitly not guaranteed, and the vendor publishes only a placeholder example.</li>
+      <li>Watchmode mixes three casing conventions in one object: <code>poster</code>, <code>posterLarge</code>, <code>imdb_id</code>.</li>
+      <li>Simkl needs domain, prefix, fragment, size suffix and extension in order; two documented poster heights vary, and <code>_m</code> comes back larger than <code>_w</code>.</li>
+      <li>JustWatch profiles are a closed, unpublished set. <code>s66</code> and <code>s999</code> both <code>400</code>.</li>
+      <li>Cinemeta's <code>large</code> poster returns WebP while its other sizes return JPEG, and nine of its twelve size choices return a byte-identical image.</li>
+      <li>Fanart.tv serves <code>http://</code> though the host does support TLS, and types <code>likes</code> as a string, so <code>"7"</code> sorts after <code>"51"</code>.</li>
+      <li>Wikidata's <code>P18</code> is a photograph of the subject, not a poster, and resolves through a redirect.</li>
+      <li>IMDb's bulk datasets contain no images in any of their seven files, though the public suggestion endpoint returns an Amazon URL whose <code>_V1_</code> segment is an open transform slot.</li>
+    </ul>
+
+    <h3>Ratings</h3>
+    <ul class="tight">
+      <li>TMDB's <code>0.0</code> means unrated. Branch on <code>vote_count</code>, never on the value.</li>
+      <li>OMDb returns every field as a string, missing values as <code>"N/A"</code>, and vote counts with thousands separators.</li>
+      <li>Wikidata bakes the denominator into the value: <code>"74/100"</code>, <code>"8.1/10"</code>, <code>"87%"</code>.</li>
+      <li>Simkl's provider keys appear as both <code>imdb</code> and <code>IMDB</code> in its own examples, and <code>rank</code> is sometimes an integer and sometimes an object.</li>
+      <li>JustWatch mixes 0&ndash;10, 0&ndash;100 and 0&ndash;1 in one flat object and gives a vote count to only one provider.</li>
+      <li>Watchmode's <code>user_rating</code> and <code>critic_score</code> are adjacent keys on different scales, beside two percentiles that are ranks.</li>
+      <li>Streaming Availability's <code>rating</code> blends unnamed sources and states no scale; its own published example returns <code>89</code>, so it is 0&ndash;100.</li>
+      <li>MDBList's OpenAPI declares <code>ratings</code> as an untyped array of untyped objects.</li>
+      <li>TheTVDB's <code>score</code> has no documented range, no vote count, and shares its name with an unrelated artwork score.</li>
+      <li>TMDB's per-image <code>vote_average</code> and <code>vote_count</code> share names with the film's and mean something else.</li>
+      <li><code>popularity</code> is not a rating anywhere it appears.</li>
+    </ul>
+
+    <h3>IMDb ids</h3>
+    <ul class="tight">
+      <li>Present on every detail endpoint in the survey.</li>
+      <li>Absent from TMDB list responses, the one place it costs an extra call.</li>
+      <li>TMDB's <code>external_ids</code> returns <code>""</code> for one missing id and <code>null</code> for another in the same object.</li>
+      <li>TheTVDB identifies the source by integer, not by key name.</li>
+    </ul>
+  </section>
+
+  <section id="amro">
+    <h2>Section 8</h2>
+    <div class="h2sub">What this means for AMRO</div>
+    <p class="lede">The brief's post-MVP ambition to collect from multiple sources hits the same wall in all three fields, and the fix has the same shape as the genre recommendation in the companion report: <strong>resolve at the source boundary into an app-owned type, and never let a source's representation reach the UI.</strong></p>
+
+    <h3>Images</h3>
+    <p>Model an app-owned image reference holding a resolved absolute URL per size bucket the UI actually asks for, and give each source's mapper the job of building it. TMDB concatenates base and size, Trakt prepends a scheme, Simkl assembles five pieces, JustWatch substitutes two placeholders, Cinemeta and Streaming Availability pass through. Only the mapper should ever know which. Keep the returned <code>aspect_ratio</code> where a source gives one, because TMDB's posters are not uniformly 2:3.</p>
+
+    <h3>Ratings</h3>
+    <p>Model a rating as <em>value + scale + vote count + provenance</em>, all four non-optional in the app type. A bare <code>Float</code> cannot distinguish 8.8 from IMDb, 86 from Rotten Tomatoes and 0.97 from JustWatch, and it cannot express "unrated" &mdash; which TMDB encodes as <code>0.0</code> and Streaming Availability cannot express at all. Sort and filter on the normalised value; display the original scale, because a user who knows a film is 87% on Rotten Tomatoes will not recognise 8.7.</p>
+
+    <h3>The join key</h3>
+    <p>The IMDb id is the only identifier on the detail record of every source surveyed, and it is stable, opaque and globally unique. Make it the cross-source identity in the domain model. Two consequences: TMDB list responses do not carry it, so a multi-source pipeline either keys on TMDB ids internally and resolves to <code>tt&hellip;</code> at detail time or accepts one extra call per title; and both Cinemeta and Watchmode hand out IMDb-to-TMDB mappings for free, so the join need not be paid for at TMDB rates.</p>
+
+    <div class="callout">
+      <div class="hd">The licence constraints bind hardest on images</div>
+      <p>TMDB caps caching at six months and forbids commercial use without a written agreement. OMDb is CC BY-NC 4.0. IMDb's datasets are non-commercial. Trakt requires server-side caching and blocks hotlinking. Watchmode disclaims any licence to the images it links. Streaming Availability ships the best-formed URLs in the survey, but they are CloudFront leases that expire on their own schedule, so what you cache is the bytes, never the link. No source in the survey both hands over durable URLs and attaches no rule the app has to work around.</p>
+    </div>
+  </section>
+
+  <section id="repro">
+    <h2>Section 9</h2>
+    <div class="h2sub">Reproduce it</div>
+<pre><i># TMDB, image base URLs and the closed size list</i>
+curl -s -H "Authorization: Bearer $TMDB_TOKEN" <b>https://api.themoviedb.org/3/configuration</b>
+
+<i># TMDB, an unlisted size is a hard 400</i>
+for s in w92 w342 w500 original <em>w999</em>; do
+  curl -s -o /dev/null -w "$s %{http_code} %{size_download}B\n" \
+    <b>https://image.tmdb.org/t/p/$s/xlaY2zyzMfkhk0HSC5VUwzoZPU1.jpg</b>
+done
+
+<i># TMDB, poster and logo aspect ratios are not fixed</i>
+curl -s -H "Authorization: Bearer $TMDB_TOKEN" <b>https://api.themoviedb.org/3/movie/27205/images</b> \
+  | python3 -c "
+import sys,json
+d=json.load(sys.stdin)
+for k in ['posters','backdrops','logos']:
+    r=[x['aspect_ratio'] for x in d[k]]
+    print(k, len(r), min(r), max(r))"
+
+<i># TMDB, imdb_id coverage and the zero-vote trap across trending page 1</i>
+curl -s -H "Authorization: Bearer $TMDB_TOKEN" <b>https://api.themoviedb.org/3/trending/movie/week</b> \
+  | python3 -c 'import sys,json;print(" ".join(str(r["id"]) for r in json.load(sys.stdin)["results"]))' \
+  | tr " " "\n" | while read id; do
+      curl -s -H "Authorization: Bearer $TMDB_TOKEN" "https://api.themoviedb.org/3/movie/$id" \
+        | python3 -c "
+import sys,json
+d=json.load(sys.stdin)
+print(d['id'], repr(d.get('imdb_id')), d['vote_average'], d['vote_count'])"
+    done
+
+<i># TMDB, external_ids mixes empty string and null for absent</i>
+curl -s -H "Authorization: Bearer $TMDB_TOKEN" <b>https://api.themoviedb.org/3/movie/27205/external_ids</b>
+
+<i># JustWatch, the scoring object and the URL template</i>
+curl -s <b>https://apis.justwatch.com/graphql</b> -H 'content-type: application/json' \
+  -d '{"query":"{ urlV2(fullPath:\"/us/movie/inception\"){ node { ... on Movie { content(country:\"US\",language:\"en\"){ posterUrl scoring{ imdbScore imdbVotes tmdbScore tomatoMeter certifiedFresh jwRating } externalIds{ imdbId tmdbId wikidataId } } } } } }"}'
+
+<i># JustWatch, the profile set is closed and has to be probed</i>
+for p in s66 s166 s276 s332 s592 s718 s999; do
+  curl -s -o /dev/null -w "$p %{http_code} %{size_download}B\n" \
+    <b>https://images.justwatch.com/poster/343657134/$p/x.webp</b>
+done
+
+<i># Trakt, the scheme has to be prepended, and the size set is undocumented</i>
+for s in thumb medium full <em>original</em>; do
+  curl -s -o /dev/null -w "$s %{http_code} %{size_download}B\n" \
+    <b>https://walter-r2.trakt.tv/images/movies/000/012/601/posters/$s/e0d9dd35c5.jpg.webp</b>
+done
+
+<i># TheTVDB, the base the spec never names, recovered from the public site</i>
+curl -s <b>https://thetvdb.com/movies/inception</b> | grep -o 'https://artworks.thetvdb.com/[^"]*' | sort -u
+curl -s -o /dev/null -w "%{http_code} %{size_download}B\n" \
+  <b>https://artworks.thetvdb.com/banners/movies/113/posters/601c4ea1292a8<em>_t</em>.jpg</b>
+
+<i># Streaming Availability, the keyless example, and what the signature is doing</i>
+curl -s <b>https://www.movieofthenight.com/v4/examples/shows/the-dark-knight</b> \
+  | python3 -c "
+import sys,json,datetime,urllib.parse
+d=json.load(sys.stdin); u=d['imageSet']['verticalPoster']['w240']
+q=urllib.parse.parse_qs(urllib.parse.urlparse(u).query)
+print('rating', d['rating'], '| tmdbId', d['tmdbId'])
+print('len', len(u), '| params', list(q))
+print('expires', datetime.datetime.fromtimestamp(int(q['Expires'][0]), datetime.UTC))"
+<i># strip the query and it is a 403</i>
+curl -s -o /dev/null -w "%{http_code}\n" <b>https://cdn.movieofthenight.com/show/68/poster/vertical/en/240.jpg</b>
+
+<i># OMDb host family: the _V1_ segment is an open transform slot</i>
+curl -s <b>https://v3.sg.media-imdb.com/suggestion/x/inception.json</b>
+for t in SX300 SX600 UX128 QL75_UX380_; do
+  curl -s -o /dev/null -w "$t %{http_code} %{size_download}B\n" \
+    <b>"https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_$t.jpg"</b>
+done
+
+<i># Simkl, every documented suffix, and the proxy the docs ask you to use</i>
+for s in _w _m _ca _c _cm _s; do
+  curl -s -o /dev/null -w "$s %{http_code} %{size_download}B\n" \
+    <b>https://simkl.in/posters/74/74415673dcdc9cdd$s.webp</b>
+done
+
+<i># Fanart.tv, thumbnails are a path swap, and the host does support TLS</i>
+curl -s -o /dev/null -w "%{http_code} %{size_download}B\n" \
+  <b>https://assets.fanart.tv/<em>preview</em>/movies/120/movieposter/the-lord-of-the-rings-the-fellowship-of-the-ring-528aa45a8633a.jpg</b>
+
+<i># Wikidata, ?width= resizes but never upscales</i>
+for w in 400 1200; do
+  curl -s -o /dev/null -L -w "$w %{http_code} %{size_download}B\n" \
+    <b>"https://commons.wikimedia.org/wiki/Special:FilePath/InceptionCast2July10.jpg?width=$w"</b>
+done
+
+<i># Cinemeta, artwork addressed straight from an IMDb id</i>
+curl -s <b>https://v3-cinemeta.strem.io/meta/movie/tt1375666.json</b>
+for s in small medium large original; do
+  curl -s -o /dev/null -L -w "$s %{http_code} %{size_download}B %{content_type}\n" \
+    <b>https://images.metahub.space/poster/$s/tt1375666/img</b>
+done
+
+<i># Wikidata, the denominator lives inside the value</i>
+curl -s -G <b>https://query.wikidata.org/sparql</b> --data-urlencode format=json \
+  --data-urlencode 'query=
+SELECT ?scoreVal ?byLabel ?revLabel WHERE {
+  wd:Q25188 p:P444 ?st . ?st ps:P444 ?scoreVal .
+  OPTIONAL { ?st pq:P447 ?by } OPTIONAL { ?st pq:P459 ?rev }
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "en" } }'
+
+<i># IMDb, no image column in any of the seven files</i>
+for f in title.basics title.ratings title.akas title.crew; do
+  curl -s -r 0-200000 <b>https://datasets.imdbws.com/$f.tsv.gz</b> | gzip -dc 2>/dev/null | head -1
+done
+
+<i># OMDb, failure is a 200 with a string "False"</i>
+curl -s <b>https://www.omdbapi.com/?i=tt1375666</b>
+
+<i># Watchmode, the ID map needs no key</i>
+curl -s -r 0-500 <b>https://api.watchmode.com/datasets/title_id_map.csv</b></pre>
+
+    <p>Contracts read for the <span class="tag t-spec">Spec</span> findings:</p>
+<pre>curl -s <b>https://api.watchmode.com/openapi.json</b>                    <i># TitleDetails image and rating fields</i>
+curl -s <b>https://api.apis.guru/v2/specs/omdbapi.com/1/swagger.json</b>  <i># every field typed string</i>
+curl -s <b>https://api.mdblist.com/schema/</b>                           <i># ratings declared untyped</i>
+curl -s <b>https://thetvdb.github.io/v4-api/swagger.yml</b>               <i># ArtworkBaseRecord, RemoteID</i>
+curl -s <b>https://jsapi.apiary.io/apis/trakt.apib</b>                    <i># images object, ratings distribution</i>
+curl -s <b>https://jsapi.apiary.io/apis/simkl.apib</b>                    <i># image URL assembly, per-provider ratings</i>
+curl -s <b>https://jsapi.apiary.io/apis/fanarttv.apib</b>                 <i># artwork objects, likes as string</i>
+curl -s <b>.../movieofthenight/ts-streaming-availability/main/src/models/ShowImageSet.ts</b>
+curl -s <b>.../movieofthenight/ts-streaming-availability/main/src/models/Show.ts</b></pre>
+  </section>
+
+  <footer>
+    <span>AMRO / Movie Discovery MVP</span>
+    <span>Images, ratings and ids, 2026-09-03</span>
+    <span>13 sources, 9 live, 3 spec, 1 doc</span>
+    <span>docs/superpowers/reports/apiscompare/images-ratings-ids.md</span>
+  </footer>
+
+  </main>
+</div>
+</div>
+
+</body>
+</html>

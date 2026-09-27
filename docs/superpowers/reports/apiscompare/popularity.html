@@ -1,0 +1,1062 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{color-scheme:light dark}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Sorted By What?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#F4F6F6;--panel:#FFFFFF;--panel-2:#EAEEEF;
+  --ink:#161C1E;--ink-2:#454F52;--ink-3:#6D797C;
+  --rule:#D2DADB;--rule-2:#B9C4C6;
+  --accent:#0B6E75;--accent-soft:#D6E9EA;
+  --live:#1D7A4C;--live-soft:#D5E9DD;
+  --spec:#2F5E9E;--spec-soft:#D8E2F1;
+  --doc:#7A6A3F;--doc-soft:#EAE3D0;
+  --warn:#A33B14;--warn-soft:#F2DED4;
+  --shadow:0 1px 2px rgba(22,28,30,.06),0 8px 24px -18px rgba(22,28,30,.35);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1315;--panel:#151B1E;--panel-2:#1D2529;
+    --ink:#E6EBEB;--ink-2:#AAB6B8;--ink-3:#7E8B8E;
+    --rule:#283236;--rule-2:#3A474C;
+    --accent:#4FC3C9;--accent-soft:#123336;
+    --live:#5BC98C;--live-soft:#13301F;
+    --spec:#7FAEEA;--spec-soft:#152539;
+    --doc:#C9B47C;--doc-soft:#2A2415;
+    --warn:#E8865E;--warn-soft:#331B10;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -20px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1315;--panel:#151B1E;--panel-2:#1D2529;
+  --ink:#E6EBEB;--ink-2:#AAB6B8;--ink-3:#7E8B8E;
+  --rule:#283236;--rule-2:#3A474C;
+  --accent:#4FC3C9;--accent-soft:#123336;
+  --live:#5BC98C;--live-soft:#13301F;
+  --spec:#7FAEEA;--spec-soft:#152539;
+  --doc:#C9B47C;--doc-soft:#2A2415;
+  --warn:#E8865E;--warn-soft:#331B10;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -20px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:"Source Serif 4",Georgia,"Times New Roman",serif;
+  font-size:16.5px;line-height:1.62;-webkit-font-smoothing:antialiased}
+::selection{background:var(--accent-soft);color:var(--ink)}
+a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:2px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px 96px}
+.shell{display:grid;grid-template-columns:minmax(0,1fr)}
+@media(min-width:1040px){.shell{grid-template-columns:194px minmax(0,1fr);gap:52px;align-items:start}}
+
+.masthead{border-bottom:2px solid var(--ink);padding:38px 0 18px;margin-bottom:26px}
+.kicker{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:14px;align-items:baseline}
+.kicker b{color:var(--accent);font-weight:600}
+h1{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-weight:700;
+  font-size:clamp(34px,6vw,60px);line-height:1.02;letter-spacing:-.025em;margin:14px 0 10px;text-wrap:balance}
+.dek{font-size:19px;color:var(--ink-2);max-width:64ch;margin:0 0 22px}
+.dek strong{color:var(--ink);font-weight:600}
+
+.tag{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10.5px;font-weight:600;
+  letter-spacing:.09em;text-transform:uppercase;padding:2px 7px;border-radius:3px;
+  white-space:nowrap;display:inline-block;vertical-align:2px}
+.t-live{background:var(--live-soft);color:var(--live)}
+.t-spec{background:var(--spec-soft);color:var(--spec)}
+.t-doc{background:var(--doc-soft);color:var(--doc)}
+.legend{display:flex;flex-wrap:wrap;gap:10px 26px;padding:14px 0 0;border-top:1px solid var(--rule)}
+.legend div{font-size:14.5px;color:var(--ink-2);display:flex;gap:9px;align-items:baseline}
+
+.rail{display:none}
+@media(min-width:1040px){
+  .rail{display:block;position:sticky;top:26px;
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;line-height:1.9}
+  .rail h4{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);
+    margin:0 0 8px;font-weight:600}
+  .rail a{display:block;color:var(--ink-2);text-decoration:none;
+    border-left:2px solid var(--rule);padding-left:10px}
+  .rail a:hover{color:var(--accent);border-left-color:var(--accent)}
+  .rail .grp{margin-bottom:20px}
+}
+
+section{margin:0 0 54px;scroll-margin-top:20px}
+h2{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:13px;font-weight:600;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin:0 0 4px}
+h2 + .h2sub{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;
+  font-size:clamp(23px,3vw,31px);font-weight:600;letter-spacing:-.018em;line-height:1.15;
+  margin:0 0 18px;color:var(--ink);text-wrap:balance}
+h3{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:19px;font-weight:600;
+  letter-spacing:-.01em;margin:32px 0 8px}
+p{margin:0 0 15px;max-width:66ch}
+.lede{max-width:66ch}
+code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.86em}
+p code,td code,li code{background:var(--panel-2);padding:1px 5px;border-radius:3px;color:var(--ink)}
+
+.scroller{overflow-x:auto;border:1px solid var(--rule);border-radius:5px;
+  background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:9px 13px;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:10.5px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);background:var(--panel-2);
+  white-space:nowrap;position:sticky;top:0}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--panel-2)}
+td.num,th.num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.src{font-family:Archivo,sans-serif;font-weight:600;white-space:nowrap}
+
+/* shape strip */
+.shapes{display:grid;gap:12px}
+@media(min-width:760px){.shapes{grid-template-columns:1fr 1fr}}
+.shape{background:var(--panel);border:1px solid var(--rule);border-radius:5px;
+  padding:13px 15px 14px;display:flex;flex-direction:column;gap:8px}
+.shape .hd{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.shape h4{font-family:Archivo,sans-serif;font-size:15.5px;font-weight:600;margin:0;letter-spacing:-.01em}
+.shape pre{margin:0;border:0;padding:0;background:none;box-shadow:none;
+  font-size:12px;line-height:1.55;overflow-x:auto;color:var(--ink-2)}
+.shape .why{font-size:13.5px;color:var(--ink-3);margin:0;max-width:none}
+
+pre{background:var(--panel);border:1px solid var(--rule);border-radius:5px;
+  padding:15px 17px;overflow-x:auto;margin:16px 0;
+  font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12.5px;line-height:1.62;color:var(--ink-2)}
+pre b{color:var(--ink);font-weight:500}
+pre i{color:var(--ink-3);font-style:normal}
+pre em{color:var(--accent);font-style:normal;font-weight:500}
+
+/* AND/OR chart */
+.chart{background:var(--panel);border:1px solid var(--rule);border-radius:5px;
+  padding:22px 24px 18px;box-shadow:var(--shadow)}
+.bar-row{display:grid;grid-template-columns:172px minmax(0,1fr) 64px;gap:12px;align-items:center;margin-bottom:8px}
+.bar-row .lbl{font-family:"IBM Plex Mono",monospace;font-size:12px;text-align:right;color:var(--ink-2)}
+.track{height:17px;background:var(--panel-2);border-radius:2px;overflow:hidden}
+.fill{height:100%;background:var(--accent);border-radius:2px}
+.fill.and{background:var(--warn)}
+.bar-row .val{font-family:"IBM Plex Mono",monospace;font-size:12.5px;
+  font-variant-numeric:tabular-nums;color:var(--ink)}
+.axis{display:grid;grid-template-columns:172px minmax(0,1fr) 64px;gap:12px;margin-top:10px;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+.axis .ticks{display:flex;justify-content:space-between;border-top:1px solid var(--rule);padding-top:4px}
+.chart-note{font-size:13.5px;color:var(--ink-3);margin:14px 0 0;max-width:62ch}
+
+/* venn-ish id split */
+.split{display:grid;gap:12px;margin:18px 0}
+@media(min-width:720px){.split{grid-template-columns:repeat(3,1fr)}}
+.split .col{background:var(--panel);border:1px solid var(--rule);border-radius:5px;padding:14px 16px}
+.split .col.mid{border-color:var(--accent);background:var(--accent-soft)}
+.split h5{font-family:Archivo,sans-serif;font-size:11px;font-weight:600;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--ink-3);margin:0 0 4px}
+.split .col.mid h5{color:var(--accent)}
+.split .n{font-family:Archivo,sans-serif;font-size:30px;font-weight:700;line-height:1;
+  letter-spacing:-.02em;margin:0 0 8px;font-variant-numeric:tabular-nums}
+.split ul{margin:0;padding-left:0;list-style:none;
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;line-height:1.75;color:var(--ink-2)}
+
+.callout{border-left:3px solid var(--warn);background:var(--warn-soft);
+  padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0}
+.callout p{margin:0;max-width:64ch}
+.callout .hd{font-family:Archivo,sans-serif;font-size:11px;font-weight:600;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--warn);margin-bottom:5px}
+.note{border-left-color:var(--accent);background:var(--accent-soft)}
+.note .hd{color:var(--accent)}
+
+ul.tight{margin:0 0 16px;padding-left:20px;max-width:68ch}
+ul.tight li{margin-bottom:8px}
+
+footer{border-top:1px solid var(--rule);margin-top:20px;padding-top:18px;
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);
+  display:flex;flex-wrap:wrap;gap:8px 22px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* ---- inversion staircase: one row per rank, bar = the popularity that rank shipped ---- */
+.stair{background:var(--panel);border:1px solid var(--rule);border-radius:5px;
+  padding:20px 22px 16px;box-shadow:var(--shadow);margin:18px 0}
+.srow{display:grid;grid-template-columns:26px 168px minmax(0,1fr) 74px;gap:12px;align-items:center;
+  margin-bottom:5px}
+@media(max-width:640px){.srow,.stair .cap{grid-template-columns:24px minmax(0,1fr) 64px}
+  .srow .ti{display:none}}
+.srow .ti{font-family:Archivo,sans-serif;font-size:12px;color:var(--ink-2);overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.srow.up .ti{color:var(--warn);font-weight:600}
+.srow .rk{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);text-align:right;
+  font-variant-numeric:tabular-nums}
+.srow .bar{position:relative;height:15px;background:var(--panel-2);border-radius:2px}
+.srow .bar i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:2px;
+  display:block;font-style:normal}
+
+.srow .vv{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-2);
+  font-variant-numeric:tabular-nums}
+.srow.up .bar i{background:var(--warn)}
+.srow.up .rk{color:var(--warn);font-weight:600}
+.srow.up .vv{color:var(--warn);font-weight:600}
+
+.stair .cap{display:grid;grid-template-columns:26px 168px minmax(0,1fr) 74px;gap:12px;
+  font-family:Archivo,sans-serif;font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--ink-3);margin-bottom:9px}
+
+/* ---- three mirrors: one film, three numbers, drawn as a range ---- */
+.mir{background:var(--panel);border:1px solid var(--rule);border-radius:5px;
+  padding:20px 22px 14px;box-shadow:var(--shadow);margin:18px 0}
+.mrow{display:grid;grid-template-columns:180px minmax(0,1fr) 146px;gap:14px;align-items:center;
+  padding:5px 0}
+.mrow .fl{font-family:Archivo,sans-serif;font-size:12.5px;color:var(--ink-2);display:block;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:640px){.mrow{grid-template-columns:106px minmax(0,1fr) 112px;gap:9px}
+  .mrow .fl{font-size:11.5px}.mrow .dl{font-size:10px}}
+.mline{position:relative;height:18px;display:block}
+.mline .rng{position:absolute;top:8px;height:2px;background:var(--rule-2);border-radius:1px}
+.mline span{position:absolute;top:5px;width:9px;height:9px;border-radius:50%;
+  margin-left:-4.5px;border:1.5px solid var(--panel)}
+.mline .jw{background:var(--spec)}
+.mline .ci{background:var(--doc)}
+.mline .tm{background:var(--accent);width:11px;height:11px;top:4px;margin-left:-5.5px}
+.mrow .dl{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--warn);
+  font-variant-numeric:tabular-nums;text-align:right;font-weight:600}
+.mkey{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:12px;padding-top:11px;
+  border-top:1px solid var(--rule);font-family:"IBM Plex Mono",monospace;font-size:11px;
+  color:var(--ink-3);align-items:center}
+.mkey em{font-style:normal;display:inline-block;width:9px;height:9px;border-radius:50%;
+  margin-right:6px;vertical-align:-1px}
+
+/* ---- what each source actually ships ---- */
+.grid3{display:grid;gap:10px;margin:16px 0}
+@media(min-width:820px){.grid3{grid-template-columns:repeat(3,1fr)}}
+.kind{background:var(--panel);border:1px solid var(--rule);border-radius:5px;padding:13px 15px}
+.kind.good{border-color:var(--live);background:var(--live-soft)}
+.kind h5{font-family:Archivo,sans-serif;font-size:11px;font-weight:600;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--ink-3);margin:0 0 6px}
+.kind.good h5{color:var(--live)}
+.kind ul{margin:0;padding-left:0;list-style:none;font-family:"IBM Plex Mono",monospace;
+  font-size:11.5px;line-height:1.8;color:var(--ink-2)}
+.kind p{font-size:13px;color:var(--ink-3);margin:8px 0 0;max-width:none}
+
+td.u{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;line-height:1.5;
+  overflow-wrap:anywhere;word-break:normal;color:var(--ink-2)}
+td.u b{color:var(--ink);font-weight:600}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--live)}
+.dot.no{background:var(--warn)}
+.dot.na{background:var(--rule-2)}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="kicker">
+    <span>AMRO &middot; movie API survey &middot; report 4</span>
+    <span><b>13 sources</b></span>
+    <span>read 2026-09-03, 08:12&ndash;08:52 UTC</span>
+  </div>
+  <h1>Sorted By What?</h1>
+  <p class="dek">Eleven of thirteen movie APIs will sort a list by popularity. Six print a number
+  next to it. <strong>Not one of the six sorts the list by the number it prints.</strong></p>
+  <div class="legend">
+    <div><span class="tag t-live">live</span> request issued here, response quoted</div>
+    <div><span class="tag t-spec">spec</span> OpenAPI, blueprint or published client read</div>
+    <div><span class="tag t-doc">doc</span> vendor prose; endpoint needs a key not held</div>
+  </div>
+</header>
+
+<div class="shell">
+<nav class="rail" aria-label="Contents">
+  <div class="grp">
+    <h4>Sections</h4>
+    <a href="#answer">The short answer</a>
+    <a href="#sort">Sorted by what?</a>
+    <a href="#sources">Source by source</a>
+    <a href="#mirrors">Three mirrors</a>
+    <a href="#gotchas">Gotchas</a>
+    <a href="#amro">For AMRO</a>
+    <a href="#repro">Reproducing this</a>
+  </div>
+  <div class="grp">
+    <h4>Measured</h4>
+    <a href="#sort">6 inversions / 19</a>
+    <a href="#mirrors">0 of 12 agree</a>
+    <a href="#sources">stremio = tmdb / 30</a>
+  </div>
+</nav>
+
+<main>
+
+<section id="answer">
+  <h2>01 &middot; The short answer</h2>
+  <p class="h2sub">What each API gives you on a trending or popular list</p>
+  <p class="lede">Two sources rank by a number you can verify: Trakt and Wikimedia. Both do it by
+  publishing a raw count and letting you divide. Everyone else ships a score.</p>
+
+  <div class="scroller">
+  <table>
+    <thead><tr>
+      <th>Source</th><th>List endpoint</th><th>Number in the list</th>
+      <th>Type / scale</th><th>Sorted by it?</th><th>Evidence</th>
+    </tr></thead>
+    <tbody>
+      <tr><td class="src">TMDB</td><td class="u">trending/movie/{day,week}<br>movie/popular &middot; discover</td>
+        <td class="u"><b>popularity</b></td><td>float, unbounded, no unit</td>
+        <td><b style="color:var(--warn)">No</b></td><td><span class="tag t-live">live</span></td></tr>
+      <tr><td class="src">OMDb</td><td>none</td><td>&mdash;</td><td>&mdash;</td><td><span class="dot na"></span></td><td><span class="tag t-spec">spec</span></td></tr>
+      <tr><td class="src">IMDb datasets</td><td>none</td><td>&mdash;</td><td>&mdash;</td><td><span class="dot na"></span></td><td><span class="tag t-live">live</span></td></tr>
+      <tr><td class="src">IMDb suggestion</td><td class="u">suggestion/x/{q}.json</td>
+        <td class="u"><b>rank</b></td><td>int, 1 = most popular</td>
+        <td><b style="color:var(--warn)">No</b></td><td><span class="tag t-live">live</span></td></tr>
+      <tr><td class="src">Trakt</td><td>8 endpoints</td>
+        <td class="u"><b>watchers</b> &middot; play_count<br>list_count &middot; revenue</td>
+        <td>ints, real units</td><td><b style="color:var(--live)">Yes</b></td><td><span class="tag t-spec">spec</span></td></tr>
+      <tr><td class="src">TheTVDB</td><td class="u">movies/filter?sort=score</td>
+        <td class="u"><b>score</b></td><td>double, no range, no meaning</td>
+        <td>unstated</td><td><span class="tag t-spec">spec</span></td></tr>
+      <tr><td class="src">Watchmode</td><td class="u">list-titles<br>?sort_by=popularity_desc</td>
+        <td class="u"><b>popularity_percentile</b></td><td>0&ndash;100 percentile, nullable</td>
+        <td>stated</td><td><span class="tag t-spec">spec</span></td></tr>
+      <tr><td class="src">Streaming Avail.</td><td class="u">shows/search/filters<br>?order_by=popularity_1week</td>
+        <td><em>none</em></td><td>&mdash;</td>
+        <td>value withheld</td><td><span class="tag t-spec">spec</span></td></tr>
+      <tr><td class="src">Simkl</td><td class="u">keyless<br>{today,week,month}_100.json</td>
+        <td class="u"><b>watched</b> &middot; rank<br>drop_rate</td>
+        <td>int, int, <b>string with %</b></td><td><b style="color:var(--live)">Yes</b>, on watched</td><td><span class="tag t-live">live</span></td></tr>
+      <tr><td class="src">MDBList</td><td>re-served lists</td><td>&mdash;</td><td>&mdash;</td><td><span class="dot na"></span></td><td><span class="tag t-doc">doc</span></td></tr>
+      <tr><td class="src">JustWatch</td><td class="u">popularTitles(sortBy: POPULAR)</td>
+        <td class="u"><b>tmdbPopularity</b><br><i>(someone else's)</i></td><td>float</td>
+        <td><b style="color:var(--warn)">No</b></td><td><span class="tag t-live">live</span></td></tr>
+      <tr><td class="src">Cinemeta</td><td class="u">catalog/movie/top.json</td>
+        <td class="u"><b>popularities</b><br>{trakt, moviedb,<br>&nbsp;stremio, stremio_lib}</td>
+        <td>four scales at once</td><td><b style="color:var(--warn)">No</b></td><td><span class="tag t-live">live</span></td></tr>
+      <tr><td class="src">Wikimedia</td><td class="u">pageviews/top/en.wikipedia</td>
+        <td class="u"><b>views</b> &middot; rank</td><td>int, <b>an actual unit</b></td>
+        <td><b style="color:var(--live)">Yes</b></td><td><span class="tag t-live">live</span></td></tr>
+      <tr><td class="src">Fanart.tv</td><td>none public</td><td>&mdash;</td><td>&mdash;</td><td><span class="dot na"></span></td><td><span class="tag t-spec">spec</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="grid3">
+    <div class="kind good">
+      <h5>Counts something</h5>
+      <ul><li>Trakt &mdash; watchers</li><li>Simkl &mdash; watched</li><li>Wikimedia &mdash; views</li></ul>
+      <p>A unit, a window, and for Trakt a denominator in the response header. Comparable, blendable,
+      defensible.</p>
+    </div>
+    <div class="kind">
+      <h5>Scores something</h5>
+      <ul><li>TMDB &mdash; popularity</li><li>TheTVDB &mdash; score</li><li>Watchmode &mdash; percentile</li><li>Cinemeta &mdash; four at once</li></ul>
+      <p>A number with no unit. Orders one source's own catalogue and means nothing outside it.</p>
+    </div>
+    <div class="kind">
+      <h5>Ships nothing</h5>
+      <ul><li>OMDb &middot; IMDb datasets</li><li>Streaming Availability</li><li>MDBList &middot; Fanart.tv</li><li>Trakt <code>/movies/popular</code></li></ul>
+      <p>Streaming Availability indexes four popularity windows and returns none of them.</p>
+    </div>
+  </div>
+</section>
+
+<section id="sort">
+  <h2>02 &middot; Sorted by what?</h2>
+  <p class="h2sub">TMDB does not sort by <code>popularity</code></p>
+  <p class="lede">One request, <code>discover/movie?sort_by=popularity.desc&amp;page=1</code>. Each bar
+  is the <code>popularity</code> value that rank shipped. In a list sorted by that field, every bar
+  would be shorter than the one above it. <strong>Six of the nineteen adjacent pairs grow instead.</strong></p>
+
+  <div class="stair">
+    <div class="cap"><span>rank</span><span>title</span><span>popularity value returned at that rank</span><span style="text-align:right">value</span></div>
+    <div class="srow"><span class="rk">1</span><span class="ti">Spider-Man: Brand New Day</span><span class="bar"><i style="width:100.0%"></i></span><span class="vv">901.1</span></div>
+    <div class="srow"><span class="rk">2</span><span class="ti">The Odyssey</span><span class="bar"><i style="width:56.75%"></i></span><span class="vv">511.4</span></div>
+    <div class="srow"><span class="rk">3</span><span class="ti">Mutiny</span><span class="bar"><i style="width:44.9%"></i></span><span class="vv">404.6</span></div>
+    <div class="srow"><span class="rk">4</span><span class="ti">The Last Sunrise</span><span class="bar"><i style="width:30.72%"></i></span><span class="vv">276.8</span></div>
+    <div class="srow"><span class="rk">5</span><span class="ti">Facing El Chapo</span><span class="bar"><i style="width:27.79%"></i></span><span class="vv">250.5</span></div>
+    <div class="srow up"><span class="rk">6</span><span class="ti">Shape of My Heart</span><span class="bar"><i style="width:30.4%"></i></span><span class="vv">274.0</span></div>
+    <div class="srow"><span class="rk">7</span><span class="ti">Toxic: A Fairy Tale for Grown-ups</span><span class="bar"><i style="width:28.56%"></i></span><span class="vv">257.3</span></div>
+    <div class="srow up"><span class="rk">8</span><span class="ti">Coyote vs. Acme</span><span class="bar"><i style="width:29.92%"></i></span><span class="vv">269.6</span></div>
+    <div class="srow"><span class="rk">9</span><span class="ti">The Whisper Man</span><span class="bar"><i style="width:25.01%"></i></span><span class="vv">225.4</span></div>
+    <div class="srow"><span class="rk">10</span><span class="ti">Pinocchio: Unstrung</span><span class="bar"><i style="width:22.33%"></i></span><span class="vv">201.3</span></div>
+    <div class="srow up"><span class="rk">11</span><span class="ti">Obsession</span><span class="bar"><i style="width:23.73%"></i></span><span class="vv">213.9</span></div>
+    <div class="srow"><span class="rk">12</span><span class="ti">Toy Story 5</span><span class="bar"><i style="width:20.82%"></i></span><span class="vv">187.6</span></div>
+    <div class="srow"><span class="rk">13</span><span class="ti">Rage of Stars</span><span class="bar"><i style="width:20.57%"></i></span><span class="vv">185.4</span></div>
+    <div class="srow"><span class="rk">14</span><span class="ti">Minions &amp; Monsters</span><span class="bar"><i style="width:18.32%"></i></span><span class="vv">165.1</span></div>
+    <div class="srow up"><span class="rk">15</span><span class="ti">Colony</span><span class="bar"><i style="width:20.8%"></i></span><span class="vv">187.4</span></div>
+    <div class="srow"><span class="rk">16</span><span class="ti">Moana</span><span class="bar"><i style="width:17.96%"></i></span><span class="vv">161.9</span></div>
+    <div class="srow"><span class="rk">17</span><span class="ti">Batman: Knightfall Part 1</span><span class="bar"><i style="width:16.57%"></i></span><span class="vv">149.3</span></div>
+    <div class="srow up"><span class="rk">18</span><span class="ti">The Runner</span><span class="bar"><i style="width:17.94%"></i></span><span class="vv">161.7</span></div>
+    <div class="srow up"><span class="rk">19</span><span class="ti">Ghost in the Cell</span><span class="bar"><i style="width:20.2%"></i></span><span class="vv">182.0</span></div>
+    <div class="srow"><span class="rk">20</span><span class="ti">Above &amp; Below</span><span class="bar"><i style="width:17.22%"></i></span><span class="vv">155.2</span></div>
+  </div>
+  <p class="chart-note">Amber marks a rank whose value is <em>higher</em> than the rank above it.
+  The gaps are up to 23.5 points, or 15% of the value: not rounding.</p>
+
+  <div class="callout">
+    <div class="hd">The field is a copy, not the key</div>
+    <p>The parameter is named <code>popularity.desc</code>. The field is named <code>popularity</code>.
+    They are two different numbers. The one you can read lags the one the index sorts on, so a
+    client that re-sorts the page by the field it received produces an order the server never
+    intended.</p>
+  </div>
+
+  <h3>And TMDB's two popular lists disagree with each other</h3>
+  <p><code>/movie/popular</code> and <code>discover?sort_by=popularity.desc</code>, requested seconds
+  apart, returned <strong>the same twenty ids in a different order</strong>:</p>
+<pre>discover: &hellip; 1323244, <em>1315772</em>, <em>1375646</em>, 1108427, 1560520 &hellip;
+popular : &hellip; 1323244, <em>1375646</em>, 1108427, <em>1315772</em>, 1560520 &hellip;</pre>
+  <p>Two surfaces over one index, and they cannot agree on which of two films is more popular.</p>
+
+  <h3>JustWatch proves it is achievable</h3>
+  <p><code>popularTitles(sortBy: TMDB_POPULARITY)</code> over fifteen titles is
+  <strong>strictly monotonic</strong> in the <code>tmdbPopularity</code> it returns:</p>
+<pre>1027.966  585.875  413.216  318.6  318.6  275.7  260.8
+ 232.2  230.4  227.7  205.1  197.4  177.3  176.4  173.5</pre>
+  <p>A third party sorting TMDB's number keeps the sort and the number consistent. TMDB, sorting its
+  own, does not. Under <code>POPULAR</code> and <code>TRENDING</code> the same list is monotonic in
+  nothing JustWatch exposes &mdash; those two rankings have no readable key at all.</p>
+</section>
+
+<section id="sources">
+  <h2>03 &middot; The number, source by source</h2>
+  <p class="h2sub">Thirteen answers to one question</p>
+
+  <h3>TMDB <span class="tag t-live">live</span></h3>
+  <p>Five list endpoints carry <code>popularity</code>, and so does the detail record.</p>
+<pre>{
+  "id": 1386315,
+  "title": "The Runner",
+  <b>"popularity": 161.6957,</b>
+  "vote_average": 6.054,
+  "vote_count": 46,
+  "media_type": "movie",     <i>&larr; only on trending/*</i>
+  "softcore": false          <i>&larr; a second adult flag, on every list item</i>
+}</pre>
+  <p><strong>The value is global, not per-list.</strong> 25 ids appeared in more than one of the five
+  endpoints in the same minute. Zero carried a different <code>popularity</code>.</p>
+  <p><strong>And it is not window-scoped, even though the list is.</strong> 13 titles appear in both
+  <code>trending/movie/day</code> and <code>trending/movie/week</code>. All 13 carry the identical
+  value in both. The window changes which films are listed and in what order; it does not change the
+  number printed beside them &mdash; so the number cannot be what produced the ordering.</p>
+  <p><strong>What it measures.</strong> TMDB documents a &ldquo;lifetime&rdquo; score whose daily
+  inputs are votes, views, favourites, watchlist adds, release date, total votes, and
+  <em>the previous day's score</em>. It is recursive: today's popularity is partly yesterday's. That
+  makes it a decayed running total, not a rate, which is why a 40-year-old film can outrank this
+  week's release. Trending is documented only as &ldquo;calculated quite differently&rdquo;.</p>
+
+  <div class="scroller" style="margin:16px 0">
+  <table>
+    <thead><tr><th>movie/popular page</th><th class="num">min popularity</th><th class="num">max popularity</th><th>note</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td class="num">149.3230</td><td class="num">901.1066</td><td>top 20 span 750 points</td></tr>
+      <tr><td class="num">50</td><td class="num">11.5021</td><td class="num">17.4786</td><td></td></tr>
+      <tr><td class="num">200</td><td class="num">5.8747</td><td class="num">7.9996</td><td></td></tr>
+      <tr><td class="num">500</td><td class="num">3.0822</td><td class="num">5.4966</td><td>ranks 9,980&ndash;10,000 span 2.4</td></tr>
+      <tr><td class="num">501</td><td colspan="3" class="u">{"success": false, "status_code": 22, "status_message": "<b>Invalid page: Pages start at 1 and max at 500.</b>"}</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>The page cap.</strong> <code>movie/popular</code> reports
+  <code>total_pages: 58741</code> and <code>total_results: 1174803</code>, then refuses page 501.
+  10,000 of 1.17 million rows are reachable. <code>trending</code> reports
+  <code>total_results: 10000</code> exactly &mdash; that is the cap wearing a count's clothing.
+  <code>total_results</code> also drifts <em>downward</em> within minutes: 1,174,967 &rarr; 1,174,819
+  &rarr; 1,174,803 across three requests.</p>
+  <p><strong>Volatility.</strong> Two <code>trending/movie/day</code> requests 2m18s apart returned the
+  same 20 ids in the same order with 0 of 20 values changed. The number is a daily batch, not a live
+  reading.</p>
+
+  <h3>OMDb <span class="tag t-spec">spec</span></h3>
+  <p>One path, <code>/</code>. There is no list endpoint. <code>s=</code> is a title search and its
+  items carry five fields:</p>
+<pre>{"Title": "&hellip;", "Year": "&hellip;", "imdbID": "tt&hellip;", "Type": "movie", "Poster": "https://&hellip;"}</pre>
+  <p>No popularity, no rank, no vote count, no documented ordering. If AMRO needs a browsable list,
+  OMDb cannot supply one.</p>
+
+  <h3>IMDb <span class="tag t-live">live</span></h3>
+  <p>The seven bulk dataset files have no popularity column. <code>title.ratings.tsv.gz</code> is the
+  closest thing, and <code>numVotes</code> is a lifetime rating count &mdash; a fame proxy, not a
+  popularity one, with no list to page.</p>
+<pre>tconst	averageRating	numVotes</pre>
+  <p>The keyless autocomplete endpoint does carry a popularity rank, and it is the only place IMDb
+  publishes one:</p>
+<pre>GET https://v2.sg.media-imdb.com/suggestion/t/tt1375666.json
+{"d":[{"id":"tt1375666","l":"Inception",<b>"rank":129</b>,"y":2010, &hellip;}]}</pre>
+  <p>The search variant returns it too, and <strong>does not sort by it</strong>: Inception 129,
+  <i>The Cobol Job</i> 13,930, a 2016 <i>Inception</i> 105,815, a short 119,246,
+  <i>Jump Right Into the Action</i> 55,398. The licensed datasets omit the number; an undocumented
+  autocomplete endpoint leaks it.</p>
+
+  <h3>Trakt <span class="tag t-spec">spec</span></h3>
+  <p>Eight movie list endpoints, and the cleanest design in the survey. Every one returns a raw count
+  with a stated unit, and the endpoint name says which count did the sorting.</p>
+  <div class="scroller">
+  <table>
+    <thead><tr><th>Endpoint</th><th>Field</th><th>What it counts</th></tr></thead>
+    <tbody>
+      <tr><td class="u">movies/trending</td><td class="u"><b>watchers</b></td><td>people watching right now, last 24h</td></tr>
+      <tr><td class="u">movies/popular</td><td><em>none</em></td><td>&mdash;</td></tr>
+      <tr><td class="u">movies/favorited/{period}</td><td class="u"><b>user_count</b></td><td>users who favourited it</td></tr>
+      <tr><td class="u">movies/played/{period}</td><td class="u"><b>play_count</b></td><td>plays, repeats included</td></tr>
+      <tr><td class="u">movies/watched/{period}</td><td class="u"><b>watcher_count</b></td><td>unique users</td></tr>
+      <tr><td class="u">movies/collected/{period}</td><td class="u"><b>collected_count</b></td><td>unique collectors</td></tr>
+      <tr><td class="u">movies/anticipated</td><td class="u"><b>list_count</b></td><td>lists it appears on</td></tr>
+      <tr><td class="u">movies/boxoffice</td><td class="u"><b>revenue</b></td><td>US dollars, last weekend</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><code>played</code>, <code>watched</code> and <code>collected</code> all return the
+  <em>same three</em> counts. Only the sort differs. One call gets all three measures and you pick the
+  ranking:</p>
+<pre>{ "watcher_count": 66667, "play_count": 109736, "collected_count": 27584, "movie": { &hellip; } }</pre>
+  <p><code>period</code> is <code>daily</code> | <code>weekly</code> | <code>monthly</code> |
+  <code>all</code>.</p>
+
+  <div class="callout note">
+    <div class="hd">The only source that ships the denominator</div>
+    <p><code>movies/trending</code> sets a response header: <code>X-Trending-User-Count: 1721</code>.
+    21 watchers out of 1,721 people watching anything is a share you can compute. Every other source
+    gives you a numerator and keeps the denominator.</p>
+  </div>
+
+  <p><strong>And <code>movies/popular</code> publishes no number at all.</strong> The body is bare
+  movie objects. The docs say popularity there &ldquo;is calculated using the rating percentage and
+  the number of ratings&rdquo; &mdash; which makes Trakt's <em>popular</em> list a ratings ranking.
+  Trakt documents the formula and withholds the value; TMDB ships the value and withholds the
+  formula.</p>
+  <p>Keyless requests are refused at the edge (<code>403</code>, Cloudflare interstitial), so this is
+  read from the published blueprint, which itself carries a deprecation banner.</p>
+
+  <h3>TheTVDB <span class="tag t-spec">spec</span></h3>
+  <p><code>score</code> is <code>format: double, type: number</code>, with no range, no unit and no
+  field-level description. The only explanation is a note at the top of the whole specification:</p>
+<pre>"score" is a field across almost all entities.  We generate scores for
+different types of entities in various ways, so <b>no assumptions should be
+made about the meaning of this value</b>.  It is simply used to hint at
+relative popularity for sorting purposes.</pre>
+  <p>A vendor stating in its own contract that the number is meaningless except as a sort key. It is
+  the most honest sentence in the survey, and it means the value cannot be displayed, compared across
+  two films, or blended with anything. <code>GET /movies/filter</code> takes
+  <code>sort</code> &isin; <code>score</code> | <code>firstAired</code> | <code>name</code> and
+  requires <code>country</code> and <code>lang</code>, so there is no unfiltered popular list to
+  fetch.</p>
+
+  <h3>Watchmode <span class="tag t-spec">spec</span></h3>
+  <p><code>GET /list-titles</code> with eight <code>sort_by</code> values, documented as
+  &ldquo;Popularity options use Watchmode's normalized popularity percentile.&rdquo;</p>
+<pre>{"id": 1337513, "title": "Secret in Their Eyes", "imdb_id": "tt1741273",
+ "tmdb_id": 290751, <b>"popularity_percentile": 99.421</b>}</pre>
+  <div class="callout">
+    <div class="hd">A percentile is not a score</div>
+    <p>It says what fraction of the catalogue a title beats, so the distance between 99.421 and
+    97.618 is a count of rows, not a difference in audience. Near the top the scale saturates:
+    everything worth showing sits between 99 and 100. It cannot be summed, averaged, or compared
+    across a filtered subset, because the population it ranks against changes.</p>
+  </div>
+  <p><code>TitleDetails</code> carries both <code>popularity_percentile</code> and
+  <code>relevance_percentile</code>. On <code>Person</code>, the field named
+  <code>relevance_percentile</code> is described as &ldquo;Popularity percentile (0-100)&rdquo; &mdash;
+  the spec's own names and descriptions disagree.</p>
+
+  <h3>Streaming Availability <span class="tag t-spec">spec</span></h3>
+  <p><code>GET /shows/search/filters</code> takes <code>order_by</code>, and the published client
+  enumerates seven values:</p>
+<pre>original_title   release_date   rating
+<em>popularity_alltime   popularity_1year   popularity_1month   popularity_1week</em></pre>
+  <p>Four popularity windows &mdash; the richest popularity model in the survey by a distance. The
+  <code>Show</code> object returns twenty-one fields, and <strong>none of them is any of those
+  four</strong>. The only score is <code>rating</code>, 0&ndash;100, &ldquo;the average of ratings
+  found online from multiple sources&rdquo;.</p>
+  <div class="callout">
+    <div class="hd">The order, or nothing</div>
+    <p>The API will rank a catalogue by weekly popularity and then refuse to tell you the weekly
+    popularity of anything in it.</p>
+  </div>
+  <p><code>GET /shows/top</code> is a different thing again: &ldquo;Top shows are determined by the
+  streaming service itself&rdquo;. It re-serves Netflix's or Prime's own board. Position only, no
+  number, and the methodology belongs to a third party.</p>
+
+  <h3>Simkl <span class="tag t-live">live</span></h3>
+  <p>Simkl publishes <strong>keyless, pre-built trending files</strong>, which makes it the only
+  source besides TMDB a client can read here with no credential.</p>
+<pre>https://data.simkl.in/discover/trending/movies/<em>today</em>_100.json
+https://data.simkl.in/discover/trending/movies/<em>week</em>_500.json
+https://data.simkl.in/discover/trending/movies/<em>month</em>_100.json
+https://data.simkl.in/discover/dvd/releases_100.json</pre>
+  <p>Attribution is required in the section title, a <code>User-Agent</code> must be set, query
+  strings are ignored, and the files are Cloudflare-cached for an hour with a real
+  <code>Last-Modified</code>. All three movie files served on 2026-09-03 carried
+  <code>Thu, 03 Sep 2026 07:32:02 GMT</code> &mdash; one generation run feeds every window.</p>
+<pre>{
+  "title": "The Odyssey",
+  "ids": {"simkl_id": 2604475, "imdb": "tt33764258", "tmdb": <b>"1368337"</b>, "tvdb": "362547"},
+  <b>"rank": 140,</b>
+  <b>"drop_rate": "0.6%",</b>
+  <b>"watched": 73,</b>
+  "plan_to_watch": 7899,
+  "ratings": {"simkl": {"rating": 8.47, "votes": 2503},
+              "imdb":  {"rating": 8.4,  "votes": 465215}}
+}</pre>
+  <p><strong><code>watched</code> is the ordering metric</strong>, strictly descending in all three
+  files. It is a raw count, so the windows are directly comparable:</p>
+  <div class="scroller" style="margin:14px 0">
+  <table>
+    <thead><tr><th>window</th><th class="num">#1 watched</th><th class="num">#12 watched</th></tr></thead>
+    <tbody>
+      <tr><td>today</td><td class="num">73</td><td class="num">29</td></tr>
+      <tr><td>week</td><td class="num">787</td><td class="num">292</td></tr>
+      <tr><td>month</td><td class="num">6,005</td><td class="num">1,707</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Simkl's absolute audience is two orders of magnitude below Trakt's. Fine for ordering, useless
+  for anything treating the number as a population.</p>
+  <p><strong><code>rank</code> is not the list position.</strong> The Odyssey is
+  <code>rank: 140</code> while sitting at position 1 in <code>today</code>, 4 in <code>week</code> and
+  2 in <code>month</code>. 72 titles appear in all three files and all 72 carry an identical
+  <code>rank</code> in every one. It is a stable global standing, spanning 1 to 73,401, shipped inside
+  a this-week list.</p>
+  <p><strong><code>drop_rate</code> is a string with a percent sign in it</strong>: <code>"0.6%"</code>,
+  <code>"8.8%"</code>, and &mdash; unpadded &mdash; <code>"1%"</code>. It is also identical across
+  today, week and month for every shared title, while the counts beside it are window-scoped.</p>
+  <p>The keyed API refuses without a client id:
+  <code>{"error": "client_id_failed", "code": 412}</code>.</p>
+
+  <h3>MDBList <span class="tag t-doc">doc</span></h3>
+  <p>No popularity number of its own. Its <code>score</code> is a ratings aggregate: &ldquo;calculated
+  using all the ratings average and with a votes baseline&hellip; if the vote count is lower than the
+  baseline, the rating is decreased&rdquo;.</p>
+  <p>Its &ldquo;Popular lists&rdquo; are other people's lists, re-served:</p>
+  <div class="scroller">
+  <table>
+    <thead><tr><th>List</th><th>Source</th></tr></thead>
+    <tbody>
+      <tr><td>IMDb Most Popular Movies</td><td class="u">imdb.com/chart/moviemeter</td></tr>
+      <tr><td>IMDb Top Rated Movies</td><td class="u">imdb.com/chart/top</td></tr>
+      <tr><td>Netflix / Disney+ Top Movies</td><td class="u">flixpatrol.com</td></tr>
+      <tr><td>Top 10 Pirated Movies of The Week</td><td class="u">torrentfreak.com</td></tr>
+      <tr><td>Trakt Trending, Popular, Anticipated, Watched, Collected, Played, Box Office</td><td class="u">trakt.tv</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Its one original list, &ldquo;Most Popular Movies [top-20]&rdquo;, is documented as &ldquo;List
+  based on vote increase in the last month&rdquo; &mdash; a derivative of ratings activity, not of
+  watching. A shortcut to seven sources at once; not a thirteenth opinion.</p>
+
+  <h3>JustWatch <span class="tag t-live">live</span></h3>
+  <p><code>popularTitles(country:, sortBy:)</code>, <code>totalCount: 162763</code>. Introspection is
+  disabled, so the enum was recovered by substitution:</p>
+  <div class="scroller">
+  <table>
+    <thead><tr><th>value</th><th>accepted</th><th>value</th><th>accepted</th></tr></thead>
+    <tbody>
+      <tr><td class="u">POPULAR</td><td><span class="dot"></span></td><td class="u">JW_RATING</td><td><span class="dot no"></span></td></tr>
+      <tr><td class="u">TRENDING</td><td><span class="dot"></span></td><td class="u">RELEASE_DATE</td><td><span class="dot no"></span></td></tr>
+      <tr><td class="u">TMDB_POPULARITY</td><td><span class="dot"></span></td><td class="u">TOMATO_METER</td><td><span class="dot no"></span></td></tr>
+      <tr><td class="u">IMDB_SCORE</td><td><span class="dot"></span></td><td class="u">PROVIDER_PREFERRED</td><td><span class="dot no"></span></td></tr>
+      <tr><td class="u">ALPHABETICAL &middot; RANDOM</td><td><span class="dot"></span></td><td></td><td></td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p><strong>JustWatch does not expose its own popularity.</strong> The <code>Scoring</code> type has
+  no such field, and the validation error says so:</p>
+<pre>Cannot query field "popularity" on type "Scoring". <em>Did you mean "tmdbPopularity"?</em></pre>
+  <p><code>popularityPercentile</code> is rejected outright. The error messages are the schema
+  documentation. The only popularity number JustWatch will give you is <code>tmdbPopularity</code>
+  &mdash; TMDB's, mirrored, and stale. <code>jwRating</code> (0&ndash;1) exists but is a rating and is
+  not the sort key: under <code>POPULAR</code> the first values run 0.918, 0.833, 0.875, 0.954, 0.966
+  &mdash; no order at all.</p>
+  <div class="callout note">
+    <div class="hd">The rank is the cursor</div>
+    <p>JustWatch's pagination cursors are base64 of the 1-based position:
+    <code>MQ==</code>&nbsp;&rarr;&nbsp;<code>"1"</code>,
+    <code>MTA=</code>&nbsp;&rarr;&nbsp;<code>"10"</code>. If you want a popularity rank out of
+    JustWatch, decoding the cursor is how you get one. That is the whole ranking: an ordinal, with no
+    value behind it.</p>
+  </div>
+  <p>Sorting by <code>IMDB_SCORE</code> puts a title with <code>tmdbPopularity: null</code> and
+  <code>jwRating: null</code> at position 1, so the score sorts are unguarded against thin records.</p>
+
+  <h3>Cinemeta <span class="tag t-live">live</span></h3>
+  <p>Three catalogues, and the manifest labels them differently from their ids: <code>top</code> is
+  displayed as <em>Popular</em>, <code>year</code> as <em>New</em>, <code>imdbRating</code> as
+  <em>Featured</em>. <code>catalog/movie/top.json</code> <code>307</code>-redirects to
+  <code>cinemeta-catalogs.strem.io</code> and returns 50 items.</p>
+  <p>Cinemeta is <strong>the only source that publishes more than one popularity number per
+  film</strong>, in a dedicated object:</p>
+<pre>{
+  "name": "The Whisper Man",
+  "popularity": 0.30802333333333337,
+  "popularities": {
+    <b>"trakt": 1445,</b>          <i>watcher count, hundreds to low thousands</i>
+    <b>"moviedb": 233.5012,</b>    <i>TMDB's unbounded float, mirrored</i>
+    <b>"stremio": 0.30802333,</b>  <i>== popularity, for all 50</i>
+    <b>"stremio_lib": 0</b>        <i>0 on every one of the 50</i>
+  }
+}</pre>
+  <p><strong><code>stremio</code> is <code>moviedb</code> divided by 30.</strong> Over the 47 items
+  carrying both, the ratio is exactly 30.00 (&plusmn;0.01) for 43 of them. Cinemeta's own popularity
+  is TMDB's, rescaled by a constant. The four that miss are stale, and the size of the miss says how
+  stale:</p>
+  <div class="scroller">
+  <table>
+    <thead><tr><th>film</th><th class="num">moviedb now</th><th class="num">stremio</th><th class="num">ratio</th><th class="num">TMDB value implied by stremio</th></tr></thead>
+    <tbody>
+      <tr><td>The Whisper Man</td><td class="num">233.5012</td><td class="num">0.30802</td><td class="num" style="color:var(--warn);font-weight:600">758.06</td><td class="num">9.24</td></tr>
+      <tr><td>Evil Dead Burn</td><td class="num">75.3700</td><td class="num">3.98723</td><td class="num" style="color:var(--warn);font-weight:600">18.90</td><td class="num">119.62</td></tr>
+      <tr><td>The Invite</td><td class="num">56.5576</td><td class="num">1.87109</td><td class="num">30.23</td><td class="num">56.13</td></tr>
+      <tr><td>Avengers: Endgame</td><td class="num">65.5717</td><td class="num">2.19072</td><td class="num">29.93</td><td class="num">65.72</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>The Whisper Man's derived popularity was computed when TMDB said 9.24, and is being served next
+  to a mirrored TMDB value of 233.50 &mdash; a 25&times; spread inside a single object.</p>
+  <p><strong>The catalogue called &ldquo;Popular&rdquo; is not sorted by popularity.</strong> The
+  first ten values: <code>0.308&nbsp; 7.739&nbsp; 0.086&nbsp; 1.871&nbsp; 3.434&nbsp; null&nbsp;
+  4.699&nbsp; 3.870&nbsp; 0.511&nbsp; 0.637</code>. Three of the 50 have <code>popularities: null</code>
+  outright, and one of them (<i>Facing El Chapo</i>) is currently #5 on TMDB's own popular list at
+  250.4566.</p>
+
+  <h3>Wikimedia <span class="tag t-live">live</span></h3>
+  <p>Wikidata has no popularity property. The auditable substitute is the pageviews REST API,
+  keyless, and it is the only number in this survey with a unit anyone can check.</p>
+<pre>GET /metrics/pageviews/top/en.wikipedia/all-access/2026/09/01
+{"rank": 4, "article": "Killing_of_the_Clancy_children", "views": 428824}
+{"rank": 5, "article": <em>"Toxic_(2026_film)"</em>,              "views": 255041}</pre>
+  <div class="scroller">
+  <table>
+    <thead><tr><th>article</th><th class="num">views, 2026-09-01</th></tr></thead>
+    <tbody>
+      <tr><td class="u">Spider-Man:_Brand_New_Day</td><td class="num">102,473</td></tr>
+      <tr><td class="u">The_Odyssey_(2026_film)</td><td class="num">79,043</td></tr>
+      <tr><td class="u">Project_Hail_Mary_(film)</td><td class="num">14,205</td></tr>
+      <tr><td class="u">Inception</td><td class="num">4,774</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Real counts, a real window, a published rank, and no vendor formula in between. The costs: the
+  ranked list is all of Wikipedia, so films surface among current events; and it keys on an article
+  title, not an id, so every lookup needs a resolution step that breaks on disambiguation
+  (<code>The_Odyssey_(2026_film)</code>).</p>
+
+  <h3>Fanart.tv <span class="tag t-spec">spec</span></h3>
+  <p>No public list endpoint. <code>/v3/movies/latest</code> returns
+  <code>{"error": "missing api_key or client_key parameter"}</code>. The only count Fanart publishes
+  is <code>likes</code> on an individual artwork, which ranks images, not films.</p>
+</section>
+
+<section id="mirrors">
+  <h2>04 &middot; Three mirrors</h2>
+  <p class="h2sub">One film, three &ldquo;TMDB popularity&rdquo; values</p>
+  <p class="lede">JustWatch and Cinemeta both mirror TMDB's <code>popularity</code>. Twelve films
+  appear in both, and all twelve were then read live from TMDB itself within the same few minutes.
+  Each row below is one film; the three dots are the three numbers, drawn on that film's own
+  range.</p>
+
+  <div class="mir">
+    <div class="mrow">
+      <span class="fl" title="The Shawshank Redemption">The Shawshank Redemption</span>
+      <span class="mline"><i class="rng" style="left:0.0%;right:0.0%"></i><span class="jw" style="left:0.0%" title="JustWatch 101.1313"></span><span class="ci" style="left:43.2%" title="Cinemeta 105.9697"></span><span class="tm" style="left:100.0%" title="TMDB live 112.3265"></span></span>
+      <span class="dl">101.1&ndash;112.3 &middot; +11%</span>
+    </div>
+    <div class="mrow">
+      <span class="fl" title="Masters of the Universe">Masters of the Universe</span>
+      <span class="mline"><i class="rng" style="left:0.0%;right:0.0%"></i><span class="jw" style="left:100.0%" title="JustWatch 85.5991"></span><span class="ci" style="left:91.2%" title="Cinemeta 84.7472"></span><span class="tm" style="left:0.0%" title="TMDB live 75.9701"></span></span>
+      <span class="dl">76.0&ndash;85.6 &middot; +13%</span>
+    </div>
+    <div class="mrow">
+      <span class="fl" title="Spider-Man: No Way Home">Spider-Man: No Way Home</span>
+      <span class="mline"><i class="rng" style="left:0.0%;right:0.0%"></i><span class="jw" style="left:100.0%" title="JustWatch 131.4164"></span><span class="ci" style="left:100.0%" title="Cinemeta 131.4164"></span><span class="tm" style="left:0.0%" title="TMDB live 119.2476"></span></span>
+      <span class="dl">119.2&ndash;131.4 &middot; +10%</span>
+    </div>
+    <div class="mrow">
+      <span class="fl" title="Project Hail Mary">Project Hail Mary</span>
+      <span class="mline"><i class="rng" style="left:0.0%;right:0.0%"></i><span class="jw" style="left:0.0%" title="JustWatch 103.0339"></span><span class="ci" style="left:0.0%" title="Cinemeta 103.0339"></span><span class="tm" style="left:100.0%" title="TMDB live 104.7899"></span></span>
+      <span class="dl">103.0&ndash;104.8 &middot; +2%</span>
+    </div>
+    <div class="mrow">
+      <span class="fl" title="The Whisper Man">The Whisper Man</span>
+      <span class="mline"><i class="rng" style="left:0.0%;right:0.0%"></i><span class="jw" style="left:29.2%" title="JustWatch 227.7433"></span><span class="ci" style="left:100.0%" title="Cinemeta 233.5012"></span><span class="tm" style="left:0.0%" title="TMDB live 225.3706"></span></span>
+      <span class="dl">225.4&ndash;233.5 &middot; +4%</span>
+    </div>
+    <div class="mrow">
+      <span class="fl" title="Backrooms">Backrooms</span>
+      <span class="mline"><i class="rng" style="left:0.0%;right:0.0%"></i><span class="jw" style="left:69.6%" title="JustWatch 132.2215"></span><span class="ci" style="left:100.0%" title="Cinemeta 140.9675"></span><span class="tm" style="left:0.0%" title="TMDB live 112.1557"></span></span>
+      <span class="dl">112.2&ndash;141.0 &middot; +26%</span>
+    </div>
+    <div class="mrow">
+      <span class="fl" title="Toy Story 5">Toy Story 5</span>
+      <span class="mline"><i class="rng" style="left:0.0%;right:0.0%"></i><span class="jw" style="left:67.9%" title="JustWatch 205.144"></span><span class="ci" style="left:100.0%" title="Cinemeta 213.4425"></span><span class="tm" style="left:0.0%" title="TMDB live 187.6072"></span></span>
+      <span class="dl">187.6&ndash;213.4 &middot; +14%</span>
+    </div>
+    <div class="mrow">
+      <span class="fl" title="Disclosure Day">Disclosure Day</span>
+      <span class="mline"><i class="rng" style="left:0.0%;right:0.0%"></i><span class="jw" style="left:100.0%" title="JustWatch 127.7223"></span><span class="ci" style="left:100.0%" title="Cinemeta 127.7223"></span><span class="tm" style="left:0.0%" title="TMDB live 104.9504"></span></span>
+      <span class="dl">105.0&ndash;127.7 &middot; +22%</span>
+    </div>
+    <div class="mrow">
+      <span class="fl" title="The Death of Robin Hood">The Death of Robin Hood</span>
+      <span class="mline"><i class="rng" style="left:0.0%;right:0.0%"></i><span class="jw" style="left:58.1%" title="JustWatch 119.3583"></span><span class="ci" style="left:0.0%" title="Cinemeta 115.8007"></span><span class="tm" style="left:100.0%" title="TMDB live 121.9261"></span></span>
+      <span class="dl">115.8&ndash;121.9 &middot; +5%</span>
+    </div>
+    <div class="mrow">
+      <span class="fl" title="Obsession">Obsession</span>
+      <span class="mline"><i class="rng" style="left:0.0%;right:0.0%"></i><span class="jw" style="left:100.0%" title="JustWatch 232.1632"></span><span class="ci" style="left:100.0%" title="Cinemeta 232.1632"></span><span class="tm" style="left:0.0%" title="TMDB live 213.8596"></span></span>
+      <span class="dl">213.9&ndash;232.2 &middot; +9%</span>
+    </div>
+    <div class="mrow">
+      <span class="fl" title="Gunche / Colony">Gunche / Colony</span>
+      <span class="mline"><i class="rng" style="left:0.0%;right:0.0%"></i><span class="jw" style="left:81.6%" title="JustWatch 177.3214"></span><span class="ci" style="left:0.0%" title="Cinemeta 132.6035"></span><span class="tm" style="left:100.0%" title="TMDB live 187.4256"></span></span>
+      <span class="dl">132.6&ndash;187.4 &middot; +41%</span>
+    </div>
+    <div class="mrow">
+      <span class="fl" title="Batman: Knightfall Part 1">Batman: Knightfall Part 1</span>
+      <span class="mline"><i class="rng" style="left:0.0%;right:0.0%"></i><span class="jw" style="left:100.0%" title="JustWatch 164.0656"></span><span class="ci" style="left:0.0%" title="Cinemeta 116.1093"></span><span class="tm" style="left:69.3%" title="TMDB live 149.323"></span></span>
+      <span class="dl">116.1&ndash;164.1 &middot; +41%</span>
+    </div>
+    <div class="mkey">
+      <span><em class="jw" style="background:var(--spec)"></em>JustWatch</span>
+      <span><em class="ci" style="background:var(--doc)"></em>Cinemeta</span>
+      <span><em class="tm" style="background:var(--accent)"></em>TMDB, live</span>
+      <span style="margin-left:auto">right column: range, then spread as % of the lowest</span>
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="hd">Zero of twelve match the live value</div>
+    <p>JustWatch and Cinemeta agree exactly with each other on four of the twelve and disagree on the
+    other eight, so they are not reading one shared export &mdash; they are two independent refresh
+    cycles that sometimes land on the same day. Worst spreads: Batman: Knightfall
+    116.11&nbsp;&rarr;&nbsp;164.07 (<b>+41%</b>), Backrooms 112.16&nbsp;&rarr;&nbsp;140.97
+    (<b>+26%</b>), Disclosure Day 104.95&nbsp;&rarr;&nbsp;127.72 (<b>+22%</b>).</p>
+  </div>
+
+  <p>Id 1375646 is called <i>Gunche</i> by JustWatch and <i>Colony</i> by TMDB, so the title drifts
+  alongside the number.</p>
+  <p>The consequence for a client: <strong>a mirrored popularity is not the same field as its
+  source.</strong> If AMRO reads TMDB popularity from JustWatch and TMDB popularity from TMDB, it has
+  two fields, and merging them by name produces a number that is neither.</p>
+</section>
+
+<section id="gotchas">
+  <h2>05 &middot; Gotchas, collected</h2>
+  <p class="h2sub">Everything that will bite a client</p>
+
+  <div class="shapes">
+    <div class="shape">
+      <div class="hd"><h4>Sorting</h4></div>
+      <ul class="tight">
+        <li>TMDB's <code>sort_by=popularity.desc</code> does not sort by the returned
+          <code>popularity</code>: 6 inversions in 19 adjacent pairs, gaps up to 23.5 points.</li>
+        <li><code>/movie/popular</code> and <code>discover?sort_by=popularity.desc</code> return the
+          same 20 ids in a different order.</li>
+        <li>Cinemeta's <code>top</code> catalogue is labelled &ldquo;Popular&rdquo; and is not sorted
+          by any popularity field it returns.</li>
+        <li>IMDb's suggestion endpoint returns <code>rank</code> and orders by title relevance.</li>
+        <li><b>Never re-sort a list client-side by the popularity field it came with.</b></li>
+      </ul>
+    </div>
+    <div class="shape">
+      <div class="hd"><h4>Scales</h4></div>
+      <ul class="tight">
+        <li>TMDB: unbounded float, recursive on its own previous value. Top 20 span 750 points; ranks
+          9,980&ndash;10,000 span 2.4.</li>
+        <li>Watchmode: a percentile, so a difference is a row count, and it saturates at the top.</li>
+        <li>TheTVDB: a double with a documented instruction not to interpret it.</li>
+        <li>Cinemeta: four scales in one object, one of which is another over 30.</li>
+        <li>Simkl: raw counts, two orders of magnitude below Trakt's for the same films.</li>
+        <li>Trakt and Wikimedia: raw counts with a unit, and for Trakt a denominator in the header.</li>
+      </ul>
+    </div>
+    <div class="shape">
+      <div class="hd"><h4>Types</h4></div>
+      <ul class="tight">
+        <li>Simkl's <code>drop_rate</code> is a string with a <code>%</code> suffix, unpadded:
+          <code>"0.6%"</code>, <code>"1%"</code>.</li>
+        <li>Simkl's <code>ids.tmdb</code> is a string while <code>ids.simkl_id</code> is an int.</li>
+        <li>Watchmode's <code>popularity_percentile</code> is nullable.</li>
+        <li>Cinemeta's <code>popularity</code> and <code>popularities</code> are both nullable, and
+          were null together on 3 of 50.</li>
+        <li>JustWatch's cursors are base64 ASCII digits, so the rank round-trips through
+          <code>atob</code>.</li>
+      </ul>
+    </div>
+    <div class="shape">
+      <div class="hd"><h4>Windows</h4></div>
+      <ul class="tight">
+        <li>TMDB's <code>popularity</code> is identical in the day and the week list. The window
+          orders the list; it does not scope the number.</li>
+        <li>Simkl's <code>rank</code> and <code>drop_rate</code> are identical across today, week and
+          month while <code>watched</code> is window-scoped, so one item mixes both.</li>
+        <li>Streaming Availability indexes four popularity windows and returns none of them.</li>
+        <li>Trakt is the only source where the window is a path parameter and every number in the
+          body is relative to it.</li>
+      </ul>
+    </div>
+    <div class="shape">
+      <div class="hd"><h4>Reach</h4></div>
+      <ul class="tight">
+        <li>TMDB caps at page 500 (10,000 rows) while reporting <code>total_pages: 58741</code>;
+          <code>trending</code> reports <code>total_results: 10000</code>, which is the cap.</li>
+        <li>Simkl's files stop at 500 items, regenerated hourly at best.</li>
+        <li>Trakt, TheTVDB, Watchmode, Streaming Availability, MDBList and Fanart.tv all need a
+          credential before you see a single row.</li>
+        <li>OMDb and the IMDb bulk datasets have no popularity list at all.</li>
+      </ul>
+    </div>
+    <div class="shape">
+      <div class="hd"><h4>Attribution</h4></div>
+      <ul class="tight">
+        <li>Simkl requires a visible &ldquo;Simkl Trending&rdquo; style title on any surface showing
+          the data, and a <code>User-Agent</code> on the request.</li>
+        <li>Streaming Availability's <code>/shows/top</code> is a streaming service's own board, so
+          the methodology and the licence belong to Netflix, not to the API.</li>
+        <li>MDBList's popular lists are re-served from IMDb, FlixPatrol, TorrentFreak and Trakt, each
+          with its own terms.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="amro">
+  <h2>06 &middot; For AMRO</h2>
+  <p class="h2sub">What to build</p>
+
+  <p><strong>Do not model popularity as a number.</strong> Every source that ships one ships a
+  different thing: a decayed lifetime score, a percentile, a watcher count, a page-view count, an
+  ordinal. Storing them all in a <code>popularity: Double</code> throws away the only part that
+  decides whether two of them can be compared.</p>
+
+<pre>sealed interface <b>Popularity</b> {
+    <i>/** A raw count of people or events, with the window it was counted over. */</i>
+    data class <b>Count</b>(val value: Long, val unit: CountUnit, val window: Window) : Popularity
+    <i>/** Position in a ranking. The only honest reading of an opaque score. */</i>
+    data class <b>Rank</b>(val position: Int, val outOf: Int?) : Popularity
+    <i>/** A vendor score with no unit. Displayable never, sortable only within one source. */</i>
+    data class <b>OpaqueScore</b>(val value: Double, val source: Source) : Popularity
+}</pre>
+
+  <div class="split">
+    <div class="col">
+      <h5>Trust the order</h5>
+      <p class="why" style="font-size:14px;color:var(--ink-2)">Eleven sources will sort a list and six
+      hand you a number; the two do not agree in any of the six. Take the list in the order it
+      arrives, keep the index, and never re-sort by the field.</p>
+    </div>
+    <div class="col mid">
+      <h5>Prefer a count</h5>
+      <p class="why" style="font-size:14px;color:var(--ink-2)">Trakt's <code>watchers</code> with
+      <code>X-Trending-User-Count</code>, and Wikimedia's <code>views</code>, are the only two numbers
+      AMRO could show a user, blend across sources, or defend in review. Everything else can rank, and
+      nothing else can measure.</p>
+    </div>
+    <div class="col">
+      <h5>Keep the source</h5>
+      <p class="why" style="font-size:14px;color:var(--ink-2)"><code>tmdbPopularity</code> from
+      JustWatch and <code>popularity</code> from TMDB are different fields with the same name, up to
+      41% apart. A mirror is a separate source.</p>
+    </div>
+  </div>
+
+  <p><strong>Treat popularity as stale by default.</strong> TMDB's value did not move in 2m18s;
+  Cinemeta was serving a value derived from a TMDB reading 25&times; out of date; JustWatch was up to
+  41% off. Cache aggressively and never render a popularity number as if it were current.</p>
+
+  <div class="callout note">
+    <div class="hd">For the MVP, one source</div>
+    <p>TMDB's ordering is coherent within itself and its lists are paginated and cheap. Read
+    <code>trending/movie/day</code> and <code>movie/popular</code>, keep the returned order, keep
+    <code>vote_average</code> and <code>vote_count</code> (which <em>are</em> comparable), and store
+    <code>popularity</code> only as an opaque tiebreaker that never reaches the UI.</p>
+  </div>
+</section>
+
+<section id="repro">
+  <h2>07 &middot; Reproducing this</h2>
+  <p class="h2sub">Every finding, as a shell command</p>
+<pre>TOK=$(grep '^tmdb.readAccessToken=' local.properties | cut -d= -f2-)
+H="Authorization: Bearer $TOK"
+
+<i># TMDB: the sort does not match the field</i>
+curl -s -H "$H" "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&amp;page=1" \
+  | python3 -c "import json,sys;p=[x['popularity'] for x in json.load(sys.stdin)['results']];\
+print([(i+1,p[i],p[i+1]) for i in range(len(p)-1) if p[i]&lt;p[i+1]])"
+
+<i># TMDB: two popular surfaces, same set, different order</i>
+curl -s -H "$H" "https://api.themoviedb.org/3/movie/popular?page=1"
+curl -s -H "$H" "https://api.themoviedb.org/3/discover/movie?sort_by=popularity.desc&amp;page=1"
+
+<i># TMDB: the number is not window-scoped (same id -&gt; same popularity)</i>
+curl -s -H "$H" "https://api.themoviedb.org/3/trending/movie/day"
+curl -s -H "$H" "https://api.themoviedb.org/3/trending/movie/week"
+
+<i># TMDB: the page cap</i>
+curl -s -H "$H" "https://api.themoviedb.org/3/movie/popular?page=501"
+<i># {"success":false,"status_code":22,"status_message":"Invalid page: … max at 500."}</i>
+
+<i># Simkl: keyless trending files (User-Agent required)</i>
+curl -s  -A "amro/1.0" https://data.simkl.in/discover/trending/movies/today_100.json
+curl -sI -A "amro/1.0" https://data.simkl.in/discover/trending/movies/week_100.json | grep -i last-modified
+
+<i># Cinemeta: four popularities in one object; stremio == moviedb / 30</i>
+curl -sL https://v3-cinemeta.strem.io/catalog/movie/top.json \
+  | python3 -c "import json,sys;[print(x['name'],x.get('popularities')) for x in json.load(sys.stdin)['metas'][:5]]"
+
+<i># JustWatch: the schema, through its error messages</i>
+curl -s -X POST https://apis.justwatch.com/graphql -H 'content-type: application/json' \
+  -d '{"query":"{popularTitles(country:US,first:1,sortBy:POPULAR){edges{node{content(country:US,language:en){scoring{popularity}}}}}}"}'
+<i># Cannot query field "popularity" on type "Scoring". Did you mean "tmdbPopularity"?</i>
+
+curl -s -X POST https://apis.justwatch.com/graphql -H 'content-type: application/json' \
+  -d '{"query":"{popularTitles(country:US,first:1,sortBy:BOGUS){totalCount}}"}'
+<i># Value "BOGUS" does not exist in "PopularTitlesSorting!" enum.</i>
+
+<i># JustWatch: the cursor is the rank</i>
+python3 -c "import base64;print(base64.b64decode('MTA=').decode())"   <i># 10</i>
+
+<i># IMDb: the only popularity number IMDb publishes</i>
+curl -s "https://v2.sg.media-imdb.com/suggestion/t/tt1375666.json"     <i># "rank": 129</i>
+curl -s https://datasets.imdbws.com/title.ratings.tsv.gz | gzip -dc | head -1
+<i># tconst  averageRating  numVotes        &lt;- no popularity column</i>
+
+<i># Streaming Availability: four windows you can sort by and cannot read</i>
+npm pack streaming-availability &amp;&amp; tar xzf streaming-availability-*.tgz
+grep -A9 SearchShowsByFiltersOrderByEnum package/dist/apis/ShowsApi.d.ts
+grep -n 'rating\|popular' package/dist/models/Show.d.ts
+
+<i># TheTVDB: the disclaimer</i>
+curl -s https://thetvdb.github.io/v4-api/swagger.yml | sed -n '11p'
+
+<i># Watchmode: percentile, nullable</i>
+curl -s https://api.watchmode.com/openapi.json \
+  | python3 -c "import json,sys;d=json.load(sys.stdin);\
+print(d['components']['schemas']['TitleListItem']['properties']['popularity_percentile'])"
+
+<i># Trakt: keyless is refused; read the blueprint</i>
+curl -s -o /dev/null -w '%{http_code}\n' https://api.trakt.tv/movies/trending   <i># 403</i>
+curl -sL https://jsapi.apiary.io/apis/trakt.apib | grep -n 'X-Trending-User-Count'
+
+<i># Wikimedia: a number with a unit</i>
+curl -s -A "amro/1.0" \
+  "https://wikimedia.org/api/rest_v1/metrics/pageviews/top/en.wikipedia/all-access/2026/09/01"
+curl -s -A "amro/1.0" \
+  "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Inception/daily/20260901/20260901"</pre>
+  <p>All figures were read on 2026-09-03 between 08:12 and 08:52&nbsp;UTC. Popularity is the field
+  most likely to have moved since; the shapes will not have.</p>
+</section>
+
+<footer>
+  <span>AMRO &middot; movie API survey, report 4</span>
+  <span>13 sources &middot; 7 live, 5 spec, 1 doc</span>
+  <span>2026-09-03</span>
+</footer>
+
+</main>
+</div>
+</div>
+
+</body>
+</html>

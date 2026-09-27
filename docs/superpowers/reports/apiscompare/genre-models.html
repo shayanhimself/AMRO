@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{color-scheme:light dark}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Twelve Ways to Say Genre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#F4F6F6;--panel:#FFFFFF;--panel-2:#EAEEEF;
+  --ink:#161C1E;--ink-2:#454F52;--ink-3:#6D797C;
+  --rule:#D2DADB;--rule-2:#B9C4C6;
+  --accent:#0B6E75;--accent-soft:#D6E9EA;
+  --live:#1D7A4C;--live-soft:#D5E9DD;
+  --spec:#2F5E9E;--spec-soft:#D8E2F1;
+  --doc:#7A6A3F;--doc-soft:#EAE3D0;
+  --warn:#A33B14;--warn-soft:#F2DED4;
+  --shadow:0 1px 2px rgba(22,28,30,.06),0 8px 24px -18px rgba(22,28,30,.35);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1315;--panel:#151B1E;--panel-2:#1D2529;
+    --ink:#E6EBEB;--ink-2:#AAB6B8;--ink-3:#7E8B8E;
+    --rule:#283236;--rule-2:#3A474C;
+    --accent:#4FC3C9;--accent-soft:#123336;
+    --live:#5BC98C;--live-soft:#13301F;
+    --spec:#7FAEEA;--spec-soft:#152539;
+    --doc:#C9B47C;--doc-soft:#2A2415;
+    --warn:#E8865E;--warn-soft:#331B10;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -20px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1315;--panel:#151B1E;--panel-2:#1D2529;
+  --ink:#E6EBEB;--ink-2:#AAB6B8;--ink-3:#7E8B8E;
+  --rule:#283236;--rule-2:#3A474C;
+  --accent:#4FC3C9;--accent-soft:#123336;
+  --live:#5BC98C;--live-soft:#13301F;
+  --spec:#7FAEEA;--spec-soft:#152539;
+  --doc:#C9B47C;--doc-soft:#2A2415;
+  --warn:#E8865E;--warn-soft:#331B10;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -20px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:"Source Serif 4",Georgia,"Times New Roman",serif;
+  font-size:16.5px;line-height:1.62;-webkit-font-smoothing:antialiased}
+::selection{background:var(--accent-soft);color:var(--ink)}
+a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:2px}
+a:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px 96px}
+.shell{display:grid;grid-template-columns:minmax(0,1fr)}
+@media(min-width:1040px){.shell{grid-template-columns:194px minmax(0,1fr);gap:52px;align-items:start}}
+
+.masthead{border-bottom:2px solid var(--ink);padding:38px 0 18px;margin-bottom:26px}
+.kicker{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:14px;align-items:baseline}
+.kicker b{color:var(--accent);font-weight:600}
+h1{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-weight:700;
+  font-size:clamp(34px,6vw,60px);line-height:1.02;letter-spacing:-.025em;margin:14px 0 10px;text-wrap:balance}
+.dek{font-size:19px;color:var(--ink-2);max-width:64ch;margin:0 0 22px}
+.dek strong{color:var(--ink);font-weight:600}
+
+.tag{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:10.5px;font-weight:600;
+  letter-spacing:.09em;text-transform:uppercase;padding:2px 7px;border-radius:3px;
+  white-space:nowrap;display:inline-block;vertical-align:2px}
+.t-live{background:var(--live-soft);color:var(--live)}
+.t-spec{background:var(--spec-soft);color:var(--spec)}
+.t-doc{background:var(--doc-soft);color:var(--doc)}
+.legend{display:flex;flex-wrap:wrap;gap:10px 26px;padding:14px 0 0;border-top:1px solid var(--rule)}
+.legend div{font-size:14.5px;color:var(--ink-2);display:flex;gap:9px;align-items:baseline}
+
+.rail{display:none}
+@media(min-width:1040px){
+  .rail{display:block;position:sticky;top:26px;
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;line-height:1.9}
+  .rail h4{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);
+    margin:0 0 8px;font-weight:600}
+  .rail a{display:block;color:var(--ink-2);text-decoration:none;
+    border-left:2px solid var(--rule);padding-left:10px}
+  .rail a:hover{color:var(--accent);border-left-color:var(--accent)}
+  .rail .grp{margin-bottom:20px}
+}
+
+section{margin:0 0 54px;scroll-margin-top:20px}
+h2{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:13px;font-weight:600;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin:0 0 4px}
+h2 + .h2sub{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;
+  font-size:clamp(23px,3vw,31px);font-weight:600;letter-spacing:-.018em;line-height:1.15;
+  margin:0 0 18px;color:var(--ink);text-wrap:balance}
+h3{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:19px;font-weight:600;
+  letter-spacing:-.01em;margin:32px 0 8px}
+p{margin:0 0 15px;max-width:66ch}
+.lede{max-width:66ch}
+code{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.86em}
+p code,td code,li code{background:var(--panel-2);padding:1px 5px;border-radius:3px;color:var(--ink)}
+
+.scroller{overflow-x:auto;border:1px solid var(--rule);border-radius:5px;
+  background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:9px 13px;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-size:10.5px;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);background:var(--panel-2);
+  white-space:nowrap;position:sticky;top:0}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:var(--panel-2)}
+td.num,th.num{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.src{font-family:Archivo,sans-serif;font-weight:600;white-space:nowrap}
+
+/* shape strip */
+.shapes{display:grid;gap:12px}
+@media(min-width:760px){.shapes{grid-template-columns:1fr 1fr}}
+.shape{background:var(--panel);border:1px solid var(--rule);border-radius:5px;
+  padding:13px 15px 14px;display:flex;flex-direction:column;gap:8px}
+.shape .hd{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.shape h4{font-family:Archivo,sans-serif;font-size:15.5px;font-weight:600;margin:0;letter-spacing:-.01em}
+.shape pre{margin:0;border:0;padding:0;background:none;box-shadow:none;
+  font-size:12px;line-height:1.55;overflow-x:auto;color:var(--ink-2)}
+.shape .why{font-size:13.5px;color:var(--ink-3);margin:0;max-width:none}
+
+pre{background:var(--panel);border:1px solid var(--rule);border-radius:5px;
+  padding:15px 17px;overflow-x:auto;margin:16px 0;
+  font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12.5px;line-height:1.62;color:var(--ink-2)}
+pre b{color:var(--ink);font-weight:500}
+pre i{color:var(--ink-3);font-style:normal}
+pre em{color:var(--accent);font-style:normal;font-weight:500}
+
+/* AND/OR chart */
+.chart{background:var(--panel);border:1px solid var(--rule);border-radius:5px;
+  padding:22px 24px 18px;box-shadow:var(--shadow)}
+.bar-row{display:grid;grid-template-columns:172px minmax(0,1fr) 64px;gap:12px;align-items:center;margin-bottom:8px}
+.bar-row .lbl{font-family:"IBM Plex Mono",monospace;font-size:12px;text-align:right;color:var(--ink-2)}
+.track{height:17px;background:var(--panel-2);border-radius:2px;overflow:hidden}
+.fill{height:100%;background:var(--accent);border-radius:2px}
+.fill.and{background:var(--warn)}
+.bar-row .val{font-family:"IBM Plex Mono",monospace;font-size:12.5px;
+  font-variant-numeric:tabular-nums;color:var(--ink)}
+.axis{display:grid;grid-template-columns:172px minmax(0,1fr) 64px;gap:12px;margin-top:10px;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+.axis .ticks{display:flex;justify-content:space-between;border-top:1px solid var(--rule);padding-top:4px}
+.chart-note{font-size:13.5px;color:var(--ink-3);margin:14px 0 0;max-width:62ch}
+
+/* venn-ish id split */
+.split{display:grid;gap:12px;margin:18px 0}
+@media(min-width:720px){.split{grid-template-columns:repeat(3,1fr)}}
+.split .col{background:var(--panel);border:1px solid var(--rule);border-radius:5px;padding:14px 16px}
+.split .col.mid{border-color:var(--accent);background:var(--accent-soft)}
+.split h5{font-family:Archivo,sans-serif;font-size:11px;font-weight:600;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--ink-3);margin:0 0 4px}
+.split .col.mid h5{color:var(--accent)}
+.split .n{font-family:Archivo,sans-serif;font-size:30px;font-weight:700;line-height:1;
+  letter-spacing:-.02em;margin:0 0 8px;font-variant-numeric:tabular-nums}
+.split ul{margin:0;padding-left:0;list-style:none;
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;line-height:1.75;color:var(--ink-2)}
+
+.callout{border-left:3px solid var(--warn);background:var(--warn-soft);
+  padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0}
+.callout p{margin:0;max-width:64ch}
+.callout .hd{font-family:Archivo,sans-serif;font-size:11px;font-weight:600;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--warn);margin-bottom:5px}
+.note{border-left-color:var(--accent);background:var(--accent-soft)}
+.note .hd{color:var(--accent)}
+
+ul.tight{margin:0 0 16px;padding-left:20px;max-width:68ch}
+ul.tight li{margin-bottom:8px}
+
+footer{border-top:1px solid var(--rule);margin-top:20px;padding-top:18px;
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);
+  display:flex;flex-wrap:wrap;gap:8px 22px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="kicker">
+    <span>AMRO / Research</span><span>2026-09-02</span>
+    <span><b>One field</b>, twelve APIs</span><span>Companion to the Movie API Field Guide</span>
+  </div>
+  <h1>Twelve Ways to Say Genre</h1>
+  <p class="dek">How a genre appears inside a movie object, whether the API publishes a genre endpoint, what that endpoint returns, and what selecting two genres at once actually means. <strong>The delimiter that means AND on TMDB means OR on Trakt.</strong> Both were checked.</p>
+  <div class="legend">
+    <div><span class="tag t-live">Live</span> Request issued here; response quoted.</div>
+    <div><span class="tag t-spec">Spec</span> OpenAPI or Blueprint read.</div>
+    <div><span class="tag t-doc">Doc</span> Vendor prose; endpoint needs a key.</div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Contents">
+    <div class="grp">
+      <h4>Sections</h4>
+      <a href="#answer">Short answer</a>
+      <a href="#shapes">In the movie object</a>
+      <a href="#endpoints">The endpoints</a>
+      <a href="#two">TMDB's two lists</a>
+      <a href="#andor">AND or OR</a>
+      <a href="#gotchas">Gotchas</a>
+      <a href="#amro">For AMRO</a>
+      <a href="#repro">Reproduce it</a>
+    </div>
+    <div class="grp">
+      <h4>Measured</h4>
+      <a href="#two">19 movie / 16 TV</a>
+      <a href="#andor">5,615 vs 71,087</a>
+      <a href="#answer">693 Wikidata</a>
+    </div>
+  </nav>
+
+  <main>
+
+  <section id="answer">
+    <h2>Section 1</h2>
+    <div class="h2sub">The short answer</div>
+    <p class="lede">Three of the twelve publish no genre vocabulary of their own. OMDb and Cinemeta re-export IMDb's, and IMDb has no endpoint because its vocabulary exists only as values in a TSV column.</p>
+    <div class="scroller">
+      <table>
+        <thead><tr><th>Source</th><th>In the movie object</th><th>Endpoint</th><th>Endpoint returns</th><th>Evidence</th></tr></thead>
+        <tbody>
+          <tr><td class="src">TMDB</td><td><code>genre_ids: [53]</code> on list, <code>genres: [{id, name}]</code> on detail</td><td><code>/3/genre/movie/list</code></td><td><code>{genres: [{id, name}]}</code>, 19 rows</td><td><span class="tag t-live">Live</span></td></tr>
+          <tr><td class="src">OMDb</td><td><code>"Genre": "Action, Adventure, Sci-Fi"</code></td><td>none</td><td>&mdash;</td><td><span class="tag t-doc">Doc</span></td></tr>
+          <tr><td class="src">IMDb datasets</td><td><code>genres</code> column, <code>"Documentary,Short"</code>, max 3</td><td>none</td><td>vocabulary is implicit in the data</td><td><span class="tag t-live">Live</span></td></tr>
+          <tr><td class="src">Trakt</td><td><code>genres: ["action"]</code></td><td><code>/genres/movies</code></td><td><code>[{name, slug}]</code>, 34 rows, nests subgenres on request</td><td><span class="tag t-spec">Spec</span></td></tr>
+          <tr><td class="src">TheTVDB</td><td><code>genres: [GenreBaseRecord]</code></td><td><code>/genres</code>, <code>/genres/{id}</code></td><td><code>{data: [{id, name, slug}], status}</code></td><td><span class="tag t-spec">Spec</span></td></tr>
+          <tr><td class="src">Watchmode</td><td><code>genres: [7]</code> <em>and</em> <code>genre_names: ["Drama"]</code></td><td><code>/v1/genres</code></td><td><code>[{id, name, tmdb_id}]</code></td><td><span class="tag t-doc">Doc</span></td></tr>
+          <tr><td class="src">Streaming Avail.</td><td><code>genres: [{id, name}]</code></td><td><code>/genres</code></td><td><code>[{id, name}]</code>, 21 rows, localisable</td><td><span class="tag t-spec">Spec</span></td></tr>
+          <tr><td class="src">Simkl</td><td><code>genres: ["Adventure", "Family"]</code></td><td>none</td><td>20 slugs documented as path values</td><td><span class="tag t-spec">Spec</span></td></tr>
+          <tr><td class="src">MDBList</td><td>inside the media record</td><td><code>/genres?anime=0|1</code></td><td><code>[{id, name}]</code>, two vocabularies</td><td><span class="tag t-spec">Spec</span></td></tr>
+          <tr><td class="src">JustWatch</td><td><code>genres: [{shortName, translation}]</code></td><td>root <code>genres</code> GraphQL field</td><td>19 rows of <code>{shortName, translation}</code></td><td><span class="tag t-live">Live</span></td></tr>
+          <tr><td class="src">Cinemeta</td><td><code>genres: [...]</code> plus a duplicate <code>genre</code> key</td><td>none, declared in <code>manifest.json</code></td><td>19 filterable strings in <code>extra.options</code></td><td><span class="tag t-live">Live</span></td></tr>
+          <tr><td class="src">Wikidata</td><td><code>P136</code> statements pointing at Q-items</td><td>none, it is a SPARQL query</td><td>693 items are instances of film genre</td><td><span class="tag t-live">Live</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="shapes">
+    <h2>Section 2</h2>
+    <div class="h2sub">The same concept, twelve shapes</div>
+    <p class="lede">Real payloads, trimmed to the genre field and enough context to place it.</p>
+
+    <div class="shapes">
+      <article class="shape">
+        <div class="hd"><h4>TMDB</h4><span class="tag t-live">Live</span></div>
+<pre><i>// trending/movie/week -> results[0]</i>
+{ "id": 1386315, "title": "The Runner",
+  <b>"genre_ids": [53]</b> }
+
+<i>// movie/27205</i>
+{ "title": "Inception",
+  <b>"genres"</b>: [ {"id": 28,  "name": "Action"},
+               {"id": 878, "name": "Science Fiction"},
+               {"id": 12,  "name": "Adventure"} ] }</pre>
+        <p class="why">Different key, different type, same concept. A list screen showing genre names cannot get them from the list response.</p>
+      </article>
+
+      <article class="shape">
+        <div class="hd"><h4>OMDb</h4><span class="tag t-doc">Doc</span></div>
+<pre>{ <b>"Genre": "Action, Adventure, Sci-Fi"</b> }</pre>
+        <p class="why">One string, singular key, comma and space. No genre name contains that delimiter, so splitting is safe. Missing reads <code>"N/A"</code>, not null.</p>
+      </article>
+
+      <article class="shape">
+        <div class="hd"><h4>IMDb datasets</h4><span class="tag t-live">Live</span></div>
+<pre>tconst     titleType  primaryTitle  ... <b>genres</b>
+tt0000001  short      Carmencita    ... <b>Documentary,Short</b></pre>
+        <p class="why">Comma, no space, capped at three per title, <code>\N</code> when empty. The vocabulary is whatever appears in the column.</p>
+      </article>
+
+      <article class="shape">
+        <div class="hd"><h4>Trakt</h4><span class="tag t-spec">Spec</span></div>
+<pre>{ "title": "TRON: Legacy",
+  <b>"genres": ["action"]</b>,
+  "certification": "PG-13" }</pre>
+        <p class="why">Lowercase slugs, and only with <code>?extended=full</code>. The base response carries no genres at all.</p>
+      </article>
+
+      <article class="shape">
+        <div class="hd"><h4>TheTVDB</h4><span class="tag t-spec">Spec</span></div>
+<pre>GenreBaseRecord:
+  <b>id</b>:   integer(int64)
+  <b>name</b>: string
+  <b>slug</b>: string</pre>
+        <p class="why">The only source giving id, display name and a URL-safe slug in one object, on both the movie and the vocabulary endpoint.</p>
+      </article>
+
+      <article class="shape">
+        <div class="hd"><h4>Watchmode</h4><span class="tag t-doc">Doc</span></div>
+<pre>{ <b>"genres": [7]</b>,
+  <b>"genre_names": ["Drama"]</b> }</pre>
+        <p class="why">Both representations pre-joined on the same object. No second call, no lookup table. Nothing else here does this.</p>
+      </article>
+
+      <article class="shape">
+        <div class="hd"><h4>Streaming Availability</h4><span class="tag t-spec">Spec</span></div>
+<pre>export interface Genre {
+  <b>id: string</b>;   <i>// not integer</i>
+  <b>name: string</b>;
+}</pre>
+        <p class="why">From the generated client for OpenAPI 4.1.0. A string id will not compare equal to TMDB's integer without a cast.</p>
+      </article>
+
+      <article class="shape">
+        <div class="hd"><h4>Simkl</h4><span class="tag t-spec">Spec</span></div>
+<pre>{ "title": "Harry Potter and the ...",
+  <b>"genres": ["Adventure", "Family", "Fantasy"]</b> }
+
+<i>// but the browse path wants</i>
+/movies/genres/<b>science-fiction</b>/movies/all/all/rank</pre>
+        <p class="why">Title case in the body, lowercase hyphenated in its own URLs. One source, two casings of one vocabulary.</p>
+      </article>
+
+      <article class="shape">
+        <div class="hd"><h4>JustWatch</h4><span class="tag t-live">Live</span></div>
+<pre><b>"genres"</b>: [
+  {"shortName": "act", "translation": "Action &amp; Adventure"},
+  {"shortName": "trl", "translation": "Mystery &amp; Thriller"},
+  {"shortName": "scf", "translation": "Science-Fiction"} ]</pre>
+        <p class="why">The key is <code>translation</code>, not <code>name</code>. Honest: the value changes with language, the <code>shortName</code> does not.</p>
+      </article>
+
+      <article class="shape">
+        <div class="hd"><h4>Cinemeta</h4><span class="tag t-live">Live</span></div>
+<pre>{ "name": "Inception",
+  <b>"genre"</b>:  ["Action", "Adventure", "Sci-Fi"],
+  <b>"genres"</b>: ["Action", "Adventure", "Sci-Fi"] }</pre>
+        <p class="why">Both keys, identical values, on every response. Legacy and current side by side, which is how such duplication survives.</p>
+      </article>
+
+      <article class="shape">
+        <div class="hd"><h4>Wikidata</h4><span class="tag t-live">Live</span></div>
+<pre><i># ?film wdt:P136 ?g</i>
+<b>Q130232</b>  drama film
+<b>Q188473</b>  action film</pre>
+        <p class="why">Not a field. Statements pointing at Q-items, each label resolved separately, in any language.</p>
+      </article>
+
+      <article class="shape">
+        <div class="hd"><h4>MDBList</h4><span class="tag t-spec">Spec</span></div>
+<pre><i># /genres returns</i>
+[ { <b>"id"</b>: 1, <b>"name"</b>: "Action" } ]
+
+<i># but the catalogue filter takes names</i>
+?<b>genre=action</b>&amp;<b>genre=comedy</b>&amp;genre_mode=or</pre>
+        <p class="why">Ids out of the vocabulary endpoint, names into the filter. The two do not meet.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="endpoints">
+    <h2>Section 3</h2>
+    <div class="h2sub">What the endpoints return</div>
+
+    <h3>TMDB, the full vocabulary <span class="tag t-live">Live</span></h3>
+<pre>GET <b>/3/genre/movie/list?language=en-US</b>
+
+{"genres":[{"id":<em>28</em>,"name":"Action"},      {"id":<em>12</em>,"name":"Adventure"},
+           {"id":<em>16</em>,"name":"Animation"},   {"id":<em>35</em>,"name":"Comedy"},
+           {"id":<em>80</em>,"name":"Crime"},       {"id":<em>99</em>,"name":"Documentary"},
+           {"id":<em>18</em>,"name":"Drama"},       {"id":<em>10751</em>,"name":"Family"},
+           {"id":<em>14</em>,"name":"Fantasy"},     {"id":<em>36</em>,"name":"History"},
+           {"id":<em>27</em>,"name":"Horror"},      {"id":<em>10402</em>,"name":"Music"},
+           {"id":<em>9648</em>,"name":"Mystery"},   {"id":<em>10749</em>,"name":"Romance"},
+           {"id":<em>878</em>,"name":"Science Fiction"},
+           {"id":<em>10770</em>,"name":"TV Movie"}, {"id":<em>53</em>,"name":"Thriller"},
+           {"id":<em>10752</em>,"name":"War"},      {"id":<em>37</em>,"name":"Western"}]}</pre>
+    <p>Wrapped in a <code>genres</code> object rather than a bare array. Ids are non-contiguous and unsorted, so nothing may be inferred from their order or range: they are opaque keys.</p>
+
+    <h3>Trakt, the only hierarchy <span class="tag t-spec">Spec</span></h3>
+<pre>GET <b>/genres/movies?extended=subgenres</b>
+
+[ { "name": "Action", "slug": "action",
+    <b>"subgenres"</b>: [ {"name": "Action Comedy",  "slug": "action-comedy"},
+                    {"name": "Heist",         "slug": "heist"},
+                    {"name": "Revenge",       "slug": "revenge"},
+                    {"name": "Martial Arts",  "slug": "martial-arts"},
+                    {"name": "Buddy Cop",     "slug": "buddy-cop"},
+                    {"name": "Spy Thriller",  "slug": "spy-thriller"},
+                    {"name": "Vigilante",     "slug": "vigilante"},
+                    {"name": "Assassin",      "slug": "assassin"},
+                    {"name": "Chase",         "slug": "chase"} ] } ]</pre>
+    <p>Thirty-four top-level slugs, each able to nest a second tier. The blueprint marks subgenres as a technical preview. Nothing else here can express that <code>heist</code> is a kind of <code>action</code>.</p>
+
+    <h3>Watchmode, the only published cross-walk <span class="tag t-doc">Doc</span></h3>
+<pre>GET <b>/v1/genres</b>
+
+[ {"id": 4,  "name": "Comedy",      <b>"tmdb_id": 35</b>},
+  {"id": 6,  "name": "Documentary", <b>"tmdb_id": 99</b>},
+  {"id": 33, "name": "Anime",       <b>"tmdb_id": 0</b>} ]</pre>
+    <p><code>tmdb_id: 0</code> marks a genre TMDB has no equivalent for, which is how <code>Anime</code> is represented. Every other pairing of sources in this survey needs a mapping table you write and maintain.</p>
+
+    <h3>JustWatch, nineteen merged buckets <span class="tag t-live">Live</span></h3>
+<pre>POST <b>https://apis.justwatch.com/graphql</b>
+{ genres { shortName translation(language: "en") } }
+
+<b>act</b> Action &amp; Adventure   <b>cmy</b> Comedy        <b>crm</b> Crime
+<b>doc</b> Documentary         <b>drm</b> Drama         <b>eur</b> Made in Europe
+<b>fml</b> Kids &amp; Family      <b>fnt</b> Fantasy       <b>hrr</b> Horror
+<b>hst</b> History             <b>msc</b> Music &amp; Musical
+<b>rly</b> Reality TV          <b>rma</b> Romance       <b>scf</b> Science-Fiction
+<b>spt</b> Sport               <b>trl</b> Mystery &amp; Thriller
+<b>war</b> War &amp; Military     <b>wsn</b> Western       <b>ani</b> Animation</pre>
+    <p><code>language</code> is a required argument on <code>translation</code>, so there is no untranslated form of a name and the code is the only stable key. Two buckets merge what TMDB splits, and <code>eur</code>, <em>Made in Europe</em>, is not a genre at all: it is provenance in a genre's clothing, because this vocabulary was designed for a filter row rather than for cataloguing.</p>
+
+    <h3>Cinemeta, a vocabulary with no endpoint <span class="tag t-live">Live</span></h3>
+<pre>GET <b>/manifest.json</b>  ->  catalogs[0].extra[0]
+
+{ "name": "genre", "options": [
+  "Action","Adventure","Animation","Biography","Comedy","Crime",
+  "Documentary","Drama","Family","Fantasy","History","Horror",
+  "Mystery","Romance","Sci-Fi","Sport","Thriller","War","Western" ] }</pre>
+    <div class="callout">
+      <div class="hd">Nineteen filterable, twenty-eight on items</div>
+      <p>Meta objects return the full IMDb set, so <code>Short</code>, <code>Music</code>, <code>Musical</code>, <code>Film-Noir</code>, <code>News</code>, <code>Reality-TV</code>, <code>Talk-Show</code>, <code>Game-Show</code> and <code>Adult</code> appear on items that no catalogue query can select. A live fetch of <code>tt1254207</code> comes back <code>["Animation", "Short", "Comedy"]</code>.</p>
+    </div>
+  </section>
+
+  <section id="two">
+    <h2>Section 4</h2>
+    <div class="h2sub">TMDB has two genre vocabularies, not one</div>
+    <p class="lede"><code>/genre/movie/list</code> and <code>/genre/tv/list</code> are different sets sharing one id space. Both fetched live.</p>
+
+    <div class="split">
+      <div class="col">
+        <h5>Movie only</h5>
+        <p class="n">11</p>
+        <ul>
+          <li>28 Action</li><li>12 Adventure</li><li>14 Fantasy</li>
+          <li>27 Horror</li><li>36 History</li><li>53 Thriller</li>
+          <li>878 Science Fiction</li><li>10402 Music</li><li>10749 Romance</li>
+          <li>10752 War</li><li>10770 TV Movie</li>
+        </ul>
+      </div>
+      <div class="col mid">
+        <h5>In both, same names</h5>
+        <p class="n">8</p>
+        <ul>
+          <li>16 Animation</li><li>18 Drama</li><li>35 Comedy</li>
+          <li>37 Western</li><li>80 Crime</li><li>99 Documentary</li>
+          <li>9648 Mystery</li><li>10751 Family</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h5>TV only</h5>
+        <p class="n">8</p>
+        <ul>
+          <li>10759 Action &amp; Adventure</li><li>10762 Kids</li><li>10763 News</li>
+          <li>10764 Reality</li><li>10765 Sci-Fi &amp; Fantasy</li><li>10766 Soap</li>
+          <li>10767 Talk</li><li>10768 War &amp; Politics</li>
+        </ul>
+      </div>
+    </div>
+
+    <p>Nineteen movie genres, sixteen TV, twenty-seven distinct ids across both. No id carries a different name in the two lists, so a collision would be silent rather than obviously wrong.</p>
+    <p>The TV list merges what the movie list splits: <code>10759 Action &amp; Adventure</code> covers movie ids <code>28</code> and <code>12</code>, <code>10765 Sci-Fi &amp; Fantasy</code> covers <code>878</code> and <code>14</code>, <code>10768 War &amp; Politics</code> covers <code>10752</code>. TMDB's TV vocabulary is shaped like JustWatch's. Its movie vocabulary is not.</p>
+
+    <div class="callout note">
+      <div class="hd">Localisation, checked</div>
+      <p><code>?language=nl-NL</code> returns <code>28:Actie, 12:Avontuur, 16:Animatie, 35:Komedie, 80:Misdaad, 99:Documentaire, 18:Drama, 10751:Familie</code>. Ids stable, names translated. The rule that follows: never persist a genre <em>name</em> as a key. The id or slug is the key; the name is a display string that changes with locale and with the vendor's editorial mood.</p>
+    </div>
+  </section>
+
+  <section id="andor">
+    <h2>Section 5</h2>
+    <div class="h2sub">Selecting two genres: AND, or OR</div>
+    <p class="lede">Four sources accept several genres at once and they disagree about what that means. TMDB was measured directly: <code>/3/discover/movie</code>, <code>total_results</code> for each query, all four calls inside one minute.</p>
+
+    <div class="chart">
+      <div class="bar-row"><div class="lbl">with_genres=28|878</div><div class="track"><div class="fill" style="width:100%"></div></div><div class="val">71,087</div></div>
+      <div class="bar-row"><div class="lbl">with_genres=28</div><div class="track"><div class="fill" style="width:69.9%"></div></div><div class="val">49,673</div></div>
+      <div class="bar-row"><div class="lbl">with_genres=878</div><div class="track"><div class="fill" style="width:38.0%"></div></div><div class="val">27,022</div></div>
+      <div class="bar-row"><div class="lbl">with_genres=28,878</div><div class="track"><div class="fill and" style="width:7.9%"></div></div><div class="val">5,615</div></div>
+      <div class="axis"><div></div><div class="ticks"><span>0</span><span>20k</span><span>40k</span><span>60k</span><span>80k</span></div><div></div></div>
+      <p class="chart-note">Genre 28 is Action, 878 is Science Fiction. Comma is AND (orange), pipe is OR. The union check holds: 49,673 + 27,022 &minus; 5,615 = 71,080 against a measured 71,087, a drift of seven titles between calls.</p>
+    </div>
+
+    <div class="scroller" style="margin-top:20px">
+      <table>
+        <thead><tr><th>Source</th><th>How you ask</th><th>What it means</th><th>Evidence</th></tr></thead>
+        <tbody>
+          <tr><td class="src">TMDB</td><td><code>with_genres=28,878</code> / <code>28|878</code></td><td>comma is <strong>AND</strong>, pipe is <strong>OR</strong></td><td><span class="tag t-live">Live</span></td></tr>
+          <tr><td class="src">Trakt</td><td><code>?genres=action,adventure</code></td><td>comma is <strong>OR</strong>. No AND form exists.</td><td><span class="tag t-spec">Spec</span></td></tr>
+          <tr><td class="src">Streaming Avail.</td><td><code>genres[]</code> plus <code>genresRelation</code></td><td>caller states it: <code>'and' | 'or'</code></td><td><span class="tag t-spec">Spec</span></td></tr>
+          <tr><td class="src">MDBList</td><td><code>?genre=action&amp;genre=comedy&amp;genre_mode=</code></td><td>repeated params, <code>and</code> or <code>or</code>, default <strong>or</strong></td><td><span class="tag t-spec">Spec</span></td></tr>
+          <tr><td class="src">Cinemeta</td><td><code>/catalog/movie/top/genre=Action.json</code></td><td>one genre per request, no multi form</td><td><span class="tag t-live">Live</span></td></tr>
+          <tr><td class="src">Watchmode</td><td><code>genres=4,7</code></td><td>documentation does not say</td><td><span class="tag t-doc">Doc</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>The brief chose multi-select with OR semantics, applied client-side, on the grounds that a median of three genres per film makes AND return almost nothing. The measurement confirms it from the other side: TMDB's own server-side AND cuts Action and Science Fiction from 49,673 and 27,022 down to 5,615, a 92% reduction against the smaller of the two sets.</p>
+  </section>
+
+  <section id="gotchas">
+    <h2>Section 6</h2>
+    <div class="h2sub">Gotchas, collected</div>
+    <ul class="tight">
+      <li><strong>TMDB list items carry ids, detail carries objects.</strong> Two shapes for one field on one API.</li>
+      <li><strong>TMDB movie and TV lists share an id space but not their contents.</strong> One cached table cannot serve both.</li>
+      <li><strong>Comma means AND on TMDB and OR on Trakt.</strong> Measured on one, documented on the other.</li>
+      <li><strong>Cinemeta's filter vocabulary is a subset of its item vocabulary.</strong> Items carry genres no query can select.</li>
+      <li><strong>Cinemeta returns both <code>genre</code> and <code>genres</code></strong> with identical values, legacy beside current.</li>
+      <li><strong>Simkl's casing differs between body and path.</strong> <code>Science Fiction</code> in the object, <code>science-fiction</code> in the URL.</li>
+      <li><strong>Simkl fails silently on an unknown genre slug:</strong> the top-level response is <code>null</code>, not <code>[]</code>, and never a 404.</li>
+      <li><strong>Streaming Availability genre ids are strings.</strong> They will not compare equal to TMDB integers without a cast.</li>
+      <li><strong>MDBList returns ids but filters on names.</strong></li>
+      <li><strong>TheTVDB's response envelope has its own <code>status</code> field</strong>, unrelated to the genre payload.</li>
+      <li><strong>OMDb writes <code>"N/A"</code>, not null,</strong> when a genre is missing.</li>
+      <li><strong>Trakt omits genres entirely</strong> unless you pass <code>?extended=full</code>.</li>
+    </ul>
+  </section>
+
+  <section id="amro">
+    <h2>Section 7</h2>
+    <div class="h2sub">What this means for AMRO</div>
+    <p class="lede">The MVP filters client-side over TMDB <code>genre_ids</code>, multi-select, OR semantics. Nothing here argues against either. Two things do follow.</p>
+
+    <h3>The genre join belongs at the source boundary</h3>
+    <p>Framed as "join TMDB ids to TMDB names", it looks like a repository detail. Framed as "resolve a source's genre representation into the app's own genre type", it is a boundary responsibility, and it is the same amount of code today. The difference shows the moment a second source arrives, because the shapes catalogued above are integers, strings, slugs, three-character codes, objects with three fields, and Q-items in an open ontology. Only Watchmode publishes a mapping to TMDB; every other pairing is a table someone writes and maintains.</p>
+
+    <h3>Genre names are display strings, not keys</h3>
+    <p>They are localised on TMDB, Streaming Availability and JustWatch, and they differ in case between Simkl's own body and its own URLs. A genre type keyed by an app-owned identifier, with the display name resolved for the current locale, costs nothing now and is the only version that survives a Dutch build or a second source.</p>
+
+    <div class="callout note">
+      <div class="hd">The list itself is cheap</div>
+      <p>Nineteen rows, ids that have not moved, a payload measured in hundreds of bytes. Good candidate for a long-lived cache with a far lazier refresh than the 24-hour detail window, and for a bundled fallback so the filter sheet is never empty on a cold, offline start.</p>
+    </div>
+  </section>
+
+  <section id="repro">
+    <h2>Section 8</h2>
+    <div class="h2sub">Reproduce this</div>
+<pre><i># TMDB: both vocabularies, and the id overlap</i>
+curl -s -H "Authorization: Bearer $TMDB_TOKEN" <b>".../3/genre/movie/list?language=en-US"</b>
+curl -s -H "Authorization: Bearer $TMDB_TOKEN" <b>".../3/genre/tv/list?language=en-US"</b>
+
+<i># TMDB: names localise, ids do not</i>
+curl -s -H "Authorization: Bearer $TMDB_TOKEN" <b>".../3/genre/movie/list?language=nl-NL"</b>
+
+<i># TMDB: comma is AND, pipe is OR</i>
+for q in 28 878 "28,878" "28%7C878"; do
+  curl -s -H "Authorization: Bearer $TMDB_TOKEN" \
+    <b>"https://api.themoviedb.org/3/discover/movie?with_genres=$q"</b> \
+    | python3 -c 'import sys,json;print(json.load(sys.stdin)["total_results"])'
+done
+
+<i># JustWatch: 19 merged buckets</i>
+curl -s -X POST <b>https://apis.justwatch.com/graphql</b> -H 'Content-Type: application/json' \
+  -d '{"query":"{genres{shortName translation(language:\"en\")}}"}'
+
+<i># Cinemeta: filter vocabulary against item vocabulary</i>
+curl -s <b>https://v3-cinemeta.strem.io/manifest.json</b>
+curl -s <b>https://v3-cinemeta.strem.io/meta/movie/tt1254207.json</b>   <i># returns "Short"</i>
+
+<i># IMDb: the 28-value vocabulary, measured from the data itself</i>
+curl -s -r 0-6000000 <b>"https://datasets.imdbws.com/title.basics.tsv.gz"</b> | gzip -dc 2&gt;/dev/null \
+  | awk -F'\t' 'NR&gt;1{n=split($9,a,","); for(i=1;i&lt;=n;i++) if(a[i]!="\\N") g[a[i]]++} \
+                END{for(k in g) print g[k]"\t"k}' | sort -rn
+
+<i># Contracts carrying the genre schemas and filter semantics</i>
+curl -s <b>https://thetvdb.github.io/v4-api/swagger.yml</b>          <i># GenreBaseRecord, /genres</i>
+curl -s <b>https://api.mdblist.com/schema/</b>                       <i># /genres, genre_mode</i>
+curl -s <b>https://jsapi.apiary.io/apis/trakt.apib</b>               <i># subgenres, filter semantics</i>
+curl -s <b>https://api.simkl.org/api-reference/simkl/get-movies-genres.md</b>
+curl -s <b>.../movieofthenight/ts-streaming-availability/main/src/apis/ShowsApi.ts</b></pre>
+  </section>
+
+  <footer>
+    <span>AMRO / Movie Discovery MVP</span>
+    <span>Genre survey 2026-09-02</span>
+    <span>12 sources, 5 live, 5 spec, 2 doc</span>
+    <span>docs/superpowers/reports/genre-models.md</span>
+  </footer>
+
+  </main>
+</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{color-scheme:light dark}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+</style>
+<title>Movie API Field Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#F4F6F6;
+  --panel:#FFFFFF;
+  --panel-2:#EAEEEF;
+  --ink:#161C1E;
+  --ink-2:#454F52;
+  --ink-3:#6D797C;
+  --rule:#D2DADB;
+  --rule-2:#B9C4C6;
+  --accent:#0B6E75;
+  --accent-soft:#D6E9EA;
+  --live:#1D7A4C;
+  --live-soft:#D5E9DD;
+  --spec:#2F5E9E;
+  --spec-soft:#D8E2F1;
+  --doc:#7A6A3F;
+  --doc-soft:#EAE3D0;
+  --warn:#A33B14;
+  --warn-soft:#F2DED4;
+  --shadow:0 1px 2px rgba(22,28,30,.06),0 8px 24px -18px rgba(22,28,30,.35);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E1315;
+    --panel:#151B1E;
+    --panel-2:#1D2529;
+    --ink:#E6EBEB;
+    --ink-2:#AAB6B8;
+    --ink-3:#7E8B8E;
+    --rule:#283236;
+    --rule-2:#3A474C;
+    --accent:#4FC3C9;
+    --accent-soft:#123336;
+    --live:#5BC98C;
+    --live-soft:#13301F;
+    --spec:#7FAEEA;
+    --spec-soft:#152539;
+    --doc:#C9B47C;
+    --doc-soft:#2A2415;
+    --warn:#E8865E;
+    --warn-soft:#331B10;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -20px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E1315;
+  --panel:#151B1E;
+  --panel-2:#1D2529;
+  --ink:#E6EBEB;
+  --ink-2:#AAB6B8;
+  --ink-3:#7E8B8E;
+  --rule:#283236;
+  --rule-2:#3A474C;
+  --accent:#4FC3C9;
+  --accent-soft:#123336;
+  --live:#5BC98C;
+  --live-soft:#13301F;
+  --spec:#7FAEEA;
+  --spec-soft:#152539;
+  --doc:#C9B47C;
+  --doc-soft:#2A2415;
+  --warn:#E8865E;
+  --warn-soft:#331B10;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -20px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--ground);
+  color:var(--ink);
+  font-family:"Source Serif 4",Georgia,"Times New Roman",serif;
+  font-size:16.5px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--accent-soft);color:var(--ink)}
+a{color:var(--accent);text-decoration-thickness:1px;text-underline-offset:2px}
+a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px 96px}
+.shell{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+@media(min-width:1040px){
+  .shell{grid-template-columns:194px minmax(0,1fr);gap:52px;align-items:start}
+}
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:2px solid var(--ink);padding:38px 0 18px;margin-bottom:26px}
+.kicker{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-3);display:flex;flex-wrap:wrap;gap:14px;align-items:baseline;
+}
+.kicker b{color:var(--accent);font-weight:600}
+h1{
+  font-family:Archivo,"Helvetica Neue",Arial,sans-serif;
+  font-weight:700;font-size:clamp(34px,6vw,60px);line-height:1.02;
+  letter-spacing:-.025em;margin:14px 0 10px;text-wrap:balance;
+}
+.dek{font-size:19px;color:var(--ink-2);max-width:62ch;margin:0 0 22px}
+.dek strong{color:var(--ink);font-weight:600}
+
+/* ---------- provenance tags ---------- */
+.tag{
+  font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:10.5px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;
+  padding:2px 7px;border-radius:3px;white-space:nowrap;display:inline-block;
+  vertical-align:2px;
+}
+.t-live{background:var(--live-soft);color:var(--live)}
+.t-spec{background:var(--spec-soft);color:var(--spec)}
+.t-doc{background:var(--doc-soft);color:var(--doc)}
+.t-no{background:var(--warn-soft);color:var(--warn)}
+
+.legend{display:flex;flex-wrap:wrap;gap:10px 26px;padding:14px 0 0;border-top:1px solid var(--rule)}
+.legend div{font-size:14.5px;color:var(--ink-2);display:flex;gap:9px;align-items:baseline}
+
+/* ---------- side rail ---------- */
+.rail{display:none}
+@media(min-width:1040px){
+  .rail{
+    display:block;position:sticky;top:26px;
+    font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:11.5px;line-height:1.9;
+  }
+  .rail h4{
+    font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);
+    margin:0 0 8px;font-weight:600;
+  }
+  .rail a{display:block;color:var(--ink-2);text-decoration:none;border-left:2px solid var(--rule);padding-left:10px}
+  .rail a:hover{color:var(--accent);border-left-color:var(--accent)}
+  .rail .grp{margin-bottom:20px}
+}
+
+/* ---------- sections ---------- */
+section{margin:0 0 54px;scroll-margin-top:20px}
+h2{
+  font-family:Archivo,"Helvetica Neue",Arial,sans-serif;
+  font-size:13px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--accent);margin:0 0 4px;
+}
+h2 + .h2sub{
+  font-family:Archivo,"Helvetica Neue",Arial,sans-serif;
+  font-size:clamp(23px,3vw,31px);font-weight:600;letter-spacing:-.018em;line-height:1.15;
+  margin:0 0 18px;color:var(--ink);text-wrap:balance;
+}
+h3{
+  font-family:Archivo,"Helvetica Neue",Arial,sans-serif;
+  font-size:19px;font-weight:600;letter-spacing:-.01em;margin:30px 0 8px;
+}
+p{margin:0 0 15px;max-width:66ch}
+.lede{max-width:66ch}
+code,.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.86em}
+p code,td code,li code{background:var(--panel-2);padding:1px 5px;border-radius:3px;color:var(--ink)}
+
+/* ---------- tables ---------- */
+.scroller{overflow-x:auto;border:1px solid var(--rule);border-radius:5px;background:var(--panel);box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:9px 13px;border-bottom:1px solid var(--rule);vertical-align:top}
+thead th{
+  font-family:Archivo,"Helvetica Neue",Arial,sans-serif;
+  font-size:10.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);background:var(--panel-2);white-space:nowrap;position:sticky;top:0;
+}
+tbody tr:last-child td{border-bottom:0}
+td.num,th.num{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.src{font-family:Archivo,"Helvetica Neue",Arial,sans-serif;font-weight:600;white-space:nowrap}
+tbody tr:hover{background:var(--panel-2)}
+
+/* coverage matrix */
+.matrix table{font-size:13px}
+.matrix th.rot{font-size:10px;letter-spacing:.06em;padding:9px 6px;text-align:center}
+.matrix td.c{text-align:center;font-family:"IBM Plex Mono",ui-monospace,monospace;padding:7px 6px}
+.matrix td.field{white-space:nowrap;font-weight:600;font-family:Archivo,sans-serif;font-size:12.5px;
+  position:sticky;left:0;background:var(--panel);border-right:1px solid var(--rule)}
+.matrix tbody tr:hover td.field{background:var(--panel-2)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%}
+.d-y{background:var(--accent)}
+.d-p{background:transparent;box-shadow:inset 0 0 0 1.5px var(--accent)}
+.d-n{width:9px;height:1.5px;border-radius:0;background:var(--rule-2)}
+
+/* ---------- genre chart ---------- */
+.chart{background:var(--panel);border:1px solid var(--rule);border-radius:5px;padding:22px 24px 16px;box-shadow:var(--shadow)}
+.bar-row{display:grid;grid-template-columns:132px minmax(0,1fr) 46px;gap:12px;align-items:center;margin-bottom:7px}
+.bar-row .lbl{font-family:Archivo,sans-serif;font-size:12.5px;font-weight:600;text-align:right;color:var(--ink-2)}
+.track{height:15px;background:var(--panel-2);border-radius:2px;position:relative;overflow:hidden}
+.fill{height:100%;background:var(--accent);border-radius:2px}
+.fill.off{background:repeating-linear-gradient(90deg,var(--warn) 0 7px,transparent 7px 11px)}
+.bar-row .val{font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.axis{display:grid;grid-template-columns:132px minmax(0,1fr) 46px;gap:12px;margin-top:10px;
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3)}
+.axis .ticks{display:flex;justify-content:space-between;border-top:1px solid var(--rule);padding-top:4px}
+.chart-note{font-size:13.5px;color:var(--ink-3);margin:12px 0 0;max-width:60ch}
+
+/* ---------- callouts ---------- */
+.callout{
+  border-left:3px solid var(--warn);background:var(--warn-soft);
+  padding:14px 18px;border-radius:0 4px 4px 0;margin:20px 0;
+}
+.callout p{margin:0;max-width:64ch}
+.callout .hd{
+  font-family:Archivo,sans-serif;font-size:11px;font-weight:600;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--warn);margin-bottom:5px;
+}
+.note{border-left-color:var(--accent);background:var(--accent-soft)}
+.note .hd{color:var(--accent)}
+
+/* ---------- source cards ---------- */
+.cards{display:grid;gap:14px}
+@media(min-width:720px){.cards{grid-template-columns:1fr 1fr}}
+.card{
+  background:var(--panel);border:1px solid var(--rule);border-radius:5px;
+  padding:16px 18px 15px;display:flex;flex-direction:column;gap:9px;
+}
+.card .top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.card h4{font-family:Archivo,sans-serif;font-size:17px;font-weight:600;margin:0;letter-spacing:-.01em}
+.card p{font-size:14.5px;margin:0;color:var(--ink-2);max-width:none}
+.spec-list{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;font-size:13px;margin:0}
+.spec-list dt{font-family:Archivo,sans-serif;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);padding-top:3px;white-space:nowrap}
+.spec-list dd{margin:0;font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--ink)}
+
+/* ---------- code ---------- */
+pre{
+  background:var(--panel);border:1px solid var(--rule);border-radius:5px;
+  padding:15px 17px;overflow-x:auto;margin:16px 0;
+  font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12.5px;line-height:1.62;
+  color:var(--ink-2);
+}
+pre b{color:var(--ink);font-weight:500}
+pre i{color:var(--ink-3);font-style:normal}
+
+ul.tight{margin:0 0 16px;padding-left:20px;max-width:66ch}
+ul.tight li{margin-bottom:7px}
+
+footer{border-top:1px solid var(--rule);margin-top:20px;padding-top:18px;
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);
+  display:flex;flex-wrap:wrap;gap:8px 22px}
+
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <div class="kicker">
+    <span>AMRO / Research</span><span>2026-09-02</span><span><b>12 sources</b> surveyed</span><span>Movie metadata APIs</span>
+  </div>
+  <h1>Movie API Field Guide</h1>
+  <p class="dek">Eleven movie data sources on top of TMDB, plus one artwork adjunct: what each returns, in what shape, what its genre model looks like, and what it costs in money and licence terms. <strong>Every number here was pulled or read on the date above.</strong></p>
+  <div class="legend">
+    <div><span class="tag t-live">Live</span> Request issued from this machine; the response is quoted.</div>
+    <div><span class="tag t-spec">Spec</span> OpenAPI or API Blueprint downloaded and read.</div>
+    <div><span class="tag t-doc">Doc</span> Vendor prose read; endpoint needs a key we don't hold.</div>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Contents">
+    <div class="grp">
+      <h4>Sections</h4>
+      <a href="#field">The field</a>
+      <a href="#genres">Genre systems</a>
+      <a href="#status">Release status</a>
+      <a href="#coverage">Field coverage</a>
+      <a href="#profiles">Source profiles</a>
+      <a href="#join">Joining sources</a>
+      <a href="#verdict">What to do</a>
+      <a href="#repro">Reproduce it</a>
+    </div>
+    <div class="grp">
+      <h4>Verified counts</h4>
+      <a href="#genres">19 &nbsp;TMDB</a>
+      <a href="#genres">28 &nbsp;IMDb</a>
+      <a href="#genres">34 &nbsp;Trakt</a>
+      <a href="#genres">693 Wikidata</a>
+    </div>
+  </nav>
+
+  <main>
+
+  <section id="field">
+    <h2>Section 1</h2>
+    <div class="h2sub">The field, and what each source is actually for</div>
+    <p class="lede">No source here replaces TMDB. Each one earns its place by carrying something TMDB does not: a critic score, a streaming deep link, an award record, a second opinion on what is trending.</p>
+
+    <div class="scroller">
+      <table>
+        <thead>
+          <tr><th>Source</th><th>Really for</th><th>Auth</th><th class="num">Free tier</th><th>Commercial use</th><th>Evidence</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="src">TMDB</td><td>General metadata, images, discovery</td><td><code>Bearer</code> v4 token</td><td class="num">unmetered</td><td>Written agreement required</td><td><span class="tag t-live">Live</span></td></tr>
+          <tr><td class="src">OMDb</td><td>IMDb-shaped data plus critic scores</td><td><code>?apikey=</code></td><td class="num">1,000 / day</td><td>Yes, via Patreon tiers</td><td><span class="tag t-doc">Doc</span></td></tr>
+          <tr><td class="src">IMDb</td><td>The authoritative title graph</td><td>none (bulk TSV)</td><td class="num">full dumps</td><td>Paid licence only</td><td><span class="tag t-live">Live</span></td></tr>
+          <tr><td class="src">Trakt</td><td>Trending, popularity, social signal</td><td><code>trakt-api-key</code></td><td class="num">1,000 / 5 min</td><td>Yes</td><td><span class="tag t-spec">Spec</span></td></tr>
+          <tr><td class="src">TheTVDB v4</td><td>Artwork, awards, per-country ratings</td><td>Bearer from <code>/login</code></td><td class="num">&lt; $50k rev.</td><td>$1k–$10k / yr by revenue</td><td><span class="tag t-spec">Spec</span></td></tr>
+          <tr><td class="src">Watchmode</td><td>Where to watch, 367 providers</td><td><code>X-API-Key</code></td><td class="num">2,500 / mo</td><td>$349/mo and up</td><td><span class="tag t-doc">Doc</span></td></tr>
+          <tr><td class="src">Streaming Availability</td><td>Where to watch, 65 countries</td><td>RapidAPI key</td><td class="num">1,000 / mo</td><td>Yes, on every tier</td><td><span class="tag t-doc">Doc</span></td></tr>
+          <tr><td class="src">Simkl</td><td>Tracking, multi-rating metadata</td><td><code>client_id</code></td><td class="num">10 GET / sec</td><td>Licence required</td><td><span class="tag t-spec">Spec</span></td></tr>
+          <tr><td class="src">MDBList</td><td>Nine rating providers in one call</td><td><code>apikey</code> or Bearer</td><td class="num">1,000 / day</td><td>Not stated</td><td><span class="tag t-spec">Spec</span></td></tr>
+          <tr><td class="src">JustWatch</td><td>The where-to-watch graph itself</td><td>none</td><td class="num">undocumented</td><td><strong>Not licensed</strong></td><td><span class="tag t-live">Live</span></td></tr>
+          <tr><td class="src">Cinemeta</td><td>IMDb-derived data for Stremio addons</td><td>none</td><td class="num">unmetered</td><td>No terms published</td><td><span class="tag t-live">Live</span></td></tr>
+          <tr><td class="src">Wikidata</td><td>Facts, awards, entity links</td><td>none</td><td class="num">60s / query</td><td>CC0, unrestricted</td><td><span class="tag t-live">Live</span></td></tr>
+          <tr><td class="src">Fanart.tv</td><td>Logos, clearart, disc art</td><td><code>api-key</code> header</td><td class="num">personal key</td><td>Project key required</td><td><span class="tag t-spec">Spec</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <div class="hd">Excluded on purpose</div>
+      <p>JustWatch's GraphQL endpoint answers unauthenticated requests and returns the best-shaped data in this survey: IMDb score, TMDB score and Tomatometer in one response, with per-country offers. It is undocumented, unversioned, and not offered for third-party use, by a company that sells this exact data. Watchmode and Streaming Availability are the licensed version. Its genre model is still worth studying, and appears below.</p>
+    </div>
+  </section>
+
+  <section id="genres">
+    <h2>Section 2</h2>
+    <div class="h2sub">Genre systems: twelve vocabularies, no two the same</div>
+    <p class="lede">This is where the sources differ most, and where adding a second one costs the most work. Counts below are measured, not recalled: IMDb's 28 came from tallying the genre column across 268,084 real rows of <code>title.basics.tsv.gz</code>, and Wikidata's 693 from a live <code>COUNT(DISTINCT)</code> over film-genre items.</p>
+
+    <div class="chart">
+      <div class="bar-row"><div class="lbl">TMDB</div><div class="track"><div class="fill" style="width:47.5%"></div></div><div class="val">19</div></div>
+      <div class="bar-row"><div class="lbl">JustWatch</div><div class="track"><div class="fill" style="width:47.5%"></div></div><div class="val">19</div></div>
+      <div class="bar-row"><div class="lbl">Cinemeta filter</div><div class="track"><div class="fill" style="width:47.5%"></div></div><div class="val">19</div></div>
+      <div class="bar-row"><div class="lbl">Simkl</div><div class="track"><div class="fill" style="width:50%"></div></div><div class="val">20</div></div>
+      <div class="bar-row"><div class="lbl">Streaming Avail.</div><div class="track"><div class="fill" style="width:52.5%"></div></div><div class="val">21</div></div>
+      <div class="bar-row"><div class="lbl">IMDb / OMDb</div><div class="track"><div class="fill" style="width:70%"></div></div><div class="val">28</div></div>
+      <div class="bar-row"><div class="lbl">Cinemeta items</div><div class="track"><div class="fill" style="width:70%"></div></div><div class="val">28</div></div>
+      <div class="bar-row"><div class="lbl">Trakt top level</div><div class="track"><div class="fill" style="width:85%"></div></div><div class="val">34</div></div>
+      <div class="bar-row"><div class="lbl">Wikidata</div><div class="track"><div class="fill off" style="width:100%"></div></div><div class="val">693</div></div>
+      <div class="axis"><div></div><div class="ticks"><span>0</span><span>10</span><span>20</span><span>30</span><span>40</span></div><div></div></div>
+      <p class="chart-note">Linear scale to 40. Wikidata is drawn hatched because it runs off the axis by a factor of seventeen: it is not a list at all but an open ontology of Q-items with transitive subclassing. Watchmode, TheTVDB and MDBList are absent because their counts need a key to read.</p>
+    </div>
+
+    <h3>How each one is keyed</h3>
+    <div class="scroller">
+      <table>
+        <thead><tr><th>Source</th><th class="num">Count</th><th>Key type</th><th>On list items</th><th>Shape</th></tr></thead>
+        <tbody>
+          <tr><td class="src">TMDB</td><td class="num">19</td><td>Non-contiguous integer</td><td>ids only</td><td><code>genre_ids: [53]</code>, names on detail</td></tr>
+          <tr><td class="src">IMDb</td><td class="num">28</td><td>Name string</td><td>&mdash;</td><td><code>"Documentary,Short"</code>, max 3</td></tr>
+          <tr><td class="src">OMDb</td><td class="num">28</td><td>Name string</td><td>&mdash;</td><td><code>"Action, Adventure, Sci-Fi"</code>, one field</td></tr>
+          <tr><td class="src">Cinemeta</td><td class="num">28 / 19</td><td>Name string</td><td>yes</td><td>items carry 28, filter offers 19</td></tr>
+          <tr><td class="src">Trakt</td><td class="num">34 + sub</td><td>Lowercase slug</td><td>yes</td><td><code>{name, slug}</code>, second tier on request</td></tr>
+          <tr><td class="src">JustWatch</td><td class="num">19</td><td>3-char code</td><td>yes</td><td><code>{shortName, translation}</code>, merged buckets</td></tr>
+          <tr><td class="src">Simkl</td><td class="num">~20</td><td>Slug in path, title-case in body</td><td>yes</td><td><code>["Adventure", "Family"]</code></td></tr>
+          <tr><td class="src">Watchmode</td><td class="num">&mdash;</td><td>Integer <em>plus TMDB mapping</em></td><td>ids and names</td><td><code>{id, name, tmdb_id}</code></td></tr>
+          <tr><td class="src">Streaming Avail.</td><td class="num">21</td><td>String id</td><td>yes</td><td><code>{id, name}</code>, localisable</td></tr>
+          <tr><td class="src">TheTVDB</td><td class="num">&mdash;</td><td>Integer + slug</td><td>yes</td><td><code>{id, name, slug}</code></td></tr>
+          <tr><td class="src">MDBList</td><td class="num">two sets</td><td>Integer</td><td>yes</td><td><code>{id, name}</code>, <code>?anime=0|1</code></td></tr>
+          <tr><td class="src">Wikidata</td><td class="num">693</td><td>Q-item</td><td>&mdash;</td><td>open ontology, transitive</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>What actually breaks when a second source arrives</h3>
+    <ul class="tight">
+      <li>TMDB says <code>Science Fiction</code>. IMDb, OMDb and Cinemeta say <code>Sci-Fi</code>. Trakt says <code>science-fiction</code>. Three spellings of one concept across four sources.</li>
+      <li>TMDB has <code>TV Movie</code> as genre id <code>10770</code>. IMDb has no such genre; it is a <code>titleType</code>. <strong>The same distinction is a genre in one model and a type in another.</strong></li>
+      <li>IMDb carries <code>Short</code>, <code>News</code>, <code>Talk-Show</code>, <code>Game-Show</code>, <code>Reality-TV</code>. TMDB carries none of them. Trakt adds nine more TMDB has no slot for, including <code>anime</code>, <code>donghua</code>, <code>holiday</code>, <code>indie</code>, <code>road</code>, and an explicit <code>none</code>.</li>
+      <li>JustWatch merges what TMDB keeps apart: <code>act</code> is <em>Action &amp; Adventure</em>, <code>trl</code> is <em>Mystery &amp; Thriller</em>. A round trip through JustWatch loses the Action/Adventure distinction permanently. Its <code>eur</code> bucket, <em>Made in Europe</em>, is not a genre at all: it is provenance wearing a genre's clothes, because the vocabulary was designed for a filter row rather than for cataloguing.</li>
+      <li>Trakt is the only two-level system. Nothing else can express that <code>heist</code> is a kind of <code>action</code>.</li>
+    </ul>
+
+    <div class="callout note">
+      <div class="hd">The trap inside Cinemeta</div>
+      <p>Its manifest declares 19 filterable movie genres. Its meta objects return the full IMDb 28: a live fetch of <em>Big Buck Bunny</em> came back <code>["Animation", "Short", "Comedy"]</code>, and <code>Short</code> is not in the filter list. A UI built from the manifest shows items carrying genres it cannot filter on.</p>
+    </div>
+
+    <p>Only Watchmode ships the cross-walk as data, via a <code>tmdb_id</code> field on every genre row, set to <code>0</code> where no TMDB equivalent exists. Everyone else leaves the mapping to you.</p>
+  </section>
+
+  <section id="status">
+    <h2>Section 3</h2>
+    <div class="h2sub">Release status: one word, three meanings</div>
+    <p class="lede">Only four of the twelve sources carry a title's release or production state at all, and no two represent it the same way. The word is also overloaded: every TheTVDB response wraps its payload as <code>{"data": …, "status": "…"}</code>, where that outer <code>status</code> reports whether the call succeeded. OMDb's <code>Response</code> is the same idea under another name. A lookup reaching for <code>status</code> on a TheTVDB response finds the envelope, not the movie.</p>
+
+    <div class="scroller">
+      <table>
+        <thead><tr><th>Source</th><th>Field</th><th>Where it lives</th><th>Values</th></tr></thead>
+        <tbody>
+          <tr><td class="src">TMDB</td><td><code>status</code> string</td><td>detail only, <strong>absent from list items</strong></td><td><code>Rumored</code>, <code>Planned</code>, <code>In Production</code>, <code>Post Production</code>, <code>Released</code>, <code>Canceled</code></td></tr>
+          <tr><td class="src">Trakt</td><td><code>status</code> string</td><td><code>?extended=full</code></td><td><code>released</code>, <code>in production</code>, <code>post production</code>, <code>planned</code>, <code>rumored</code>, <code>canceled</code></td></tr>
+          <tr><td class="src">Simkl</td><td><code>status</code> string</td><td>movie objects, including list rows</td><td><code>released</code> for movies</td></tr>
+          <tr><td class="src">TheTVDB</td><td><code>status</code> <strong>object</strong></td><td><code>MovieBaseRecord</code> and Extended</td><td>a <code>Status</code> record, <code>{id, name, keepUpdated, recordType}</code>. Enumerate with <code>GET /movies/statuses</code>.</td></tr>
+          <tr><td class="src">Watchmode</td><td>none</td><td>&mdash;</td><td><code>type</code>, <code>year</code>, <code>end_year</code> only</td></tr>
+          <tr><td class="src">Streaming Avail.</td><td>none</td><td>&mdash;</td><td><code>showType</code> is movie or series, plus <code>releaseYear</code></td></tr>
+          <tr><td class="src">MDBList</td><td>none for release state</td><td>&mdash;</td><td><code>status</code> appears only on user-collection sync payloads, <code>added</code> and <code>removed</code></td></tr>
+          <tr><td class="src">OMDb</td><td>none</td><td>&mdash;</td><td><code>Response</code> is call outcome, not title state</td></tr>
+          <tr><td class="src">IMDb datasets</td><td>none</td><td>&mdash;</td><td><code>titleType</code>, <code>startYear</code>, <code>endYear</code></td></tr>
+          <tr><td class="src">Cinemeta</td><td>movies none, series yes</td><td>verified live: a movie meta object has no <code>status</code> key</td><td>&mdash;</td></tr>
+          <tr><td class="src">JustWatch</td><td>none observed</td><td>&mdash;</td><td><code>objectType</code> is MOVIE or SHOW</td></tr>
+          <tr><td class="src">Wikidata</td><td>none</td><td>&mdash;</td><td>modelled as <code>P31</code> plus <code>P577</code> publication date</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Where both movies and TV exist, the vocabularies diverge again. Trakt's show statuses are <code>returning series</code>, <code>continuing</code>, <code>in production</code>, <code>planned</code>, <code>upcoming</code>, <code>pilot</code>, <code>canceled</code> and <code>ended</code>. Simkl reuses <code>ended</code> and <code>airing</code> for shows, and keeps a separate set for a user's own list: <code>watching</code>, <code>plantowatch</code>, <code>completed</code>, <code>hold</code>, <code>dropped</code>.</p>
+
+    <div class="callout note">
+      <div class="hd">Measured, TMDB trending page 1</div>
+      <p>All 20 details behind the current trending page were fetched: <strong>19 <code>Released</code>, 1 <code>Post Production</code></strong>. Roughly one trending film in ten has not come out yet, which is why <code>vote_count</code> is zero for 11% of them and budget and revenue are empty for over 40%. <code>status</code> is the field that explains the missing data, and it is the field the list endpoint does not send.</p>
+    </div>
+
+    <p>TMDB gives title-case strings, Trakt and Simkl give lowercase strings, TheTVDB gives a nested object with an id. A shared release-status type in the domain needs per-source parsing, exactly like the genre vocabularies one layer up. And because TMDB carries <code>status</code> on detail but not on list items, a list-level decision that depends on it, such as suppressing a rating block for an unreleased film, either waits for the detail fetch or infers the state from <code>vote_count</code> and <code>release_date</code>.</p>
+  </section>
+
+  <section id="coverage">
+    <h2>Section 4</h2>
+    <div class="h2sub">Field coverage</div>
+    <p class="lede">Filled dot: present. Hollow dot: present but degraded, string-typed, or behind a second call. Dash: absent.</p>
+    <div class="scroller matrix">
+      <table>
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th class="rot">TMDB</th><th class="rot">OMDb</th><th class="rot">IMDb</th><th class="rot">Trakt</th><th class="rot">TVDB</th>
+            <th class="rot">Watch<br>mode</th><th class="rot">Str.<br>Avail</th><th class="rot">Simkl</th><th class="rot">MDB<br>List</th><th class="rot">Cine<br>meta</th><th class="rot">Wiki<br>data</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td class="field">Title, overview</td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-p"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td></tr>
+          <tr><td class="field">Poster, backdrop</td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-p"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td></tr>
+          <tr><td class="field">Logo, clearart</td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td></tr>
+          <tr><td class="field">Runtime</td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-p"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-p"></i></td><td class="c"><i class="dot d-y"></i></td></tr>
+          <tr><td class="field">Release date</td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-p"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-p"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td></tr>
+          <tr><td class="field">Genres</td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-p"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td></tr>
+          <tr><td class="field">Budget, revenue</td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-p"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td></tr>
+          <tr><td class="field">Own rating</td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-p"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td></tr>
+          <tr><td class="field">Rotten Tomatoes</td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-p"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-p"></i></td></tr>
+          <tr><td class="field">Metacritic</td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-p"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-p"></i></td></tr>
+          <tr><td class="field">Letterboxd, Ebert</td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td></tr>
+          <tr><td class="field">Certification</td><td class="c"><i class="dot d-p"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td></tr>
+          <tr><td class="field">Cast, crew</td><td class="c"><i class="dot d-p"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-p"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-p"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-p"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td></tr>
+          <tr><td class="field">Awards</td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td></tr>
+          <tr><td class="field">Trailers</td><td class="c"><i class="dot d-p"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td></tr>
+          <tr><td class="field">Streaming availability</td><td class="c"><i class="dot d-p"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-p"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td></tr>
+          <tr><td class="field">Deep links</td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-p"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td></tr>
+          <tr><td class="field">IMDb id</td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td></tr>
+          <tr><td class="field">TMDB id</td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td></tr>
+          <tr><td class="field">Change feed</td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-y"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td><td class="c"><i class="dot d-n"></i></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="profiles">
+    <h2>Section 5</h2>
+    <div class="h2sub">Source profiles</div>
+    <p class="lede">The one thing each source does that nothing else here does, alongside the practical numbers.</p>
+
+    <div class="cards">
+      <article class="card">
+        <div class="top"><h4>TMDB</h4><span class="tag t-live">Live</span></div>
+        <p>The baseline. Broad coverage, good images, clean discovery, no per-request cost. Nothing here displaces it.</p>
+        <dl class="spec-list">
+          <dt>Page size</dt><dd>20, not configurable</dd>
+          <dt>Genres</dt><dd>19 integer ids</dd>
+          <dt>Cache cap</dt><dd>6 months, by terms</dd>
+          <dt>Watch out</dt><dd>list carries genre_ids, detail carries genre objects</dd>
+        </dl>
+      </article>
+
+      <article class="card">
+        <div class="top"><h4>OMDb</h4><span class="tag t-doc">Doc</span></div>
+        <p>The cheapest second source. Its <code>Ratings[]</code> array carries IMDb, Rotten Tomatoes and Metacritic in one call, keyed by an IMDb id TMDB already hands you.</p>
+        <dl class="spec-list">
+          <dt>Shape</dt><dd>flat, every value a string</dd>
+          <dt>Missing</dt><dd>the literal "N/A"</dd>
+          <dt>Key</dt><dd>URL parameter only</dd>
+        </dl>
+      </article>
+
+      <article class="card">
+        <div class="top"><h4>IMDb datasets</h4><span class="tag t-live">Live</span></div>
+        <p>Gzipped TSV, refreshed daily, no key, no rate limit. Non-commercial licence, so it belongs in test fixtures rather than in an app.</p>
+        <dl class="spec-list">
+          <dt>Files</dt><dd>basics, ratings, akas, crew, principals, episode, names</dd>
+          <dt>Genres</dt><dd>28, max 3 per title</dd>
+          <dt>Missing</dt><dd><code>\N</code></dd>
+        </dl>
+      </article>
+
+      <article class="card">
+        <div class="top"><h4>Trakt</h4><span class="tag t-spec">Spec</span></div>
+        <p>Configurable page size, and the best join key in the survey: an <code>ids</code> block carrying Trakt, slug, IMDb and TMDB on every entity.</p>
+        <dl class="spec-list">
+          <dt>Paging</dt><dd>?page=&amp;limit=, X-Pagination-* headers</dd>
+          <dt>Genres</dt><dd>34 slugs, plus a subgenre tier</dd>
+          <dt>Limit</dt><dd>1,000 GET / 5 min</dd>
+        </dl>
+      </article>
+
+      <article class="card">
+        <div class="top"><h4>TheTVDB v4</h4><span class="tag t-spec">Spec</span></div>
+        <p>Carries three things TMDB does not: <code>boxOfficeUS</code> split out, structured <code>awards</code>, and <code>inspirations</code> linking a film to its source work. Per-country <code>contentRatings</code> without a second call.</p>
+        <dl class="spec-list">
+          <dt>Token</dt><dd>bearer, one month</dd>
+          <dt>Lookup</dt><dd>/search/remoteid resolves IMDb and TMDB ids</dd>
+          <dt>Price</dt><dd>free under $50k revenue</dd>
+        </dl>
+      </article>
+
+      <article class="card">
+        <div class="top"><h4>Watchmode</h4><span class="tag t-doc">Doc</span></div>
+        <p>The broadest where-to-watch data, and the only genre table shipping a TMDB mapping. Two fields, <code>will_you_like_this</code> and <code>review_summary</code>, are AI-generated prose.</p>
+        <dl class="spec-list">
+          <dt>Coverage</dt><dd>367 providers, 54 countries</dd>
+          <dt>Credits</dt><dd>IMDb/TMDB lookup 2, each append +1, each region +1</dd>
+          <dt>Free tier</dt><dd>2,500/mo, non-commercial, 30-day cache</dd>
+        </dl>
+      </article>
+
+      <article class="card">
+        <div class="top"><h4>Streaming Availability</h4><span class="tag t-doc">Doc</span></div>
+        <p>Commercial use on every tier, free one included. Accepts a TMDB id directly as <code>movie/278</code>, so no mapping step.</p>
+        <dl class="spec-list">
+          <dt>Paging</dt><dd>cursor, hasMore + nextCursor</dd>
+          <dt>Genres</dt><dd>21, localisable</dd>
+          <dt>Price</dt><dd>free 1,000/mo, then $49 / $99 / $299</dd>
+        </dl>
+      </article>
+
+      <article class="card">
+        <div class="top"><h4>Simkl</h4><span class="tag t-spec">Spec</span></div>
+        <p>Simkl and IMDb ratings side by side in the base response. Images are path fragments the client composes, same pattern as TMDB.</p>
+        <dl class="spec-list">
+          <dt>Limit</dt><dd>10 GET/sec, 1 POST/sec per client_id</dd>
+          <dt>Overage</dt><dd>suspension without warning or appeal</dd>
+          <dt>Genres</dt><dd>website filter URLs, not an endpoint</dd>
+        </dl>
+      </article>
+
+      <article class="card">
+        <div class="top"><h4>MDBList</h4><span class="tag t-spec">Spec</span></div>
+        <p>Nine rating providers, including Letterboxd and Roger Ebert, which appear nowhere else here, and Rotten Tomatoes critic and audience as separate values.</p>
+        <dl class="spec-list">
+          <dt>Providers</dt><dd>imdb, tmdb, letterboxd, metacritic, myanimelist, rogerebert, rtomatoes, rtaudience, score_average</dd>
+          <dt>Scaling</dt><dd>1,000/day free to 250,000/day at &euro;5/mo</dd>
+        </dl>
+      </article>
+
+      <article class="card">
+        <div class="top"><h4>Cinemeta</h4><span class="tag t-live">Live</span></div>
+        <p>Free, keyless, IMDb-shaped, with an <code>awards</code> summary and a <code>popularities</code> object reading TMDB, Trakt and Stremio at once. No published terms and no SLA.</p>
+        <dl class="spec-list">
+          <dt>Types</dt><dd>runtime "148 min", rating "8.8", year "2010"</dd>
+          <dt>Images</dt><dd>metahub, small/medium/large, plus a logo</dd>
+        </dl>
+      </article>
+
+      <article class="card">
+        <div class="top"><h4>Wikidata</h4><span class="tag t-live">Live</span></div>
+        <p>CC0, the only source here with no legal friction at all. Right tool for a narrow gap such as awards, or linking a film to the novel it adapts.</p>
+        <dl class="spec-list">
+          <dt>Keys</dt><dd>P345 IMDb, P4947 TMDB, P136 genre, P2142 box office</dd>
+          <dt>Limit</dt><dd>60s hard timeout; a broad aggregate 502'd here</dd>
+        </dl>
+      </article>
+
+      <article class="card">
+        <div class="top"><h4>JustWatch</h4><span class="tag t-no">Do not ship</span></div>
+        <p>Best-shaped data in the survey, on an endpoint nobody offered you. Its 19 merged genre buckets are still the clearest example of a vocabulary designed for a filter row.</p>
+        <dl class="spec-list">
+          <dt>Returns</dt><dd>imdbScore, tmdbScore, tomatoMeter, per-country offers</dd>
+          <dt>Status</dt><dd>undocumented, unversioned, unlicensed</dd>
+        </dl>
+      </article>
+    </div>
+  </section>
+
+  <section id="join">
+    <h2>Section 6</h2>
+    <div class="h2sub">Joining across sources</div>
+    <p class="lede">Every source here except the IMDb bulk files speaks IMDb id, and every one except OMDb, IMDb bulk and Fanart.tv speaks TMDB id. Hold the TMDB id as the primary key, carry <code>imdb_id</code> alongside it, and every other source is one hop away.</p>
+<pre><b>TMDB id</b>
+  <i>├─</i> /movie/{id}.imdb_id ──&gt; <b>IMDb id</b> ──&gt; OMDb, Cinemeta, Simkl, MDBList
+  <i>├─</i> Trakt .ids{trakt, slug, imdb, tmdb} ──&gt; everything Trakt touches
+  <i>├─</i> TVDB /search/remoteid/{id} ─────────&gt; TVDB id
+  <i>├─</i> Watchmode /search?search_field=tmdb_movie_id
+  <i>│</i>            or the daily title_id_map.csv
+  <i>├─</i> Streaming Availability /shows/movie/{tmdb_id}
+  <i>└─</i> Wikidata P4947, or P345 for IMDb</pre>
+    <p>Watchmode's <code>title_id_map.csv</code>, refreshed daily with Watchmode, IMDb and TMDB ids for every title, is the only bulk mapping offered anywhere in this list.</p>
+  </section>
+
+  <section id="verdict">
+    <h2>Section 7</h2>
+    <div class="h2sub">What to do about it</div>
+
+    <div class="callout">
+      <div class="hd">Two TMDB facts worth stating out loud</div>
+      <p><strong>Caching is capped at six months by the terms.</strong> An unbounded offline store is a licence breach, not merely a design trade-off, so a future offline mode needs an eviction policy for legal reasons as well as storage ones. <strong>And commercial use needs a written agreement.</strong> A hiring-assignment MVP is fine; a business built on it is not, without signing something.</p>
+    </div>
+
+    <div class="scroller">
+      <table>
+        <thead><tr><th>Goal</th><th>Source</th><th>Why it, and not the alternative</th></tr></thead>
+        <tbody>
+          <tr><td>Critic scores, cheapest path</td><td class="src">OMDb</td><td>Rotten Tomatoes and Metacritic in one call, keyed by an <code>imdb_id</code> already held. Everything is a string, so parse strictly.</td></tr>
+          <tr><td>Many ratings at once</td><td class="src">MDBList</td><td>Nine providers including Letterboxd and Roger Ebert. 1,000/day free, 250,000/day for &euro;5 a month.</td></tr>
+          <tr><td>Where to watch, shipping commercially</td><td class="src">Streaming Availability</td><td>Commercial use on the free tier. Watchmode starts at $349/mo for any commercial use at all.</td></tr>
+          <tr><td>Where to watch, maximum coverage</td><td class="src">Watchmode</td><td>367 providers, episode-level deep links, and a genre table that maps itself to TMDB. Budget for the credit multipliers.</td></tr>
+          <tr><td>Trending, with better paging</td><td class="src">Trakt</td><td>Configurable page size removes the whole unstable-paging problem. Best join key here.</td></tr>
+          <tr><td>Artwork, awards, per-country ratings</td><td class="src">TheTVDB</td><td>Free below $50k revenue, and the only revenue-tiered pricing in the field.</td></tr>
+          <tr><td>Test fixtures at scale</td><td class="src">IMDb datasets</td><td>Real data, no key, no rate limit. Non-commercial, so fixtures only.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout note">
+      <div class="hd">The one architectural change this survey argues for</div>
+      <p>Resolve each source's genre representation into an app-owned genre type at the source boundary, instead of letting TMDB's integer ids reach the domain. It costs nothing today, with one source and one vocabulary. Twelve vocabularies, no two of which agree, is what "collect data from multiple API sources" actually means in this field.</p>
+    </div>
+  </section>
+
+  <section id="repro">
+    <h2>Section 8</h2>
+    <div class="h2sub">Reproduce the live findings</div>
+<pre><i># IMDb: 28 genres, measured across 268,084 real rows</i>
+curl -s -r 0-6000000 <b>"https://datasets.imdbws.com/title.basics.tsv.gz"</b> \
+  | gzip -dc 2&gt;/dev/null \
+  | awk -F'\t' 'NR&gt;1{n=split($9,a,","); for(i=1;i&lt;=n;i++) if(a[i]!="\\N") g[a[i]]++} \
+                END{for(k in g) print g[k]"\t"k}' | sort -rn
+
+<i># TMDB: status across every detail behind trending page 1</i>
+for id in $(curl -s -H "Authorization: Bearer $TMDB_TOKEN" \
+    <b>"https://api.themoviedb.org/3/trending/movie/week"</b> \
+    | python3 -c 'import sys,json;print(" ".join(str(r["id"]) for r in json.load(sys.stdin)["results"]))'); do
+  curl -s -H "Authorization: Bearer $TMDB_TOKEN" <b>"https://api.themoviedb.org/3/movie/$id"</b> \
+    | python3 -c 'import sys,json;print(json.load(sys.stdin)["status"])'
+done | sort | uniq -c | sort -rn
+
+<i># JustWatch: 19 merged genre buckets</i>
+curl -s -X POST <b>https://apis.justwatch.com/graphql</b> -H 'Content-Type: application/json' \
+  -d '{"query":"{genres{shortName translation(language:\"en\")}}"}'
+
+<i># Cinemeta: filter vocabulary (19) against item vocabulary (28)</i>
+curl -s <b>https://v3-cinemeta.strem.io/manifest.json</b>
+curl -s <b>https://v3-cinemeta.strem.io/meta/movie/tt1254207.json</b>   <i># returns "Short"</i>
+
+<i># Wikidata: 693 film-genre items</i>
+curl -s -G <b>https://query.wikidata.org/sparql</b> -H 'Accept: application/sparql-results+json' \
+  -H 'User-Agent: AMRO-research/1.0' --data-urlencode \
+  'query=SELECT (COUNT(DISTINCT ?g) AS ?c) WHERE { ?g wdt:P31/wdt:P279* wd:Q201658 . }'
+
+<i># Machine-readable contracts</i>
+curl -s <b>https://thetvdb.github.io/v4-api/swagger.yml</b>       <i># OpenAPI 3.0.0, v4.7.10</i>
+curl -s <b>https://api.mdblist.com/schema/</b>                    <i># OpenAPI 3.0.3</i>
+curl -s <b>https://jsapi.apiary.io/apis/trakt.apib</b>            <i># API Blueprint, 854 KB</i>
+curl -s <b>https://api.simkl.org/llms.txt</b>                     <i># current Simkl doc index</i>
+
+<i># Auth models, confirmed by unauthenticated probe</i>
+curl -s <b>"https://www.omdbapi.com/?i=tt1375666"</b>       <i># 401, "No API key provided."</i>
+curl -s <b>"https://api.watchmode.com/v1/genres/"</b>       <i># 401, "Please enter a valid API key."</i>
+curl -s <b>"https://api.mdblist.com/tmdb/movie/27205"</b>   <i># 401, names both apikey and bearer</i>
+curl -s <b>"https://api.trakt.tv/movies/inception-2010"</b> <i># 403 Cloudflare, no trakt-api-key</i></pre>
+  </section>
+
+  <footer>
+    <span>AMRO / Movie Discovery MVP</span>
+    <span>Survey run 2026-09-02</span>
+    <span>12 sources, 4 live, 5 spec, 3 doc</span>
+    <span>Status section added 2026-09-02</span>
+    <span>Full write-up: docs/superpowers/reports/movie-data-apis.md</span>
+  </footer>
+
+  </main>
+</div>
+</div>
+
+</body>
+</html>
